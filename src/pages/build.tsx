@@ -15,6 +15,7 @@ import Button from "../components/button";
 import ChevronRightSvg from "../svgs/chevron-right.svg";
 import ChevronLeftSvg from "../svgs/chevron-left.svg";
 import DownloadSvg from "../svgs/download.svg";
+import PencilSvg from "../svgs/pencil.svg";
 
 const rooms = [
 	{
@@ -109,52 +110,52 @@ const IndexPage = () => {
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 					<StaticImage
 						src="../images/suggested-designs/33.png"
 						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md"
+						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 					/>
 				</Stack>
 
@@ -163,7 +164,7 @@ const IndexPage = () => {
 				</Stack>
 			</section>
 
-			<section className="container mx-auto">
+			<section className="container mx-auto mt-4">
 				<Carousel title="Advanced Section">
 					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
 						<Stack className="basis-1/2 gap-12">
@@ -229,16 +230,16 @@ const IndexPage = () => {
 				</Carousel>
 			</section>
 
-			<section className="container mx-auto">
+			<section className="container mx-auto py-4">
 				<Stack className="justify-center gap-4 mt-6">
 					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
 						Save
 					</Button>
-					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
-						Save
+					<Button type="outline" LeftItem={PencilSvg} className="!px-4 !py-1">
+						Load
 					</Button>
-					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
-						Save
+					<Button type="fill" className="!px-4 !py-1">
+						Make Order
 					</Button>
 				</Stack>
 			</section>
