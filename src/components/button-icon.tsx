@@ -16,7 +16,7 @@ type ButtonIconProps = {
 	disabled?: boolean;
 	type?: ButtonType;
 	link?: string;
-} & React.HTMLAttributes<HTMLButtonElement>;
+} & React.HTMLAttributes<HTMLElement>;
 
 const ButtonIcon = ({
 	Icon,
@@ -27,7 +27,7 @@ const ButtonIcon = ({
 	onClick,
 	...props
 }: ButtonIconProps) => {
-	const handleClicked = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleClicked = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		if (link) {
 			navigate(link);
 			return;

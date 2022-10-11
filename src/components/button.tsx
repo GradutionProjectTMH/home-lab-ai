@@ -18,7 +18,7 @@ type ButtonProps = {
 	LeftItem?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 	RightItem?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 	link?: string;
-} & React.HTMLAttributes<HTMLButtonElement>;
+} & React.HTMLAttributes<HTMLElement>;
 
 const Button = ({
 	title,
@@ -32,7 +32,7 @@ const Button = ({
 	onClick,
 	...props
 }: ButtonProps) => {
-	const handleClicked = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleClicked = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		if (link) {
 			navigate(link);
 			return;

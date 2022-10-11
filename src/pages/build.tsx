@@ -7,9 +7,11 @@ import Seo from "../components/seo";
 import ButtonIcon from "../components/button-icon";
 import ChevronRightSvg from "../svgs/chevron-right.svg";
 import ChevronLeftSvg from "../svgs/chevron-left.svg";
-import H5 from "../components/typography/h5";
 import Strong from "../components/typography/strong";
 import { joinTxts } from "../utils/text.util";
+import { StaticImage } from "gatsby-plugin-image";
+import H5 from "../components/typography/h5";
+import Carousel from "../components/carousel";
 
 const rooms = [
 	{
@@ -99,6 +101,69 @@ const IndexPage = () => {
 						))}
 					</Stack>
 				</Stack>
+
+				<Stack className="mt-4">
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+					<StaticImage
+						src="../images/suggested-designs/33.png"
+						alt="suggested-design"
+						className="cursor-pointer hover:scale-110 hover:shadow-md"
+					/>
+				</Stack>
+
+				<Stack className="mt-4 justify-center font-medium text-gray-400 tracking-widest">
+					<H5 className="">RECOMMENDED DESIGNS</H5>
+				</Stack>
+			</section>
+
+			<section className="container mx-auto">
+				<Carousel title="Advanced Section">
+					<H4 className="text-gray-700">House boundary:</H4>
+				</Carousel>
 			</section>
 		</Body>
 	);
