@@ -10,6 +10,7 @@ type CarouselProps = {
 	title: string;
 	children: React.ReactNode;
 	disabled?: boolean;
+	defaultOpened?: boolean;
 	titleClassName?: React.HTMLAttributes<HTMLElement>["className"];
 	RightItem?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 	RightItemActive?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
@@ -20,13 +21,14 @@ const Carousel = ({
 	disabled = false,
 	RightItem,
 	RightItemActive,
+	defaultOpened = false,
 	children,
 	className = "",
 	titleClassName = "",
 	onClick,
 	...props
 }: CarouselProps) => {
-	const [isActive, setIsActive] = React.useState<boolean>(false);
+	const [isActive, setIsActive] = React.useState<boolean>(defaultOpened);
 
 	const handleClicked = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 		if (disabled) return;

@@ -50,7 +50,7 @@ const rooms = [
 	},
 ];
 
-const IndexPage = () => {
+const BuildPage = () => {
 	const [currentRoom, setCurrentRoom] = React.useState(rooms[0].name);
 
 	const handleRoomClicked = (room: string) => {
@@ -247,6 +247,6 @@ const IndexPage = () => {
 	);
 };
 
-export default IndexPage;
+export default BuildPage;
 
 export const Head: HeadFC = () => <Seo title="Building" />;

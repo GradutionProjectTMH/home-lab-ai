@@ -18,6 +18,12 @@ const lineByRoutes: Record<string, Record<LineName, string>> = {
 		VLine1: "bg-gray-300 left-0",
 		VLine2: "bg-gray-300 right-0",
 	},
+	Order: {
+		HLine1: "bg-gray-300 top-48",
+		HLine2: "bg-gray-300 top-[36rem]",
+		VLine1: "bg-gray-300 left-0",
+		VLine2: "bg-gray-300 right-0",
+	},
 };
 
 type MainLayoutProps = {
