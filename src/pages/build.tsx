@@ -1,17 +1,20 @@
 import * as React from "react";
 import type { HeadFC } from "gatsby";
+import { joinTxts } from "../utils/text.util";
+import { StaticImage } from "gatsby-plugin-image";
 import Body from "../components/body";
 import Stack from "../components/layout/stack";
 import H4 from "../components/typography/h4";
 import Seo from "../components/seo";
 import ButtonIcon from "../components/button-icon";
+import Strong from "../components/typography/strong";
+import H5 from "../components/typography/h5";
+import Text from "../components/typography/text";
+import Carousel from "../components/carousel";
+import Button from "../components/button";
 import ChevronRightSvg from "../svgs/chevron-right.svg";
 import ChevronLeftSvg from "../svgs/chevron-left.svg";
-import Strong from "../components/typography/strong";
-import { joinTxts } from "../utils/text.util";
-import { StaticImage } from "gatsby-plugin-image";
-import H5 from "../components/typography/h5";
-import Carousel from "../components/carousel";
+import DownloadSvg from "../svgs/download.svg";
 
 const rooms = [
 	{
@@ -162,8 +165,82 @@ const IndexPage = () => {
 
 			<section className="container mx-auto">
 				<Carousel title="Advanced Section">
-					<H4 className="text-gray-700">House boundary:</H4>
+					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
+						<Stack className="basis-1/2 gap-12">
+							<Stack column className="items-end gap-4">
+								<H4 className="text-gray-700">House boundary:</H4>
+								<Text className="text-gray-500">Width:</Text>
+								<Text className="text-gray-500">Length:</Text>
+							</Stack>
+							<Stack column className="items-start gap-4">
+								<H4 className="text-blue-700">35m2</H4>
+								<Text className="text-blue-700">5m</Text>
+								<Text className="text-blue-700">10m</Text>
+							</Stack>
+						</Stack>
+
+						<Stack className="basis-1/2 gap-12">
+							<Stack column className="items-end gap-4">
+								<H4 className="text-gray-700">Number Of floors:</H4>
+								<Text className="text-gray-500">Height of each:</Text>
+							</Stack>
+							<Stack column className="items-start gap-4">
+								<H4 className="text-blue-700">3 Floors</H4>
+								<Text className="text-blue-700">10 m</Text>
+							</Stack>
+						</Stack>
+
+						<Stack className="basis-1/2 gap-12">
+							<Stack column className="items-end gap-4">
+								<H4 className="text-gray-700">Theme Colors:</H4>
+							</Stack>
+							<Stack column className="items-start gap-4">
+								<H4 className="text-blue-700">White, Yellow</H4>
+							</Stack>
+						</Stack>
+					</Stack>
+
+					<div className="h-[1px] my-4 bg-gray-200"></div>
+
+					<Stack column className="mt-4 px-6 gap-4">
+						<Stack className="gap-12">
+							<Stack column className="items-end gap-4">
+								<H4 className="text-gray-700">Additional Infor:</H4>
+								<Text className="text-gray-500">Members:</Text>
+								<Text className="text-gray-500">Style:</Text>
+								<Text className="text-gray-500">Budget:</Text>
+								<Text className="text-gray-500">Location:</Text>
+								<Text className="text-gray-500">Located at alley:</Text>
+								<Text className="text-gray-500">Business in house:</Text>
+								<Text className="text-gray-500">Others:</Text>
+							</Stack>
+							<Stack column className="items-start gap-4">
+								<H4 className="text-green-700">Very detailed</H4>
+								<Text className="text-blue-700">Mother, Father, 2 Son, 1 Daughter, 1 Baby</Text>
+								<Text className="text-blue-700">Basic, Ancient</Text>
+								<Text className="text-blue-700">Danang City</Text>
+								<Text className="text-blue-700">Mother, Father, 2 Son, 1 Daughter, 1 Baby</Text>
+								<Text className="text-blue-700">Yes</Text>
+								<Text className="text-blue-700">Yes</Text>
+								<Text className="text-blue-700">Has pool, wallpaper</Text>
+							</Stack>
+						</Stack>
+					</Stack>
 				</Carousel>
+			</section>
+
+			<section className="container mx-auto">
+				<Stack className="justify-center gap-4 mt-6">
+					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
+						Save
+					</Button>
+					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
+						Save
+					</Button>
+					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
+						Save
+					</Button>
+				</Stack>
 			</section>
 		</Body>
 	);

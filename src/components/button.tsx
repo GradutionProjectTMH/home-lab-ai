@@ -42,7 +42,12 @@ const Button = ({
 	};
 
 	return (
-		<button className={joinTxts("px-6 py-3", buttonClass[type])} {...props} disabled={disabled} onClick={handleClicked}>
+		<button
+			className={joinTxts("px-6 py-3", buttonClass[type], className)}
+			{...props}
+			disabled={disabled}
+			onClick={handleClicked}
+		>
 			<Stack className="items-center gap-2">
 				{LeftItem && <LeftItem className="w-4 h-4" />}
 				<H5>{children}</H5>
