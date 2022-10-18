@@ -9,7 +9,7 @@
 			"windows": {
 				"program": "${workspaceRoot}/node_modules/gatsby/dist/bin/gatsby"
 			},
-			"args": ["develop"],
+			"args": ["develop", "-p", "3000"],
 			"env": {
 				"PARCEL_WORKERS": "0",
 				"GATSBY_CPU_COUNT": "1"

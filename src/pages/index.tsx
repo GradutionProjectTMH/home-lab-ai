@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { HeadFC } from "gatsby";
+import { HeadFC, navigate } from "gatsby";
 import { StaticImage } from "gatsby-plugin-image";
 import Body from "../components/body";
 import Seo from "../components/seo";
@@ -12,8 +12,31 @@ import MicSvg from "../svgs/mic-outlined.svg";
 import LightBulbSvg from "../svgs/light-bulb.svg";
 import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
+import TextRazor from "../apis/text-razor";
 
 const IndexPage = () => {
+	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+
+	const handleExtractorClicked = async () => {
+		const res = await TextRazor.extract(textAreaRef.current!.value, [
+			"entities",
+			"topics",
+			"words",
+			"phrases",
+			"dependency-trees",
+			"relations",
+			"entailments",
+			"senses",
+			"spelling",
+		]);
+
+		navigate("/build", {
+			state: {
+				entities: res.data.response.entities,
+			},
+		});
+	};
+
 	return (
 		<Body>
 			<section className="container mx-auto">
@@ -55,12 +78,16 @@ const IndexPage = () => {
 				<div className="container mx-auto">
 					<Stack className="mt-14 items-stretch justify-between">
 						<Stack column className="bg-white shadow-xl shadow-blackAlpha-100">
-							<textarea cols={64} rows={3} className="resize-none !outline-none p-4" />
+							<textarea cols={64} rows={3} className="resize-none !outline-none p-4" ref={textAreaRef} />
 							<Stack className="justify-between items-center mx-4 mb-2">
 								<Small className="text-blue-200">Tell us your dream house will be...</Small>
 								<Stack className="gap-1">
 									<ButtonIcon Icon={MicSvg} className="w-10 h-10 !fill-gray-500" />
-									<ButtonIcon Icon={LightBulbSvg} className="w-10 h-10 !fill-blue-500" />
+									<ButtonIcon
+										Icon={LightBulbSvg}
+										className="w-10 h-10 !fill-blue-500"
+										onClick={handleExtractorClicked}
+									/>
 								</Stack>
 							</Stack>
 						</Stack>
