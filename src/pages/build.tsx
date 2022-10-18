@@ -73,7 +73,7 @@ const BuildPage = ({ location }: any) => {
 		setLeftFloorPlan(res.data);
 	};
 
-	const { entities } = location.state;
+	const { entities }: any = location.state || {};
 
 	const door = leftFloorPlan?.door.split(",").map(Number);
 	return (
