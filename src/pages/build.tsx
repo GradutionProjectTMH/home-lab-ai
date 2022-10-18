@@ -73,7 +73,23 @@ const BuildPage = ({ location }: any) => {
 		setLeftFloorPlan(res.data);
 	};
 
-	const { entities }: any = location.state || {};
+	const { entities, sentences, nounPhrases }: any = location.state?.text_razor || {};
+	let currentSentenceKey = 0;
+	nounPhrases?.forEach((nounPhrase: any) => {
+		if (sentences[currentSentenceKey].words.slice(-1)[0].position < nounPhrase.wordPositions[0]) ++currentSentenceKey;
+
+		sentences[currentSentenceKey].words.forEach((word: any) => {
+			console.log(word);
+			console.log(nounPhrase);
+
+			if (nounPhrase.wordPositions.includes(word.position)) word.isNounPhrase = true;
+		});
+	});
+
+	console.log(123123123123123);
+
+	console.log(sentences);
+	console.log(nounPhrases);
 
 	const door = leftFloorPlan?.door.split(",").map(Number);
 	return (
@@ -244,48 +260,33 @@ const BuildPage = ({ location }: any) => {
 			<section className="container mx-auto mt-4">
 				<Carousel title="Advanced Section">
 					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
-						<Stack className="basis-1/2 gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">House boundary:</H4>
-								<Text className="text-gray-500">Width:</Text>
-								<Text className="text-gray-500">Length:</Text>
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-blue-700">35m2</H4>
-								<Text className="text-blue-700">5m</Text>
-								<Text className="text-blue-700">10m</Text>
-							</Stack>
-						</Stack>
-
-						<Stack className="basis-1/2 gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">Number Of floors:</H4>
-								<Text className="text-gray-500">Height of each:</Text>
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-blue-700">3 Floors</H4>
-								<Text className="text-blue-700">10 m</Text>
-							</Stack>
-						</Stack>
-
-						<Stack className="basis-1/2 gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">Theme Colors:</H4>
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-blue-700">White, Yellow</H4>
-							</Stack>
+						<Stack column className="gap-4">
+							{sentences &&
+								sentences.map((sentence: any) => (
+									<Stack key={sentence.position} className="gap-2">
+										<H4 className="text-gray-700">
+											{sentence.position + 1 < 10 ? `0${sentence.position + 1}` : sentence.position + 1}.
+										</H4>
+										<Stack className="gap-2">
+											{sentence.words.map((word: any) => (
+												<H4 key={word.position} className={word.isNounPhrase ? "text-blue-500" : "text-gray-500"}>
+													{word.token}
+												</H4>
+											))}
+										</Stack>
+									</Stack>
+								))}
 						</Stack>
 					</Stack>
 
 					<div className="h-[1px] my-4 bg-gray-200"></div>
 
-					<Stack column className="mt-4 px-6 gap-4">
-						<Stack className="gap-12">
+					<Stack className="mt-4 px-6 gap-4">
+						<Stack className="basis-1/2 gap-12">
 							<Stack column className="items-end gap-4">
 								<H4 className="text-gray-700">Entities list:</H4>
 								{entities &&
-									entities.map((entity: any) => (
+									entities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
 										<Text key={entity.entityId} className="text-gray-700">
 											{entity.entityEnglishId}
 										</Text>
@@ -294,7 +295,28 @@ const BuildPage = ({ location }: any) => {
 							<Stack column className="items-start gap-4">
 								<H4 className="text-gray-500">Confidence score</H4>
 								{entities &&
-									entities.map((entity: any) => (
+									entities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
+										<Text key={entity.entityId} className="text-gray-500">
+											{entity.confidenceScore}
+										</Text>
+									))}
+							</Stack>
+						</Stack>
+
+						<Stack className="basis-1/2 gap-12">
+							<Stack column className="items-end gap-4">
+								<H4 className="text-gray-700">Entities list:</H4>
+								{entities &&
+									entities.slice(Math.round(entities.length / 2)).map((entity: any) => (
+										<Text key={entity.entityId} className="text-gray-700">
+											{entity.entityEnglishId}
+										</Text>
+									))}
+							</Stack>
+							<Stack column className="items-start gap-4">
+								<H4 className="text-gray-500">Confidence score</H4>
+								{entities &&
+									entities.slice(Math.round(entities.length / 2)).map((entity: any) => (
 										<Text key={entity.entityId} className="text-gray-500">
 											{entity.confidenceScore}
 										</Text>

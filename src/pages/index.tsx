@@ -32,7 +32,7 @@ const IndexPage = () => {
 
 		navigate("/build", {
 			state: {
-				entities: res.data.response.entities,
+				text_razor: res.data.response,
 			},
 		});
 	};
