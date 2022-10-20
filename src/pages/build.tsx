@@ -29,15 +29,33 @@ type IdeaPosition = {
 	y: number;
 };
 
+type Boundary = {
+	door: [number, number, number, number];
+	exteriors: [number, number][];
+};
+
 const BuildPage = ({ location }: any) => {
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
+
+	const [boundary, setBoundary] = React.useState<Boundary>();
 	const [ideaPositions, setIdeaPositions] = React.useState<IdeaPosition[]>([]);
 	const [selectedIdeaPosition, setSelectedIdeaPosition] = React.useState<IdeaPosition>();
 	const [ideaRelations, setIdeaRelations] = React.useState<[IdeaPosition, IdeaPosition][]>([]);
 
 	React.useEffect(() => {
 		rooms.forEach((room) => (room.currentIndex = 0));
+		G2P.loadTestBoundary("444.png").then((res) => {
+			const { data } = res;
+			const boundary: Boundary = {
+				door: data.door.trim().split(","),
+				exteriors: data.exterior
+					.trim()
+					.split(" ")
+					.map((exterior: any) => exterior.split(",")),
+			};
+			setBoundary(boundary);
+		});
 	}, []);
 
 	const handleRoomClicked = (room: Room) => {
@@ -129,8 +147,6 @@ const BuildPage = ({ location }: any) => {
 	};
 
 	const handleRightRelationClicked = (event: KonvaEventObject<PointerEvent>, index: number) => {
-		console.log(123);
-
 		event.evt.preventDefault();
 		event.cancelBubble = true;
 
@@ -154,6 +170,21 @@ const BuildPage = ({ location }: any) => {
 									className="border-gray-300 border"
 								>
 									<Layer scale={{ x: 2, y: 2 }}>
+										{boundary && (
+											<Line
+												points={[...boundary.exteriors, boundary.exteriors[0]].reduce(
+													(result: number[], exterior) => [...result, ...exterior],
+													[],
+												)}
+												stroke={(colors as any)["gray"][900]}
+												strokeWidth={2}
+											/>
+										)}
+
+										{boundary && (
+											<Line points={boundary.door} stroke={(colors as any)["yellow"][400]} strokeWidth={2} />
+										)}
+
 										{ideaRelations.map(([ideaPositionA, ideaPositionB], index) => (
 											<Line
 												key={`${ideaPositionA.roomLabel}-${ideaPositionB.roomLabel}`}

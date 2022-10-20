@@ -40,8 +40,17 @@ const adjustGraph = async () => {
 	});
 };
 
+const loadTestBoundary = async (testName: string) => {
+	return api.get("LoadTestBoundary", {
+		params: {
+			testName,
+		},
+	});
+};
+
 const G2P = {
 	adjustGraph,
+	loadTestBoundary,
 };
 
 export default G2P;
