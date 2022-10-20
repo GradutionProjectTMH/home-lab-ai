@@ -1,10 +1,12 @@
 import * as React from "react";
 import type { HeadFC } from "gatsby";
-import useImage from "use-image";
-import { Image, Layer, Rect, Shape, Stage } from "react-konva";
+import { Circle, Image, Layer, Path, Rect, Stage } from "react-konva";
 import { colors } from "../configs/tailwind-theme.config";
 import { joinTxts } from "../utils/text.util";
 import { StaticImage } from "gatsby-plugin-image";
+import { findRoom, Room, rooms } from "../configs/rooms.config";
+import { KonvaEventObject } from "konva/lib/Node";
+import { Shape, ShapeConfig } from "konva/lib/Shape";
 import Body from "../components/body";
 import Stack from "../components/layout/stack";
 import H4 from "../components/typography/h4";
@@ -20,57 +22,31 @@ import ChevronLeftSvg from "../svgs/chevron-left.svg";
 import DownloadSvg from "../svgs/download.svg";
 import PencilSvg from "../svgs/pencil.svg";
 import G2P from "../apis/g2p";
+import { matchArea } from "../utils/konva.util";
 
-const rooms = [
-	{
-		id: 0,
-		name: "Public Area",
-		labels: ["LivingRoom", "Storage", "Balcony", "Entrance"],
-		colorTheme: "gray",
-	},
-	{
-		id: 1,
-		name: "Bedroom",
-		labels: ["MasterRoom", "SecondRoom", "ChildRoom", "StudyRoom", "GuestRoom"],
-		colorTheme: "yellow",
-	},
-	{
-		id: 2,
-		name: "Function Area",
-		labels: ["Bathroom", "Kitchen", "DiningRoom"],
-		colorTheme: "green",
-	},
-	{
-		id: 3,
-		name: "External",
-		labels: [
-			"External",
-			"External",
-			"External",
-			"External",
-			"External",
-			"External",
-			"External",
-			"External",
-			"External",
-			"External",
-		],
-		colorTheme: "blue",
-	},
-];
+type IdeaPosition = {
+	roomLabel: string;
+	x: number;
+	y: number;
+};
 
 const BuildPage = ({ location }: any) => {
-	const [currentRoom, setCurrentRoom] = React.useState<string>(rooms[0].name);
-	const [leftFloorPlan, setLeftFloorPlan] = React.useState<any>(null);
+	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
+	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
+	const [ideaPositions, setIdeaPositions] = React.useState<IdeaPosition[]>([]);
 
-	const handleRoomClicked = (room: string) => {
+	React.useEffect(() => {
+		rooms.forEach((room) => (room.currentIndex = 0));
+	}, []);
+
+	const handleRoomClicked = (room: Room) => {
 		setCurrentRoom(room);
 	};
 
 	const handleTransferButtonClicked = async () => {
 		const res = await G2P.adjustGraph();
 		console.log(res.data);
-		setLeftFloorPlan(res.data);
+		setRightFloorPlan(res.data);
 	};
 
 	const { entities, sentences, nounPhrases }: any = location.state?.text_razor || {};
@@ -86,12 +62,38 @@ const BuildPage = ({ location }: any) => {
 		});
 	});
 
-	console.log(123123123123123);
+	const handleDragEnd = (index: number, element: Shape<ShapeConfig>) => {
+		const { x, y } = element.attrs;
+		const currentIdeaPosition: IdeaPosition = ideaPositions[index];
+		currentIdeaPosition.x = x;
+		currentIdeaPosition.y = y;
 
-	console.log(sentences);
-	console.log(nounPhrases);
+		// If match trash area => remove it
+		if (matchArea(x, y, 5, 25, 231, 251)) {
+			const room = findRoom(currentIdeaPosition.roomLabel);
+			--room.currentIndex;
 
-	const door = leftFloorPlan?.door.split(",").map(Number);
+			setIdeaPositions([...ideaPositions.slice(0, index), ...ideaPositions.slice(index + 1)]);
+		}
+		// Else update position
+		else setIdeaPositions([...ideaPositions.slice(0, index), currentIdeaPosition, ...ideaPositions.slice(index + 1)]);
+	};
+
+	const handleRoomAdded = (event: KonvaEventObject<MouseEvent>) => {
+		if (currentRoom.currentIndex == currentRoom.labels.length) return;
+
+		const { offsetX, offsetY } = event.evt;
+		const newIdeaPosition: IdeaPosition = {
+			roomLabel: currentRoom.labels[currentRoom.currentIndex],
+			x: offsetX / 2,
+			y: offsetY / 2,
+		};
+		++currentRoom.currentIndex;
+
+		setIdeaPositions([...ideaPositions, newIdeaPosition]);
+	};
+
+	const door = rightFloorPlan?.door.split(",").map(Number);
 	return (
 		<Body>
 			<section className="container mx-auto">
@@ -100,8 +102,33 @@ const BuildPage = ({ location }: any) => {
 						<Stack column className="gap-1">
 							<H4 className="text-gray-500">Your Idea</H4>
 							<Stack className="h-[33rem] bg-white justify-center items-center">
-								<Stage width={512} height={512}>
-									<Layer scale={{ x: 2, y: 2 }}></Layer>
+								<Stage width={512} height={512} onDblClick={handleRoomAdded} className="border-gray-300 border">
+									<Layer scale={{ x: 2, y: 2 }}>
+										{ideaPositions.map((ideaPosition, index) => (
+											<Circle
+												key={`${ideaPosition.roomLabel}${ideaPosition.roomLabel}`}
+												x={ideaPosition.x}
+												y={ideaPosition.y}
+												width={10}
+												height={10}
+												fill={(colors as any)[findRoom(ideaPosition.roomLabel).colorTheme][500]}
+												stroke={(colors as any)["gray"][900]}
+												strokeWidth={1}
+												draggable
+												onDragEnd={(event: KonvaEventObject<DragEvent>) => handleDragEnd(index, event.target as any)}
+											/>
+										))}
+
+										<Rect x={5} y={231} width={20} height={20} stroke={(colors as any)["red"][500]} strokeWidth={0.5} />
+										<Path
+											x={8}
+											y={234}
+											scaleX={0.6}
+											scaleY={0.6}
+											data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5-1-1h-5l-1 1H5v2h14V4z"
+											fill={(colors as any)["red"][500]}
+										/>
+									</Layer>
 								</Stage>
 							</Stack>
 						</Stack>
@@ -125,7 +152,7 @@ const BuildPage = ({ location }: any) => {
 							<Stack className="h-[33rem] bg-white justify-center items-center">
 								<Stage width={512} height={512}>
 									<Layer scale={{ x: 2, y: 2 }}>
-										{leftFloorPlan?.roomret.map((plan: any[], index: number) => {
+										{rightFloorPlan?.roomret.map((plan: any[], index: number) => {
 											const [[x1, y1, x2, y2], [label], id] = plan;
 											const room = rooms.find((room) => room.labels.includes(label));
 											return (
@@ -140,7 +167,7 @@ const BuildPage = ({ location }: any) => {
 												/>
 											);
 										})}
-										{leftFloorPlan?.windows.map((position: number[]) => {
+										{rightFloorPlan?.windows.map((position: number[]) => {
 											const [x, y, width, height]: number[] = position;
 
 											return (
@@ -173,29 +200,32 @@ const BuildPage = ({ location }: any) => {
 
 				<Stack column className="items-stretch mt-8">
 					<Stack className="justify-center gap-10">
-						{rooms.map((room) => (
-							<Stack
-								column
-								key={room.name}
-								className="items-center gap-2 cursor-pointer"
-								onClick={() => handleRoomClicked(room.name)}
-							>
-								<div
-									className={joinTxts(
-										"rounded-full border-4 border-white",
-										currentRoom == room.name ? "w-10 h-10" : "w-8 h-8",
-									)}
-									style={{ backgroundColor: (colors as any)[room.colorTheme][500] }}
-								/>
-								<Strong
-									style={{
-										color: (colors as any)[room.colorTheme][500],
-									}}
+						{rooms.map((room) => {
+							const isCurrentRoom = currentRoom == room;
+							const isMaxRoom = room.currentIndex == room.labels.length;
+							const colorShade = isMaxRoom ? 200 : 500;
+
+							return (
+								<Stack
+									column
+									key={room.name}
+									className="items-center gap-2 cursor-pointer"
+									onClick={() => handleRoomClicked(room)}
 								>
-									{room.name}
-								</Strong>
-							</Stack>
-						))}
+									<div
+										className={joinTxts("rounded-full border-4 border-white", isCurrentRoom ? "w-10 h-10" : "w-8 h-8")}
+										style={{ backgroundColor: (colors as any)[room.colorTheme][colorShade] }}
+									/>
+									<Strong
+										style={{
+											color: (colors as any)[room.colorTheme][colorShade],
+										}}
+									>
+										{room.name}
+									</Strong>
+								</Stack>
+							);
+						})}
 					</Stack>
 				</Stack>
 
