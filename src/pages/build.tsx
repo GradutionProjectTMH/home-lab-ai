@@ -1,12 +1,11 @@
 import * as React from "react";
 import type { HeadFC } from "gatsby";
-import { Circle, Image, Layer, Path, Rect, Stage } from "react-konva";
+import { Circle, Layer, Line, Rect, Stage } from "react-konva";
 import { colors } from "../configs/tailwind-theme.config";
 import { joinTxts } from "../utils/text.util";
 import { StaticImage } from "gatsby-plugin-image";
 import { findRoom, Room, rooms } from "../configs/rooms.config";
 import { KonvaEventObject } from "konva/lib/Node";
-import { Shape, ShapeConfig } from "konva/lib/Shape";
 import Body from "../components/body";
 import Stack from "../components/layout/stack";
 import H4 from "../components/typography/h4";
@@ -34,6 +33,8 @@ const BuildPage = ({ location }: any) => {
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
 	const [ideaPositions, setIdeaPositions] = React.useState<IdeaPosition[]>([]);
+	const [selectedIdeaPosition, setSelectedIdeaPosition] = React.useState<IdeaPosition>();
+	const [ideaRelations, setIdeaRelations] = React.useState<[IdeaPosition, IdeaPosition][]>([]);
 
 	React.useEffect(() => {
 		rooms.forEach((room) => (room.currentIndex = 0));
@@ -62,24 +63,30 @@ const BuildPage = ({ location }: any) => {
 		});
 	});
 
-	const handleDragEnd = (index: number, element: Shape<ShapeConfig>) => {
+	const handleDragEnd = (event: KonvaEventObject<MouseEvent>, index: number) => {
+		const element = event.target;
 		const { x, y } = element.attrs;
+
 		const currentIdeaPosition: IdeaPosition = ideaPositions[index];
 		currentIdeaPosition.x = x;
 		currentIdeaPosition.y = y;
 
-		// If match trash area => remove it
-		if (matchArea(x, y, 5, 25, 231, 251)) {
+		// If match canvas area => update position
+		if (matchArea(x, y, 0, 256, 0, 256)) {
+			setIdeaPositions([...ideaPositions.slice(0, index), currentIdeaPosition, ...ideaPositions.slice(index + 1)]);
+		}
+
+		// Else => remove it
+		else {
 			const room = findRoom(currentIdeaPosition.roomLabel);
 			--room.currentIndex;
 
 			setIdeaPositions([...ideaPositions.slice(0, index), ...ideaPositions.slice(index + 1)]);
 		}
-		// Else update position
-		else setIdeaPositions([...ideaPositions.slice(0, index), currentIdeaPosition, ...ideaPositions.slice(index + 1)]);
 	};
 
 	const handleRoomAdded = (event: KonvaEventObject<MouseEvent>) => {
+		if (event.evt.button != 0) return;
 		if (currentRoom.currentIndex == currentRoom.labels.length) return;
 
 		const { offsetX, offsetY } = event.evt;
@@ -93,6 +100,43 @@ const BuildPage = ({ location }: any) => {
 		setIdeaPositions([...ideaPositions, newIdeaPosition]);
 	};
 
+	const handleRightIdeaClicked = (event: KonvaEventObject<PointerEvent>, index: number) => {
+		event.evt.preventDefault();
+		event.cancelBubble = true;
+		const currentIdeaPosition: IdeaPosition = ideaPositions[index];
+
+		if (selectedIdeaPosition) {
+			const isConnected = ideaRelations.find(
+				(ideaRelation) => ideaRelation.includes(selectedIdeaPosition) && ideaRelation.includes(currentIdeaPosition),
+			);
+
+			if (!isConnected) {
+				setIdeaRelations([...ideaRelations, [selectedIdeaPosition, currentIdeaPosition]]);
+			}
+
+			// Toggle selected state
+			setSelectedIdeaPosition(undefined);
+			return;
+		}
+
+		// Toggle selected state
+		setSelectedIdeaPosition(currentIdeaPosition);
+	};
+
+	const handleResetSelectIdea = (event: KonvaEventObject<PointerEvent>) => {
+		event.evt.preventDefault();
+		setSelectedIdeaPosition(undefined);
+	};
+
+	const handleRightRelationClicked = (event: KonvaEventObject<PointerEvent>, index: number) => {
+		console.log(123);
+
+		event.evt.preventDefault();
+		event.cancelBubble = true;
+
+		setIdeaRelations([...ideaRelations.slice(0, index), ...ideaRelations.slice(index + 1)]);
+	};
+
 	const door = rightFloorPlan?.door.split(",").map(Number);
 	return (
 		<Body>
@@ -102,32 +146,43 @@ const BuildPage = ({ location }: any) => {
 						<Stack column className="gap-1">
 							<H4 className="text-gray-500">Your Idea</H4>
 							<Stack className="h-[33rem] bg-white justify-center items-center">
-								<Stage width={512} height={512} onDblClick={handleRoomAdded} className="border-gray-300 border">
+								<Stage
+									width={512}
+									height={512}
+									onDblClick={handleRoomAdded}
+									onContextMenu={handleResetSelectIdea}
+									className="border-gray-300 border"
+								>
 									<Layer scale={{ x: 2, y: 2 }}>
+										{ideaRelations.map(([ideaPositionA, ideaPositionB], index) => (
+											<Line
+												key={`${ideaPositionA.roomLabel}-${ideaPositionB.roomLabel}`}
+												points={[ideaPositionA.x, ideaPositionA.y, ideaPositionB.x, ideaPositionB.y]}
+												stroke={(colors as any)["gray"][900]}
+												strokeWidth={1.2}
+												onContextMenu={(event) => handleRightRelationClicked(event, index)}
+											/>
+										))}
+
 										{ideaPositions.map((ideaPosition, index) => (
 											<Circle
-												key={`${ideaPosition.roomLabel}${ideaPosition.roomLabel}`}
+												key={`${ideaPosition.roomLabel}`}
 												x={ideaPosition.x}
 												y={ideaPosition.y}
 												width={10}
 												height={10}
 												fill={(colors as any)[findRoom(ideaPosition.roomLabel).colorTheme][500]}
-												stroke={(colors as any)["gray"][900]}
-												strokeWidth={1}
+												stroke={
+													ideaPosition == selectedIdeaPosition
+														? (colors as any)["red"][500]
+														: (colors as any)["gray"][900]
+												}
+												strokeWidth={1.2}
 												draggable
-												onDragEnd={(event: KonvaEventObject<DragEvent>) => handleDragEnd(index, event.target as any)}
+												onDragEnd={(event) => handleDragEnd(event, index)}
+												onContextMenu={(event) => handleRightIdeaClicked(event, index)}
 											/>
 										))}
-
-										<Rect x={5} y={231} width={20} height={20} stroke={(colors as any)["red"][500]} strokeWidth={0.5} />
-										<Path
-											x={8}
-											y={234}
-											scaleX={0.6}
-											scaleY={0.6}
-											data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5-1-1h-5l-1 1H5v2h14V4z"
-											fill={(colors as any)["red"][500]}
-										/>
 									</Layer>
 								</Stage>
 							</Stack>
