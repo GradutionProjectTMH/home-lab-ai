@@ -5,3 +5,4 @@ src/gatsby-types.d.ts
 package-lock.json
 .env.development
 local
+yarn.lock
