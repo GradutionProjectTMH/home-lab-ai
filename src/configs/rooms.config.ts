@@ -2,7 +2,7 @@ export const rooms = [
 	{
 		id: 0,
 		name: "Public Area",
-		labels: ["LivingRoom", "Storage", "Balcony", "Entrance"],
+		labels: ["LivingRoom", "Balcony", "Entrance"],
 		colorTheme: "gray",
 		currentIndex: 0,
 	},
@@ -16,7 +16,7 @@ export const rooms = [
 	{
 		id: 2,
 		name: "Function Area",
-		labels: ["Bathroom", "Kitchen", "DiningRoom"],
+		labels: ["Bathroom", "Kitchen", "DiningRoom", "Storage"],
 		colorTheme: "green",
 		currentIndex: 0,
 	},

@@ -3,9 +3,9 @@ import type { HeadFC } from "gatsby";
 import { Circle, Layer, Line, Rect, Stage } from "react-konva";
 import { colors } from "../configs/tailwind-theme.config";
 import { joinTxts } from "../utils/text.util";
-import { StaticImage } from "gatsby-plugin-image";
 import { findRoom, Room, rooms } from "../configs/rooms.config";
 import { KonvaEventObject } from "konva/lib/Node";
+import { matchArea } from "../utils/konva.util";
 import Body from "../components/body";
 import Stack from "../components/layout/stack";
 import H4 from "../components/typography/h4";
@@ -21,7 +21,6 @@ import ChevronLeftSvg from "../svgs/chevron-left.svg";
 import DownloadSvg from "../svgs/download.svg";
 import PencilSvg from "../svgs/pencil.svg";
 import G2P from "../apis/g2p";
-import { matchArea } from "../utils/konva.util";
 
 type IdeaPosition = {
 	roomLabel: string;
@@ -34,9 +33,16 @@ type Boundary = {
 	exteriors: [number, number][];
 };
 
+type SuggestedPlan = {
+	trainName: string;
+	url: string;
+};
+
 const BuildPage = ({ location }: any) => {
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
+
+	const [suggestedPlans, setSuggestedPlans] = React.useState<SuggestedPlan[]>([]);
 
 	const [boundary, setBoundary] = React.useState<Boundary>();
 	const [ideaPositions, setIdeaPositions] = React.useState<IdeaPosition[]>([]);
@@ -56,6 +62,11 @@ const BuildPage = ({ location }: any) => {
 			};
 			setBoundary(boundary);
 		});
+
+		G2P.numSearch("444.png").then((res) => {
+			const { data } = res;
+			setSuggestedPlans(data.map((trainName: any) => ({ trainName, url: G2P.getImageUrl(trainName) })));
+		});
 	}, []);
 
 	const handleRoomClicked = (room: Room) => {
@@ -64,7 +75,6 @@ const BuildPage = ({ location }: any) => {
 
 	const handleTransferButtonClicked = async () => {
 		const res = await G2P.adjustGraph();
-		console.log(res.data);
 		setRightFloorPlan(res.data);
 	};
 
@@ -153,6 +163,13 @@ const BuildPage = ({ location }: any) => {
 		setIdeaRelations([...ideaRelations.slice(0, index), ...ideaRelations.slice(index + 1)]);
 	};
 
+	const handleSuggestedPlanClicked = async (trainName: string) => {
+		const res = await G2P.loadTrainHouse(trainName);
+		console.log(res);
+
+		setRightFloorPlan(res.data);
+	};
+
 	const door = rightFloorPlan?.door.split(",").map(Number);
 	return (
 		<Body>
@@ -238,9 +255,24 @@ const BuildPage = ({ location }: any) => {
 							<Stack className="h-[33rem] bg-white justify-center items-center">
 								<Stage width={512} height={512}>
 									<Layer scale={{ x: 2, y: 2 }}>
-										{rightFloorPlan?.roomret.map((plan: any[], index: number) => {
-											const [[x1, y1, x2, y2], [label], id] = plan;
+										{rightFloorPlan?.hsbox?.map((box: any[], index: number) => {
+											const [[x1, y1, x2, y2], [label]] = box;
 											const room = rooms.find((room) => room.labels.includes(label));
+											return (
+												<Rect
+													key={[x1, y1, x2, y2, label].join("-")}
+													x={x1}
+													y={y1}
+													width={x2 - x1}
+													height={y2 - y1}
+													fill={(colors as any)[room?.colorTheme!][200]}
+													stroke={(colors as any)["gray"][700]}
+												/>
+											);
+										})}
+										{rightFloorPlan?.roomret?.map((plan: any[], index: number) => {
+											const [[x1, y1, x2, y2], [label], id] = plan;
+											const room = findRoom(label);
 											return (
 												<Rect
 													key={id}
@@ -253,7 +285,7 @@ const BuildPage = ({ location }: any) => {
 												/>
 											);
 										})}
-										{rightFloorPlan?.windows.map((position: number[]) => {
+										{rightFloorPlan?.windows?.map((position: number[]) => {
 											const [x, y, width, height]: number[] = position;
 
 											return (
@@ -277,6 +309,34 @@ const BuildPage = ({ location }: any) => {
 												stroke={(colors as any)["yellow"][400]}
 											/>
 										)}
+										{rightFloorPlan?.hsedge?.map(([positionIndexA, positionIndexB]: number[], index: string) => {
+											const [, labelA, xA, yA] = rightFloorPlan.rmpos[positionIndexA];
+											const [, labelB, xB, yB] = rightFloorPlan.rmpos[positionIndexB];
+
+											return (
+												<Line
+													key={[xA, yA, labelA, xB, yB, labelB].join("-")}
+													points={[xA, yA, xB, yB]}
+													stroke={(colors as any)["gray"][900]}
+													strokeWidth={1.2}
+												/>
+											);
+										})}
+										{rightFloorPlan?.rmpos?.map((position: any[], index: number) => {
+											const [_, label, x, y] = position;
+											return (
+												<Circle
+													key={[x, y, label].join("-")}
+													x={x}
+													y={y}
+													width={10}
+													height={10}
+													fill={(colors as any)[findRoom(label).colorTheme][500]}
+													stroke={(colors as any)["gray"][900]}
+													strokeWidth={1.2}
+												/>
+											);
+										})}
 									</Layer>
 								</Stage>
 							</Stack>
@@ -316,56 +376,16 @@ const BuildPage = ({ location }: any) => {
 				</Stack>
 
 				<Stack className="mt-4">
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<StaticImage
-						src="../images/suggested-designs/33.png"
-						alt="suggested-design"
-						className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
+					{suggestedPlans.map((suggestedPlan) => (
+						<Stack key={suggestedPlan.trainName} className="flex-grow">
+							<img
+								src={suggestedPlan.url}
+								alt={`Suggested Design ${suggestedPlan.trainName}`}
+								className="w-full cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
+								onClick={() => handleSuggestedPlanClicked(suggestedPlan.trainName)}
+							/>
+						</Stack>
+					))}
 				</Stack>
 
 				<Stack className="mt-4 justify-center font-medium text-gray-400 tracking-widest">

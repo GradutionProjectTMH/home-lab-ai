@@ -1,11 +1,13 @@
 import axios, { AxiosInstance } from "axios";
+import qs from "query-string";
 
 const env = {
-	endpoint: process.env.G2P_ENDPOINT,
+	api_endpoint: process.env.G2P_API_ENDPOINT,
+	image_endpoint: process.env.G2P_IMAGE_ENDPOINT,
 };
 
 const api: AxiosInstance = axios.create({
-	baseURL: env.endpoint,
+	baseURL: env.api_endpoint,
 });
 
 api.interceptors.request.use(
@@ -48,9 +50,34 @@ const loadTestBoundary = async (testName: string) => {
 	});
 };
 
+const numSearch = async (testName: string) => {
+	return api.get("NumSearch/", {
+		params: {
+			userInfo: `["${testName}",[${[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}],[${[
+				1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			]}],[${[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}]]`,
+		},
+	});
+};
+
+const getImageUrl = (trainName: string) => {
+	return `${env.image_endpoint}snapshot_train/${trainName}`;
+};
+
+const loadTrainHouse = async (roomID: string) => {
+	return api.get("LoadTrainHouse/", {
+		params: {
+			roomID,
+		},
+	});
+};
+
 const G2P = {
 	adjustGraph,
 	loadTestBoundary,
+	numSearch,
+	getImageUrl,
+	loadTrainHouse,
 };
 
 export default G2P;
