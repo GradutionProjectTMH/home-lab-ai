@@ -21,6 +21,14 @@ export const routes = [
 		path: "/order",
 	},
 	{
+		name: "Hiring",
+		path: "/hiring",
+	},
+	{
+		name: "AddToMarketplace",
+		path: "/add-to-marketplace",
+	},
+	{
 		name: "Marketplace",
 		path: "/marketplace",
 	},
