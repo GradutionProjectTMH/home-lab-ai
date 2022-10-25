@@ -14,7 +14,7 @@ import H4 from "../components/typography/h4";
 import Small from "../components/typography/small";
 import AddCircleOutline from "../svgs/add_circle_outline.svg";
 
-const sqlitingRooms = [
+const splittingRooms = [
 	{
 		color: "#718096",
 		name: "Public Area",
@@ -160,15 +160,18 @@ const AddToMarketplacePage = () => {
 								<Stack className="pl-6 gap-12 ">
 									<H4 className="text-gray-700">Spliting Rooms:</H4>
 								</Stack>
-								{sqlitingRooms.map((e, i) => {
+								{splittingRooms.map((splittingRoom, i) => {
 									return (
 										<Stack className="ml-32 items-stretch" key={i}>
 											<Stack className="gap-2 items-center basis-1/3">
-												<div className={`w-4 h-4 rounded-full bg-[${e.color}] border-white border-2`} />
-												<Small className={`text-[${e.color}]`}>{e.name}</Small>
+												<div
+													className={`w-4 h-4 rounded-full border-white border-2`}
+													style={{ backgroundColor: splittingRoom.color }}
+												/>
+												<Small style={{ color: splittingRoom.color }}>{splittingRoom.name}</Small>
 											</Stack>
 											<Stack className="basis-2/3">
-												<Small className="text-blue-700">{e.amount} Rooms</Small>
+												<Small className="text-blue-700">{splittingRoom.amount} Rooms</Small>
 											</Stack>
 										</Stack>
 									);
@@ -230,24 +233,26 @@ const AddToMarketplacePage = () => {
 									<H4 className="text-gray-700 ">Bounty Reward:</H4>
 								</Stack>
 
-								<Stack column={true} className="gap-4 items-stretch">
-									{rewards.map((e, i) => {
+								<Stack column={true} className="gap-6 items-stretch">
+									{rewards.map((reward, i) => {
 										return (
-											<Stack column={true} className="pl-6 items-stretch" key={i}>
+											<Stack column={true} className="pl-6 gap-4 items-stretch" key={i}>
 												<Stack className="gap-2 items-center basis-1/2">
 													<StaticImage
-														src={e.icon}
+														src={"https://cryptologos.cc/logos/avalanche-avax-logo.png"}
 														alt="suggested-design"
 														className=" rounded-full border-white border-2 "
 														aspectRatio={1}
+														width={32}
+														height={32}
 													/>
-													<H4 className="text-gray-500">
-														{e.name}: {e.value} {e.symbol}
+													<H4 style={{ color: reward.color }}>
+														{reward.name}: {reward.value} {reward.symbol}
 													</H4>
 												</Stack>
 												<Stack className="basis-2/3">
 													<H5 className="text-gray-500">
-														1{e.symbol} ~ {e.price} USD
+														1{reward.symbol} ~ {reward.price} USD
 													</H5>
 												</Stack>
 											</Stack>
