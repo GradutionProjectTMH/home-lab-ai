@@ -7,7 +7,7 @@ type H3Props = {
 
 const H3 = ({ children, className = "", ...props }: H3Props) => {
 	return (
-		<h3 className={joinTxts("font-body font-bold tracking-tighter text-2xl", className)} {...props}>
+		<h3 className={joinTxts(textStyle.h3, className)} {...props}>
 			{children}
 		</h3>
 	);

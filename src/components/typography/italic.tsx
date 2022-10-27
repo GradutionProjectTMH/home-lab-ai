@@ -8,7 +8,7 @@ type ItalicProps = {
 
 const Italic = ({ children, isSpan = false, className = "", ...props }: ItalicProps) => {
 	const elementProps = {
-		className: joinTxts("font-body italic font-medium text-base", className),
+		className: joinTxts(textStyle.italic, className),
 		...props,
 	};
 

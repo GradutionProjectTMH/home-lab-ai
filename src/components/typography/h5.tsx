@@ -7,7 +7,7 @@ type H5Props = {
 
 const H5 = ({ children, className = "", ...props }: H5Props) => {
 	return (
-		<h5 className={joinTxts("font-body font-semibold text-lg", className)} {...props}>
+		<h5 className={joinTxts(textStyle.h5, className)} {...props}>
 			{children}
 		</h5>
 	);
