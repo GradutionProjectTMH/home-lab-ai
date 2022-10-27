@@ -8,7 +8,7 @@ type TextProps = {
 
 const Text = ({ children, isSpan = false, className = "", ...props }: TextProps) => {
 	const elementProps = {
-		className: joinTxts("font-body font-medium text-base", className),
+		className: joinTxts(textStyle.normal, className),
 		...props,
 	};
 

@@ -8,7 +8,7 @@ type SmallProps = {
 
 const Small = ({ children, isSpan = false, className = "", ...props }: SmallProps) => {
 	const elementProps = {
-		className: joinTxts("font-body font-medium text-sm", className),
+		className: joinTxts(textStyle.small, className),
 		...props,
 	};
 

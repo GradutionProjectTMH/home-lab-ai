@@ -395,6 +395,44 @@ const BuildPage = ({ location }: any) => {
 
 			<section className="container mx-auto mt-4">
 				<Carousel title="Advanced Section">
+					<Stack className="mt-4 px-6 flex-wrap items-start gap-y-4">
+						<Stack className="basis-1/2 items-end gap-12">
+							<Stack column className="items-end gap-4">
+								<H4 className="text-gray-700">House boundary</H4>
+								<Text className="text-gray-500">Width:</Text>
+								<Text className="text-gray-500">Length:</Text>
+								<Text className="text-gray-500">Height:</Text>
+							</Stack>
+							<Stack column className="items-start gap-4">
+								<Text className="text-blue-500">
+									50m<sup>2</sup>
+								</Text>
+								<Text className="text-blue-500">
+									50m<sup>2</sup>
+								</Text>
+								<Text className="text-blue-500">10m</Text>
+							</Stack>
+						</Stack>
+						<Stack className="basis-1/2 items-end gap-12">
+							<Stack column className="items-end gap-4">
+								<H4 className="text-gray-700">Budget</H4>
+								<Text className="text-gray-500">Width:</Text>
+								<Text className="text-gray-500">Height:</Text>
+							</Stack>
+							<Stack column className="items-start gap-4">
+								<H4 className="text-blue-500">2.000 Million VND</H4>
+								<Text className="text-blue-500">
+									50m<sup>2</sup>
+								</Text>
+								<Text className="text-blue-500">
+									50m<sup>2</sup>
+								</Text>
+							</Stack>
+						</Stack>
+					</Stack>
+
+					<div className="h-[1px] my-4 bg-gray-200"></div>
+
 					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
 						<Stack column className="gap-4">
 							{sentences &&

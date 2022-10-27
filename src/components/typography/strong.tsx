@@ -8,7 +8,7 @@ type StrongProps = {
 
 const Strong = ({ children, isSpan = false, className = "", ...props }: StrongProps) => {
 	const elementProps = {
-		className: joinTxts("font-body font-bold text-base", className),
+		className: joinTxts(textStyle.strong, className),
 		...props,
 	};
 
