@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import qs from "query-string";
+import { labelIndex } from "../configs/rooms.config";
 
 const env = {
 	api_endpoint: process.env.G2P_API_ENDPOINT,
@@ -32,10 +33,31 @@ api.interceptors.response.use(
 	},
 );
 
-const adjustGraph = async () => {
+const adjustGraph = async (ideaPositions: IdeaPosition[], ideaRelations: [IdeaPosition, IdeaPosition][]) => {
+	const positionsParam = ideaPositions.map(
+		(ideaPosition, index) => `["${index}","${ideaPosition.roomLabel}",${ideaPosition.x},${ideaPosition.y},"1"]`,
+	);
+	const relationsParam = ideaRelations.map((relation) => {
+		const [ideaPositionA, ideaPositionB] = relation;
+		const ideaPositionIndexA: number = ideaPositions.findIndex(
+			(ideaPosition) => ideaPosition.roomLabel == ideaPositionA.roomLabel,
+		);
+		const ideaPositionIndexB: number = ideaPositions.findIndex(
+			(ideaPosition) => ideaPosition.roomLabel == ideaPositionB.roomLabel,
+		);
+
+		return `["${ideaPositionIndexA}","${ideaPositionIndexB}"]`;
+	});
+	const indexesParam = ideaPositions.map(
+		(ideaPosition, index) =>
+			`[${labelIndex[ideaPosition.roomLabel]},"${ideaPosition.roomLabel}",${ideaPosition.x},${
+				ideaPosition.y
+			},${index}]`,
+	);
+
 	return api.get("AdjustGraph/", {
 		params: {
-			NewGraph: `[[["0","Kitchen",82,81.5,"1"],["1","Balcony",82.5,179.5,"1"],["2","Bathroom",175,71.5,"1"],["4","SecondRoom",128,81.5,"1"],["3","MasterRoom",145.9296875,178.21875,"1"],["6","ChildRoom",175.4296875,179.71875,"1"],["5","LivingRoom",129,122,"1"]],[["0","5"],["0","4"],["1","3"],["1","5"],["2","5"],["2","4"],["3","5"],["4","5"],["6","3"],["6","5"]],[[2,"Kitchen",82,81.5,0],[9,"Balcony",82.5,179.5,1],[3,"Bathroom",175,71.5,2],[1,"MasterRoom",142,179.5,3],[7,"SecondRoom",128,81.5,4],[0,"LivingRoom",129,122,5]]]`,
+			NewGraph: `[[${positionsParam.join(",")}],[${relationsParam.join(",")}],[${indexesParam.join(",")}]]`,
 			userRoomID: "444.png",
 			adptRoomID: "76647.png",
 		},

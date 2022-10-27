@@ -22,22 +22,6 @@ import DownloadSvg from "../svgs/download.svg";
 import PencilSvg from "../svgs/pencil.svg";
 import G2P from "../apis/g2p";
 
-type IdeaPosition = {
-	roomLabel: string;
-	x: number;
-	y: number;
-};
-
-type Boundary = {
-	door: [number, number, number, number];
-	exteriors: [number, number][];
-};
-
-type SuggestedPlan = {
-	trainName: string;
-	url: string;
-};
-
 const BuildPage = ({ location }: any) => {
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
@@ -73,8 +57,8 @@ const BuildPage = ({ location }: any) => {
 		setCurrentRoom(room);
 	};
 
-	const handleTransferButtonClicked = async () => {
-		const res = await G2P.adjustGraph();
+	const handleRightTransferButtonClicked = async () => {
+		const res = await G2P.adjustGraph(ideaPositions, ideaRelations);
 		setRightFloorPlan(res.data);
 	};
 
@@ -241,7 +225,8 @@ const BuildPage = ({ location }: any) => {
 						<ButtonIcon
 							Icon={ChevronRightSvg}
 							className="w-12 h-12 fill-gray-500"
-							onClick={handleTransferButtonClicked}
+							onClick={handleRightTransferButtonClicked}
+							disabled={ideaPositions.length == 0 || ideaRelations.length == 0}
 						/>
 						<H5 className="block [writing-mode:vertical-lr] rotate-180 font-medium text-gray-400 tracking-widest">
 							TRANSFER
