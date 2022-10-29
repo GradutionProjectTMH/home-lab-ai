@@ -48,3 +48,7 @@ export type Room = typeof rooms[0];
 export const findRoom = (label: string): Room => {
 	return rooms.find((room) => room.labels.includes(label))!;
 };
+
+export const getRoomLabel = (roomId: number): string => {
+	return Object.keys(labelIndex).find((key) => labelIndex[key] == roomId)!;
+};

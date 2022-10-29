@@ -9,3 +9,5 @@ const textStyle = {
 	italic: "font-body italic font-medium text-base",
 	small: "font-body font-medium text-sm",
 };
+
+export default textStyle;

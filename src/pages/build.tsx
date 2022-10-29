@@ -3,7 +3,7 @@ import type { HeadFC } from "gatsby";
 import { Circle, Layer, Line, Rect, Stage } from "react-konva";
 import { colors } from "../configs/tailwind-theme.config";
 import { joinTxts } from "../utils/text.util";
-import { findRoom, Room, rooms } from "../configs/rooms.config";
+import { findRoom, getRoomLabel as getRoomName, Room, rooms } from "../configs/rooms.config";
 import { KonvaEventObject } from "konva/lib/Node";
 import { matchArea } from "../utils/konva.util";
 import Body from "../components/body";
@@ -57,9 +57,57 @@ const BuildPage = ({ location }: any) => {
 		setCurrentRoom(room);
 	};
 
+	const handleLeftTransferButtonClicked = async () => {
+		const res = await G2P.transGraph("444.png", rightFloorPlan.trainName as string);
+
+		const roomPositions = res.data.rmpos!;
+		setRightFloorPlan({ ...rightFloorPlan, transRoomPositions: roomPositions });
+
+		const roomRelations = res.data.hsedge!;
+		const ideaPositions: IdeaPosition[] = roomPositions.map(
+			([roomId, roomLabel, x, y, id]: [number, string, number, number, number]) => ({
+				roomLabel,
+				x,
+				y,
+			}),
+		);
+		setIdeaPositions(ideaPositions);
+
+		const ideaRelations: [IdeaPosition, IdeaPosition][] = roomRelations.map(
+			([roomPositionIndexA, roomPositionIndexB]: [number, number]) => [
+				ideaPositions[roomPositionIndexA],
+				ideaPositions[roomPositionIndexB],
+			],
+		);
+		setIdeaRelations(ideaRelations);
+	};
+
 	const handleRightTransferButtonClicked = async () => {
-		const res = await G2P.adjustGraph(ideaPositions, ideaRelations);
-		setRightFloorPlan(res.data);
+		const res = await G2P.adjustGraph(
+			ideaPositions,
+			ideaRelations,
+			rightFloorPlan.transRoomPositions,
+			"444.png",
+			rightFloorPlan.trainName,
+		);
+		const { hsedge, rmpos } = res.data;
+		const relations: [IdeaPosition, IdeaPosition][] = hsedge.map(
+			([positionIndexA, positionIndexB]: number[], index: string) => {
+				const [, labelA, xA, yA] = rmpos.find((position: any[]) => position[4] == positionIndexA);
+				const [, labelB, xB, yB] = rmpos.find((position: any[]) => position[4] == positionIndexB);
+
+				return [
+					{ roomLabel: labelA, x: xA, y: yA },
+					{ roomLabel: labelB, x: xB, y: yB },
+				];
+			},
+		);
+		setRightFloorPlan({
+			...res.data,
+			trainName: rightFloorPlan.trainName,
+			transRoomPositions: rightFloorPlan.transRoomPositions,
+			relations,
+		});
 	};
 
 	const { entities, sentences, nounPhrases }: any = location.state?.text_razor || {};
@@ -68,9 +116,6 @@ const BuildPage = ({ location }: any) => {
 		if (sentences[currentSentenceKey].words.slice(-1)[0].position < nounPhrase.wordPositions[0]) ++currentSentenceKey;
 
 		sentences[currentSentenceKey].words.forEach((word: any) => {
-			console.log(word);
-			console.log(nounPhrase);
-
 			if (nounPhrase.wordPositions.includes(word.position)) word.isNounPhrase = true;
 		});
 	});
@@ -149,9 +194,20 @@ const BuildPage = ({ location }: any) => {
 
 	const handleSuggestedPlanClicked = async (trainName: string) => {
 		const res = await G2P.loadTrainHouse(trainName);
-		console.log(res);
+		const { hsedge, rmpos } = res.data;
 
-		setRightFloorPlan(res.data);
+		const relations: [IdeaPosition, IdeaPosition][] = hsedge.map(
+			([positionIndexA, positionIndexB]: number[], index: string) => {
+				const [, labelA, xA, yA] = rmpos[positionIndexA];
+				const [, labelB, xB, yB] = rmpos[positionIndexB];
+
+				return [
+					{ roomLabel: labelA, x: xA, y: yA },
+					{ roomLabel: labelB, x: xB, y: yB },
+				];
+			},
+		);
+		setRightFloorPlan({ ...res.data, trainName, relations });
 	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
@@ -231,7 +287,11 @@ const BuildPage = ({ location }: any) => {
 						<H5 className="block [writing-mode:vertical-lr] rotate-180 font-medium text-gray-400 tracking-widest">
 							TRANSFER
 						</H5>
-						<ButtonIcon Icon={ChevronLeftSvg} className="w-12 h-12 fill-gray-500" />
+						<ButtonIcon
+							Icon={ChevronLeftSvg}
+							className="w-12 h-12 fill-gray-500"
+							onClick={handleLeftTransferButtonClicked}
+						/>
 					</Stack>
 
 					<Stack column className="grow gap-8 items-stretch">
@@ -294,19 +354,21 @@ const BuildPage = ({ location }: any) => {
 												stroke={(colors as any)["yellow"][400]}
 											/>
 										)}
-										{rightFloorPlan?.hsedge?.map(([positionIndexA, positionIndexB]: number[], index: string) => {
-											const [, labelA, xA, yA] = rightFloorPlan.rmpos[positionIndexA];
-											const [, labelB, xB, yB] = rightFloorPlan.rmpos[positionIndexB];
+										{rightFloorPlan?.relations.map(
+											([positionA, positionB]: [IdeaPosition, IdeaPosition], index: string) => {
+												const { roomLabel: labelA, x: xA, y: yA } = positionA;
+												const { roomLabel: labelB, x: xB, y: yB } = positionB;
 
-											return (
-												<Line
-													key={[xA, yA, labelA, xB, yB, labelB].join("-")}
-													points={[xA, yA, xB, yB]}
-													stroke={(colors as any)["gray"][900]}
-													strokeWidth={1.2}
-												/>
-											);
-										})}
+												return (
+													<Line
+														key={[xA, yA, labelA, xB, yB, labelB].join("-")}
+														points={[xA, yA, xB, yB]}
+														stroke={(colors as any)["gray"][900]}
+														strokeWidth={1.2}
+													/>
+												);
+											},
+										)}
 										{rightFloorPlan?.rmpos?.map((position: any[], index: number) => {
 											const [_, label, x, y] = position;
 											return (

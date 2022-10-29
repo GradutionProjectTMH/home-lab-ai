@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import qs from "query-string";
 import { labelIndex } from "../configs/rooms.config";
 
 const env = {
@@ -32,12 +31,70 @@ api.interceptors.response.use(
 		return Promise.reject(error);
 	},
 );
+const transGraph = async (testName: string, trainName: string) => {
+	return api.get("TransGraph/", {
+		params: {
+			userInfo: [
+				testName,
+				1,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				1,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				1,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+			].join(","),
+			roomID: trainName,
+		},
+	});
+};
 
-const adjustGraph = async (ideaPositions: IdeaPosition[], ideaRelations: [IdeaPosition, IdeaPosition][]) => {
-	const positionsParam = ideaPositions.map(
+const adjustGraph = async (
+	ideaPositions: IdeaPosition[],
+	ideaRelations: [IdeaPosition, IdeaPosition][],
+	roomPositions: any[],
+	testName: string,
+	trainName: string,
+) => {
+	const ideaPositionsParam = ideaPositions.map(
 		(ideaPosition, index) => `["${index}","${ideaPosition.roomLabel}",${ideaPosition.x},${ideaPosition.y},"1"]`,
 	);
-	const relationsParam = ideaRelations.map((relation) => {
+	const ideaRelationsParam = ideaRelations.map((relation) => {
 		const [ideaPositionA, ideaPositionB] = relation;
 		const ideaPositionIndexA: number = ideaPositions.findIndex(
 			(ideaPosition) => ideaPosition.roomLabel == ideaPositionA.roomLabel,
@@ -48,18 +105,17 @@ const adjustGraph = async (ideaPositions: IdeaPosition[], ideaRelations: [IdeaPo
 
 		return `["${ideaPositionIndexA}","${ideaPositionIndexB}"]`;
 	});
-	const indexesParam = ideaPositions.map(
-		(ideaPosition, index) =>
-			`[${labelIndex[ideaPosition.roomLabel]},"${ideaPosition.roomLabel}",${ideaPosition.x},${
-				ideaPosition.y
-			},${index}]`,
+	const roomPositionsParam = roomPositions.map(
+		([roomID, roomLabel, x, y], index) => `[${roomID},"${roomLabel}",${x},${y},${index}]`,
 	);
 
 	return api.get("AdjustGraph/", {
 		params: {
-			NewGraph: `[[${positionsParam.join(",")}],[${relationsParam.join(",")}],[${indexesParam.join(",")}]]`,
-			userRoomID: "444.png",
-			adptRoomID: "76647.png",
+			NewGraph: `[[${ideaPositionsParam.join(",")}],[${ideaRelationsParam.join(",")}],[${roomPositionsParam.join(
+				",",
+			)}]]`,
+			userRoomID: testName,
+			adptRoomID: trainName,
 		},
 	});
 };
@@ -100,6 +156,7 @@ const G2P = {
 	numSearch,
 	getImageUrl,
 	loadTrainHouse,
+	transGraph,
 };
 
 export default G2P;

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { joinTxts } from "../../utils/text.util";
+import textStyle from "./text-style";
 
 type H3Props = {
 	children: React.ReactNode;
