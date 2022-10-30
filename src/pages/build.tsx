@@ -3,7 +3,7 @@ import type { HeadFC } from "gatsby";
 import { Circle, Layer, Line, Rect, Stage } from "react-konva";
 import { colors } from "../configs/tailwind-theme.config";
 import { joinTxts } from "../utils/text.util";
-import { findRoom, getRoomLabel as getRoomName, Room, rooms } from "../configs/rooms.config";
+import { findRoom, getRoomLabel as getRoomName, labelIndex, Room, rooms } from "../configs/rooms.config";
 import { KonvaEventObject } from "konva/lib/Node";
 import { matchArea } from "../utils/konva.util";
 import Body from "../components/body";
@@ -58,19 +58,27 @@ const BuildPage = ({ location }: any) => {
 	};
 
 	const handleLeftTransferButtonClicked = async () => {
+		rooms.forEach((room) => (room.currentIndex = 0));
+
 		const res = await G2P.transGraph("444.png", rightFloorPlan.trainName as string);
-
 		const roomPositions = res.data.rmpos!;
-		setRightFloorPlan({ ...rightFloorPlan, transRoomPositions: roomPositions });
-
 		const roomRelations = res.data.hsedge!;
+
 		const ideaPositions: IdeaPosition[] = roomPositions.map(
-			([roomId, roomLabel, x, y, id]: [number, string, number, number, number]) => ({
-				roomLabel,
-				x,
-				y,
-			}),
+			([roomId, roomLabel, x, y, id]: [number, string, number, number, number]) => {
+				const room: Room = findRoom(roomLabel);
+				const result: IdeaPosition = {
+					roomLabel: room.labels[room.currentIndex],
+					x,
+					y,
+				};
+				++room.currentIndex;
+
+				return result;
+			},
 		);
+
+		setRightFloorPlan({ ...rightFloorPlan, transRoomPositions: roomPositions });
 		setIdeaPositions(ideaPositions);
 
 		const ideaRelations: [IdeaPosition, IdeaPosition][] = roomRelations.map(
@@ -80,6 +88,8 @@ const BuildPage = ({ location }: any) => {
 			],
 		);
 		setIdeaRelations(ideaRelations);
+
+		setSelectedIdeaPosition(undefined);
 	};
 
 	const handleRightTransferButtonClicked = async () => {
@@ -90,7 +100,15 @@ const BuildPage = ({ location }: any) => {
 			"444.png",
 			rightFloorPlan.trainName,
 		);
-		const { hsedge, rmpos } = res.data;
+		const { hsedge, roomret } = res.data;
+		const rmpos = roomret.map(([[xA, yA, xB, yB], [roomLabel], id]: any[]) => [
+			labelIndex[roomLabel],
+			roomLabel,
+			(xA + xB) / 2,
+			(yA + yB) / 2,
+			id,
+		]);
+
 		const relations: [IdeaPosition, IdeaPosition][] = hsedge.map(
 			([positionIndexA, positionIndexB]: number[], index: string) => {
 				const [, labelA, xA, yA] = rmpos.find((position: any[]) => position[4] == positionIndexA);
@@ -105,8 +123,9 @@ const BuildPage = ({ location }: any) => {
 		setRightFloorPlan({
 			...res.data,
 			trainName: rightFloorPlan.trainName,
-			transRoomPositions: rightFloorPlan.transRoomPositions,
+			transRoomPositions: rmpos,
 			relations,
+			isGenerated: true,
 		});
 	};
 
@@ -135,6 +154,11 @@ const BuildPage = ({ location }: any) => {
 
 		// Else => remove it
 		else {
+			const newIdeaRelations = ideaRelations.filter(
+				(ideaRelation: [IdeaPosition, IdeaPosition]) => !ideaRelation.includes(currentIdeaPosition),
+			);
+			setIdeaRelations(newIdeaRelations);
+
 			const room = findRoom(currentIdeaPosition.roomLabel);
 			--room.currentIndex;
 
@@ -207,7 +231,7 @@ const BuildPage = ({ location }: any) => {
 				];
 			},
 		);
-		setRightFloorPlan({ ...res.data, trainName, relations });
+		setRightFloorPlan({ ...res.data, trainName, relations, isGenerated: false });
 	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
