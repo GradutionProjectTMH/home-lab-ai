@@ -34,6 +34,13 @@ const lineByRoutes: Record<string, Record<LineName, string>> = {
 		VLine2: "bg-gray-300 left-1/2 !h-[29.2rem]",
 		VLine3: "bg-gray-300 right-0",
 	},
+	DetailDrawing: {
+		HLine1: "bg-gray-300 top-36",
+		HLine2: "",
+		VLine1: "bg-gray-300 left-0",
+		VLine2: "",
+		VLine3: "bg-gray-300 right-0",
+	},
 };
 
 type MainLayoutProps = {

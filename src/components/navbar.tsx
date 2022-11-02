@@ -32,6 +32,10 @@ export const routes = [
 		name: "Marketplace",
 		path: "/marketplace",
 	},
+	{
+		name: "DetailDrawing",
+		path: "/detail-drawing",
+	},
 ];
 
 type NavbarProps = {} & React.HtmlHTMLAttributes<HTMLDivElement>;

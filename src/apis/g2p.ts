@@ -2,8 +2,8 @@ import axios, { AxiosInstance } from "axios";
 import { labelIndex } from "../configs/rooms.config";
 
 const env = {
-	api_endpoint: process.env.GATSBY_G2P_API_ENDPOINT,
-	image_endpoint: process.env.GATSBY_G2P_IMAGE_ENDPOINT,
+	api_endpoint: process.env.G2P_API_ENDPOINT || localStorage.getItem("G2P_API_ENDPOINT")!,
+	image_endpoint: process.env.G2P_IMAGE_ENDPOINT || localStorage.getItem("G2P_IMAGE_ENDPOINT")!,
 };
 
 const api: AxiosInstance = axios.create({

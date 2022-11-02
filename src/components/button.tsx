@@ -48,7 +48,7 @@ const Button = ({
 			disabled={disabled}
 			onClick={handleClicked}
 		>
-			<Stack className="items-center gap-2">
+			<Stack className="items-center justify-center gap-2">
 				{LeftItem && <LeftItem className="w-4 h-4" />}
 				<H5>{children}</H5>
 				{RightItem && <RightItem className="w-4 h-4" />}

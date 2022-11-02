@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 
 const env = {
-	endpoint: process.env.GATSBY_TEXT_RAZOR_ENDPOINT,
-	api_key: process.env.GATSBY_TEXT_RAZOR_API_KEY,
+	endpoint: process.env.TEXT_RAZOR_ENDPOINT || localStorage.getItem("TEXT_RAZOR_ENDPOINT")!,
+	api_key: process.env.TEXT_RAZOR_API_KEY || localStorage.getItem("TEXT_RAZOR_API_KEY")!,
 };
 
 const api: AxiosInstance = axios.create({
