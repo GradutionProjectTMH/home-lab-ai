@@ -6,13 +6,10 @@ import Seo from "../components/seo";
 import Carousel from "../components/carousel";
 import { StaticImage } from "gatsby-plugin-image";
 import Strong from "../components/typography/strong";
-import Text from "../components/typography/text";
-import H3 from "../components/typography/h3";
 import Button from "../components/button";
 import H5 from "../components/typography/h5";
 import H4 from "../components/typography/h4";
 import Small from "../components/typography/small";
-import AddCircleOutline from "../svgs/add_circle_outline.svg";
 import AddTaskOutlinedSvg from "../svgs/add-task-outlined.svg";
 import TrashOutlined from "../svgs/trash-outlined.svg";
 
@@ -108,6 +105,12 @@ const rewards = [
 ];
 
 const DetailDrawing = () => {
+	const iFrameRef = React.useRef();
+	const [iFrameHeight, setIFrameHeight] = React.useState("0px");
+
+	const handleClick = (data: any) => {
+		console.log(data);
+	};
 	return (
 		<Body>
 			<section className="pt-36 container mx-auto">
@@ -260,41 +263,32 @@ const DetailDrawing = () => {
 					<Stack column={true} className="p-8 gap-8">
 						<Stack>
 							<div className="bg-white p-1 w-full">
-								<StaticImage
-									src="../images/suggested-designs/33.png"
-									alt="suggested-design"
-									className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10  w-full"
-								/>
+								<iframe
+									src="https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO3W8MXUB63&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US"
+									className="w-full h-[700px]"
+								></iframe>
 							</div>
 						</Stack>
 						<Stack className="gap-8">
-							<div className="bg-white p-1 basis-1/3">
-								<StaticImage
-									src="../images/suggested-designs/33.png"
-									alt="suggested-design"
-									className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10  w-full"
-								/>
-							</div>
-							<div className="bg-white p-1 basis-1/3">
-								<StaticImage
-									src="../images/suggested-designs/33.png"
-									alt="suggested-design"
-									className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10  w-full"
-								/>
-							</div>
-							<div className="bg-white p-1 basis-1/3">
-								<StaticImage
-									src="../images/suggested-designs/33.png"
-									alt="suggested-design"
-									className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10  w-full"
-								/>
-							</div>
+							{Array(3)
+								.fill(0)
+								.map((_, index) => {
+									return (
+										<div className="bg-white p-1 basis-1/3" key={index} onClick={() => handleClick(index)}>
+											<StaticImage
+												src="../images/suggested-designs/33.png"
+												alt="suggested-design"
+												className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10  w-full"
+											/>
+										</div>
+									);
+								})}
 						</Stack>
 						<Stack className="gap-4 mt-2 justify-center">
 							<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
 								<Strong className="text-sm">I choose this</Strong>
 							</Button>
-							<Button type="ghost" className="px-4 py-1 text-red-500" LeftItem={TrashOutlined}>
+							<Button type="ghost" className="px-4 py-1 text-red-500 !fill-red-500" LeftItem={TrashOutlined}>
 								<Strong className="text-sm">Send message</Strong>
 							</Button>
 						</Stack>
