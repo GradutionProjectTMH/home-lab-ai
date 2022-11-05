@@ -27,10 +27,7 @@ export const routes = [
 		name: "Order",
 		path: "/order",
 	},
-	{
-		name: "Hiring",
-		path: "/hiring",
-	},
+
 	{
 		name: "AddToMarketplace",
 		path: "/add-to-marketplace",

@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { HeadFC } from "gatsby";
+import { HeadFC, navigate } from "gatsby";
 import { Circle, Layer, Line, Rect, Stage } from "react-konva";
 import { colors } from "../configs/tailwind-theme.config";
 import { joinTxts } from "../utils/text.util";
@@ -21,8 +21,12 @@ import ChevronLeftSvg from "../svgs/chevron-left.svg";
 import DownloadSvg from "../svgs/download.svg";
 import PencilSvg from "../svgs/pencil.svg";
 import G2P from "../apis/g2p";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/stores/store.redux";
 
 const BuildPage = ({ location }: any) => {
+	const isLogin = useSelector((state: RootState) => state.userLogin.isLogin);
+
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
 
@@ -232,6 +236,11 @@ const BuildPage = ({ location }: any) => {
 			},
 		);
 		setRightFloorPlan({ ...res.data, trainName, relations, isGenerated: false });
+	};
+
+	const handleMakeOrder = () => {
+		if (!isLogin) return alert("You are not logged in");
+		navigate("/hiring");
 	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
@@ -580,7 +589,7 @@ const BuildPage = ({ location }: any) => {
 					<Button type="outline" LeftItem={PencilSvg} className="!px-4 !py-1">
 						Load
 					</Button>
-					<Button type="fill" className="!px-4 !py-1">
+					<Button type="fill" className="!px-4 !py-1" onClick={handleMakeOrder}>
 						Make Order
 					</Button>
 				</Stack>
