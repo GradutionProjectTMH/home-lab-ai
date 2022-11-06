@@ -1,6 +1,7 @@
 import { ROLE, USER_STATUS } from "../enums/user.enum";
 
 type User = {
+	_id: string;
 	firstName: string;
 	lastName: string;
 	email: string;
@@ -23,4 +24,10 @@ type User = {
 
 type UserLogin = User & {
 	token?: string;
+};
+
+type ResponseAllData<T> = {
+	currentPage: number;
+	data: T[];
+	totalPage: number;
 };

@@ -7,12 +7,10 @@ import MetamaskSvg from "../svgs/metamask.svg";
 import { signInWithGoogle } from "../apis/firebase.api";
 import Button from "./button";
 import Stack from "./layout/stack";
-import H3 from "./typography/h3";
 import H5 from "./typography/h5";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
 import Avatar from "./avatar";
-import H4 from "./typography/h4";
 import { updateUser } from "../redux/slices/user.slice";
 import { LOGIN_NOT_SUCCESSFULLY } from "../constants/error.constant";
 import Ether from "../apis/ether.api";
@@ -38,10 +36,6 @@ export const routes = [
 	{
 		name: "Marketplace",
 		path: "/marketplace",
-	},
-	{
-		name: "DetailDrawing",
-		path: "/detail-drawing",
 	},
 ];
 
@@ -117,7 +111,10 @@ const Navbar = ({ ...props }: NavbarProps) => {
 							Connect
 						</Button>
 						{user ? (
-							<Stack className="items-center cursor-pointer hover:bg-gray-200 px-3 py-2" onClick={handleLogout}>
+							<Stack
+								className="items-center cursor-pointer hover:bg-gray-200 hover:rounded px-3 py-2"
+								onClick={handleLogout}
+							>
 								<Avatar src={user.avatar} />
 							</Stack>
 						) : (
