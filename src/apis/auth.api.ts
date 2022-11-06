@@ -1,20 +1,7 @@
-import axiosClient from "../configs/axios.config";
-import { IAuthLogin } from "../interfaces/auth.interface";
-import { IResponseWithData } from "../interfaces/response.interface";
-import { IUser } from "../interfaces/user.interface";
-import { baseApi } from "./base.api";
+import axiosClient from "../configs/server.config";
+import { User, UserLogin } from "../types/common";
 
-const loginByGoogle = async (token: string): Promise<IAuthLogin> => {
-	const response = await axiosClient.post<IResponseWithData<IAuthLogin>>("auth/login-by-google", {
-		token,
-	});
+export const loginByGoogle = async (token: string): Promise<UserLogin> =>
+	axiosClient.post<UserLogin, UserLogin>("auth/login-by-google", { token });
 
-	return baseApi<IAuthLogin>(response);
-};
-
-const checkToken = async (): Promise<IUser> => {
-	const response = await axiosClient.get<IResponseWithData<IUser>>("auth/check-token", {});
-	return baseApi<IUser>(response);
-};
-
-export { loginByGoogle, checkToken };
+export const checkToken = async (): Promise<User> => axiosClient.get<User, User>("auth/check-token");

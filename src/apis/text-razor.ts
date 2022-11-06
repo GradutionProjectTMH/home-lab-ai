@@ -1,16 +1,14 @@
 import axios, { AxiosInstance } from "axios";
+import { store } from "../redux/stores/store.redux";
 
-const env = {
-	endpoint: process.env.TEXT_RAZOR_ENDPOINT || localStorage.getItem("TEXT_RAZOR_ENDPOINT")!,
-	api_key: process.env.TEXT_RAZOR_API_KEY || localStorage.getItem("TEXT_RAZOR_API_KEY")!,
-};
+const env = store.getState().environment.textRazor;
 
 const api: AxiosInstance = axios.create({
-	baseURL: env.endpoint,
+	baseURL: env.API_ENDPOINT,
 	headers: {
 		"x-requested-with": "*",
 		"permit-by-nabatti99": "true",
-		"X-TextRazor-Key": env.api_key,
+		"X-TextRazor-Key": env.API_KEY,
 		"Content-Type": "application/x-www-form-urlencoded",
 	},
 });

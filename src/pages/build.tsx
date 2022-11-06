@@ -23,9 +23,10 @@ import PencilSvg from "../svgs/pencil.svg";
 import G2P from "../apis/g2p";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
+import { UN_AUTHORIZED } from "../constants/error.constant";
 
 const BuildPage = ({ location }: any) => {
-	const isLogin = useSelector((state: RootState) => state.userLogin.isLogin);
+	const user = useSelector((state: RootState) => state.user);
 
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
@@ -239,7 +240,7 @@ const BuildPage = ({ location }: any) => {
 	};
 
 	const handleMakeOrder = () => {
-		if (!isLogin) return alert("You are not logged in");
+		if (!user) throw new Error(UN_AUTHORIZED);
 		navigate("/hiring");
 	};
 

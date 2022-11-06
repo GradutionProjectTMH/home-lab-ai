@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userLoginSlice from "../slices/user-login.slice";
+import userSlice from "../slices/user.slice";
+import environmentSlice from "../slices/environment.slice";
 import logger from "redux-logger";
 
 const rootReducer = {
-	userLogin: userLoginSlice,
+	user: userSlice,
+	environment: environmentSlice,
 };
 
 export const store = configureStore({

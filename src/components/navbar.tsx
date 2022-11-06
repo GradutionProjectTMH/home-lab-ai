@@ -3,16 +3,17 @@ import { StaticImage } from "gatsby-plugin-image";
 import * as React from "react";
 import * as authApi from "../apis/auth.api";
 import GoogleSvg from "../svgs/google.svg";
-import { signInWithGoogle } from "../utils/firebase";
+import { signInWithGoogle } from "../configs/firebase";
 import Button from "./button";
 import Stack from "./layout/stack";
 import H3 from "./typography/h3";
 import H5 from "./typography/h5";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
-import { addUserLogin, setIsLogin } from "../redux/slices/user-login.slice";
 import Avatar from "./avatar";
 import H4 from "./typography/h4";
+import { updateUser } from "../redux/slices/user.slice";
+import { LOGIN_NOT_SUCCESSFULLY } from "../constants/error.constant";
 
 export const routes = [
 	{
@@ -50,31 +51,31 @@ type NavbarProps = {} & React.HtmlHTMLAttributes<HTMLDivElement>;
 
 const Navbar = ({ ...props }: NavbarProps) => {
 	const dispatch = useDispatch();
-	const userLogin = useSelector((state: RootState) => state.userLogin.user);
+	const user = useSelector((state: RootState) => state.user);
 
 	const handleLoginGoogle = async () => {
 		try {
 			const token = await signInWithGoogle();
-			if (!token) return;
-			const response = await authApi.loginByGoogle(token);
+			if (!token) throw new Error(LOGIN_NOT_SUCCESSFULLY);
 
-			if (response.token) {
-				localStorage.setItem("token", response.token);
+			const user = await authApi.loginByGoogle(token);
+			if (user.token) {
+				localStorage.setItem("token", user.token);
+				return dispatch(updateUser(user));
 			}
 
-			delete response.token;
-			dispatch(addUserLogin(response));
-			dispatch(setIsLogin(true));
+			throw new Error(LOGIN_NOT_SUCCESSFULLY);
 		} catch (error) {
-			console.log(error);
-			dispatch(setIsLogin(false));
+			localStorage.removeItem("token");
+			dispatch(updateUser(null));
+
+			throw error;
 		}
 	};
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
-		dispatch(addUserLogin(null));
-		dispatch(setIsLogin(false));
+		dispatch(updateUser(null));
 	};
 
 	return (
@@ -99,10 +100,10 @@ const Navbar = ({ ...props }: NavbarProps) => {
 					</Stack>
 
 					<Stack className="basis-1/4 justify-end">
-						{userLogin ? (
+						{user ? (
 							<Stack className="items-center cursor-pointer hover:bg-gray-200 px-3 py-2" onClick={handleLogout}>
-								<Avatar src={userLogin.avatar} />
-								<H5 className="text-gray-700 text-base">{`${userLogin.firstName} ${userLogin.lastName}`}</H5>
+								<Avatar src={user.avatar} />
+								<H5 className="text-gray-700 text-base">{`${user.firstName} ${user.lastName}`}</H5>
 							</Stack>
 						) : (
 							<Button

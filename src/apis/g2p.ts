@@ -1,13 +1,11 @@
 import axios, { AxiosInstance } from "axios";
 import { labelIndex } from "../configs/rooms.config";
+import { store } from "../redux/stores/store.redux";
 
-const env = {
-	api_endpoint: process.env.G2P_API_ENDPOINT || localStorage.getItem("G2P_API_ENDPOINT")!,
-	image_endpoint: process.env.G2P_IMAGE_ENDPOINT || localStorage.getItem("G2P_IMAGE_ENDPOINT")!,
-};
+const env = store.getState().environment.g2p;
 
 const api: AxiosInstance = axios.create({
-	baseURL: env.api_endpoint,
+	baseURL: env.API_ENDPOINT,
 });
 
 api.interceptors.request.use(
@@ -139,7 +137,7 @@ const numSearch = async (testName: string) => {
 };
 
 const getImageUrl = (trainName: string) => {
-	return `${env.image_endpoint}snapshot_train/${trainName}`;
+	return `${env.IMAGE_ENDPOINT}snapshot_train/${trainName}`;
 };
 
 const loadTrainHouse = async (roomID: string) => {
