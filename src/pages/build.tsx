@@ -20,7 +20,7 @@ import ChevronRightSvg from "../svgs/chevron-right.svg";
 import ChevronLeftSvg from "../svgs/chevron-left.svg";
 import DownloadSvg from "../svgs/download.svg";
 import PencilSvg from "../svgs/pencil.svg";
-import G2P from "../apis/g2p";
+import G2P from "../apis/g2p.api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
 import { UN_AUTHORIZED } from "../constants/error.constant";

@@ -1,12 +1,11 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import queryString from "query-string";
-import { store } from "../redux/stores/store.redux";
 const token = localStorage.getItem("token");
 
-const env = store.getState().environment.server;
+console.log(process.env.GATSBY_API_BASE_URL);
 
 const axiosClient = axios.create({
-	baseURL: env.API_BASE_URL,
+	baseURL: process.env.GATSBY_API_BASE_URL,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: token ? `Bearer ${token}` : "",
