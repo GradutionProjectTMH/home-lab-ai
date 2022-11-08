@@ -1,4 +1,4 @@
-import axiosClient from "../configs/server.config";
+import axiosClient from "../../configs/server.config";
 
 export type EnvironmentKey =
 	| "TEXT_RAZOR_API_ENDPOINT"

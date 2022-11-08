@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { EnvironmentKey } from "../../apis/environment.api";
+import { EnvironmentKey } from "../../apis/server/environment.api";
 
 const initialState = {
 	textRazor: {

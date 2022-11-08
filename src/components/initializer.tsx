@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import * as authApi from "../apis/auth.api";
+import { useDispatch, useSelector } from "react-redux";
+import * as authApi from "../apis/server/auth.api";
+import { initiateFirebase } from "../redux/slices/firebase-service.slice";
 import { updateUser } from "../redux/slices/user.slice";
+import { RootState } from "../redux/stores/store.redux";
 import { User } from "../types/common";
 
 const Initializer = () => {
 	const dispatch = useDispatch();
+	const environment = useSelector((state: RootState) => state.environment);
 
 	const checkAuthentication = async () => {
 		try {
@@ -30,9 +33,34 @@ const Initializer = () => {
 		}
 	};
 
+	const setupServices = () => {
+		const env = environment.firebase;
+		dispatch(
+			initiateFirebase({
+				apiKey: env.API_KEY,
+				authDomain: env.AUTH_DOMAIN,
+				projectId: env.PROJECT_ID,
+				storageBucket: env.STORAGE_BUCKET,
+				messagingSenderId: env.MESSAGING_SENDER_ID,
+				appId: env.APP_ID,
+				measurementId: env.MEASUREMENT_ID,
+			}),
+		);
+
+		dispatch(initial);
+	};
+
+	const initializer = async () => {
+		await setupEnvironment();
+		await checkAuthentication();
+
+		setupServices();
+
+		console.log("Done");
+	};
+
 	useEffect(() => {
-		setupEnvironment();
-		checkAuthentication();
+		initializer();
 	}, []);
 	return <div></div>;
 };

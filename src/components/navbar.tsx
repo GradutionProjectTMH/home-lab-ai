@@ -1,9 +1,9 @@
 import { Link } from "gatsby";
 import { StaticImage } from "gatsby-plugin-image";
 import * as React from "react";
-import * as authApi from "../apis/auth.api";
+import * as authApi from "../apis/server/auth.api";
 import GoogleSvg from "../svgs/google.svg";
-import { signInWithGoogle } from "../configs/firebase";
+import { signInWithGoogle } from "../apis/firebase.api";
 import Button from "./button";
 import Stack from "./layout/stack";
 import H3 from "./typography/h3";
