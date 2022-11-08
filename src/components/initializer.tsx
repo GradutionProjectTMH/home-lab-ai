@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as authApi from "../apis/server/auth.api";
+import { getEnvironment } from "../apis/server/environment.api";
+import { setEnvironment } from "../redux/slices/environment.slice";
 import { initiateFirebase } from "../redux/slices/firebase-service.slice";
+import { initiateG2p } from "../redux/slices/g2p-service.slice";
+import { initiateTextRazor } from "../redux/slices/textrazor-service.slice";
 import { updateUser } from "../redux/slices/user.slice";
 import { RootState } from "../redux/stores/store.redux";
 import { User } from "../types/common";
@@ -25,8 +29,8 @@ const Initializer = () => {
 
 	const setupEnvironment = async () => {
 		try {
-			const user: User = await authApi.checkToken();
-			dispatch(updateUser(user));
+			const environment = await getEnvironment();
+			dispatch(setEnvironment(environment));
 		} catch (error) {
 			dispatch(updateUser(null));
 			throw error;
@@ -34,34 +38,43 @@ const Initializer = () => {
 	};
 
 	const setupServices = () => {
-		const env = environment.firebase;
+		const firebaseConfig = environment.firebase;
 		dispatch(
 			initiateFirebase({
-				apiKey: env.API_KEY,
-				authDomain: env.AUTH_DOMAIN,
-				projectId: env.PROJECT_ID,
-				storageBucket: env.STORAGE_BUCKET,
-				messagingSenderId: env.MESSAGING_SENDER_ID,
-				appId: env.APP_ID,
-				measurementId: env.MEASUREMENT_ID,
+				apiKey: firebaseConfig.API_KEY,
+				authDomain: firebaseConfig.AUTH_DOMAIN,
+				projectId: firebaseConfig.PROJECT_ID,
+				storageBucket: firebaseConfig.STORAGE_BUCKET,
+				messagingSenderId: firebaseConfig.MESSAGING_SENDER_ID,
+				appId: firebaseConfig.APP_ID,
+				measurementId: firebaseConfig.MEASUREMENT_ID,
 			}),
 		);
 
-		dispatch(initial);
+		const g2pConfig = environment.g2p;
+		dispatch(initiateG2p({ baseUrl: g2pConfig.API_ENDPOINT }));
+
+		const textRazorConfig = environment.textRazor;
+		dispatch(
+			initiateTextRazor({
+				endPoint: textRazorConfig.API_ENDPOINT,
+				apiKey: textRazorConfig.API_KEY,
+			}),
+		);
 	};
 
-	const initializer = async () => {
-		await setupEnvironment();
-		await checkAuthentication();
-
+	const initialize = async () => {
 		setupServices();
-
-		console.log("Done");
+		await checkAuthentication();
 	};
 
 	useEffect(() => {
-		initializer();
+		setupEnvironment();
 	}, []);
+
+	useEffect(() => {
+		if (environment.isReady) initialize();
+	}, [environment]);
 	return <div></div>;
 };
 

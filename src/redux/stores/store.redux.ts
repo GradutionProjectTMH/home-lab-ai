@@ -3,11 +3,15 @@ import userSlice from "../slices/user.slice";
 import environmentSlice from "../slices/environment.slice";
 import logger from "redux-logger";
 import firebaseServiceSlice from "../slices/firebase-service.slice";
+import g2pServiceSlice from "../slices/g2p-service.slice";
+import textRazorServiceSlice from "../slices/textrazor-service.slice";
 
 const rootReducer = {
 	user: userSlice,
 	environment: environmentSlice,
 	firebaseService: firebaseServiceSlice,
+	g2pService: g2pServiceSlice,
+	textRazorService: textRazorServiceSlice,
 };
 
 export const store = configureStore({

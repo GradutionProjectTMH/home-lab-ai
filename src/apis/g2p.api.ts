@@ -2,34 +2,8 @@ import axios, { AxiosInstance } from "axios";
 import { labelIndex } from "../configs/rooms.config";
 import { store } from "../redux/stores/store.redux";
 
-const env = store.getState().environment.g2p;
-
-const api: AxiosInstance = axios.create({
-	baseURL: env.API_ENDPOINT,
-});
-
-api.interceptors.request.use(
-	(config) => {
-		console.log(config);
-		return config;
-	},
-	(error) => {
-		console.error(error);
-		return Promise.reject(error);
-	},
-);
-
-api.interceptors.response.use(
-	(response) => {
-		console.log(response);
-		return response;
-	},
-	(error) => {
-		console.error(error);
-		return Promise.reject(error);
-	},
-);
 const transGraph = async (testName: string, trainName: string) => {
+	const api = store.getState().g2pService;
 	return api.get("TransGraph/", {
 		params: {
 			userInfo: [
@@ -107,6 +81,7 @@ const adjustGraph = async (
 		([roomID, roomLabel, x, y], index) => `[${roomID},"${roomLabel}",${x},${y},${index}]`,
 	);
 
+	const api = store.getState().g2pService;
 	return api.get("AdjustGraph/", {
 		params: {
 			NewGraph: `[[${ideaPositionsParam.join(",")}],[${ideaRelationsParam.join(",")}],[${roomPositionsParam.join(
@@ -119,6 +94,7 @@ const adjustGraph = async (
 };
 
 const loadTestBoundary = async (testName: string) => {
+	const api = store.getState().g2pService;
 	return api.get("LoadTestBoundary", {
 		params: {
 			testName,
@@ -127,6 +103,7 @@ const loadTestBoundary = async (testName: string) => {
 };
 
 const numSearch = async (testName: string) => {
+	const api = store.getState().g2pService;
 	return api.get("NumSearch/", {
 		params: {
 			userInfo: `["${testName}",[${[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}],[${[
@@ -137,10 +114,12 @@ const numSearch = async (testName: string) => {
 };
 
 const getImageUrl = (trainName: string) => {
-	return `${env.IMAGE_ENDPOINT}snapshot_train/${trainName}`;
+	const imageEndpoint = store.getState().environment.g2p.IMAGE_ENDPOINT;
+	return `${imageEndpoint}snapshot_train/${trainName}`;
 };
 
 const loadTrainHouse = async (roomID: string) => {
+	const api = store.getState().g2pService;
 	return api.get("LoadTrainHouse/", {
 		params: {
 			roomID,
