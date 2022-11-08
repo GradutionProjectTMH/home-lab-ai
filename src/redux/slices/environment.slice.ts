@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { EnvironmentKey } from "../../apis/environment.api";
+import { EnvironmentKey } from "../../apis/server/environment.api";
 
 const initialState = {
 	textRazor: {
@@ -22,6 +22,7 @@ const initialState = {
 	server: {
 		API_BASE_URL: process.env.GATSBY_API_BASE_URL,
 	},
+	isReady: false,
 };
 
 export type Environment = typeof initialState;
@@ -50,6 +51,8 @@ const environment = createSlice({
 				APP_ID: payload.FIREBASE_APP_ID || state.firebase.APP_ID,
 				MEASUREMENT_ID: payload.FIREBASE_MEASUREMENT_ID || state.firebase.MEASUREMENT_ID,
 			};
+
+			state.isReady = true;
 		},
 	},
 });

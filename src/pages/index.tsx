@@ -12,7 +12,7 @@ import MicSvg from "../svgs/mic-outlined.svg";
 import LightBulbSvg from "../svgs/light-bulb.svg";
 import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
-import TextRazor from "../apis/text-razor";
+import TextRazor from "../apis/text-razor.api";
 
 const IndexPage = () => {
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
