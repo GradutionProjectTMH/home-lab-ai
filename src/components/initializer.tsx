@@ -16,7 +16,7 @@ const Initializer = () => {
 
 	const checkAuthentication = async () => {
 		try {
-			const token = localStorage.getItem("token");
+			const token = window?.localStorage.getItem("token");
 			if (!token) return;
 
 			const user: User = await authApi.checkToken();
