@@ -5,7 +5,7 @@ const extract = async (text: string, extractors: string[]) => {
 	params.append("text", text);
 	params.append("extractors", extractors.join(","));
 
-	const api = store.getState().textRazorService;
+	const api = store.getState().textRazorService!;
 	return api.post("/", params);
 };
 

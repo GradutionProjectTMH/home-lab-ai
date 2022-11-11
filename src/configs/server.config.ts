@@ -1,12 +1,12 @@
 import axios from "axios";
 import queryString from "query-string";
-const token = localStorage.getItem("token");
+// const token = window?.localStorage.getItem("token");
 
 const axiosClient = axios.create({
 	baseURL: process.env.GATSBY_API_BASE_URL,
 	headers: {
 		"Content-Type": "application/json",
-		Authorization: token ? `Bearer ${token}` : "",
+		// Authorization: token ? `Bearer ${token}` : "",
 	},
 	paramsSerializer: {
 		encode: (params) => queryString.stringify(params),

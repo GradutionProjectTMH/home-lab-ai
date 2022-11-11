@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, SliceCaseReducers } from "@reduxjs/toolkit";
 import { User } from "../../types/common";
 
-type UserState = User | null;
+type UserState = (User & { token?: string }) | null;
 
 const userSlice = createSlice<UserState, SliceCaseReducers<UserState>>({
 	name: "userSlice",

@@ -1,9 +1,7 @@
-import axios, { AxiosInstance } from "axios";
-import { labelIndex } from "../configs/rooms.config";
 import { store } from "../redux/stores/store.redux";
 
 const transGraph = async (testName: string, trainName: string) => {
-	const api = store.getState().g2pService;
+	const api = store.getState().g2pService!;
 	return api.get("TransGraph/", {
 		params: {
 			userInfo: [
@@ -81,7 +79,7 @@ const adjustGraph = async (
 		([roomID, roomLabel, x, y], index) => `[${roomID},"${roomLabel}",${x},${y},${index}]`,
 	);
 
-	const api = store.getState().g2pService;
+	const api = store.getState().g2pService!;
 	return api.get("AdjustGraph/", {
 		params: {
 			NewGraph: `[[${ideaPositionsParam.join(",")}],[${ideaRelationsParam.join(",")}],[${roomPositionsParam.join(
@@ -94,7 +92,7 @@ const adjustGraph = async (
 };
 
 const loadTestBoundary = async (testName: string) => {
-	const api = store.getState().g2pService;
+	const api = store.getState().g2pService!;
 	return api.get("LoadTestBoundary", {
 		params: {
 			testName,
@@ -103,7 +101,7 @@ const loadTestBoundary = async (testName: string) => {
 };
 
 const numSearch = async (testName: string) => {
-	const api = store.getState().g2pService;
+	const api = store.getState().g2pService!;
 	return api.get("NumSearch/", {
 		params: {
 			userInfo: `["${testName}",[${[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}],[${[
@@ -119,7 +117,7 @@ const getImageUrl = (trainName: string) => {
 };
 
 const loadTrainHouse = async (roomID: string) => {
-	const api = store.getState().g2pService;
+	const api = store.getState().g2pService!;
 	return api.get("LoadTrainHouse/", {
 		params: {
 			roomID,

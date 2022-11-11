@@ -60,13 +60,13 @@ const Navbar = ({ ...props }: NavbarProps) => {
 
 			const user = await authApi.loginByGoogle(token);
 			if (user.token) {
-				localStorage.setItem("token", user.token);
+				window?.localStorage.setItem("token", user.token);
 				return dispatch(updateUser(user));
 			}
 
 			throw new Error(LOGIN_NOT_SUCCESSFULLY);
 		} catch (error) {
-			localStorage.removeItem("token");
+			window?.localStorage.removeItem("token");
 			dispatch(updateUser(null));
 
 			throw error;
@@ -74,7 +74,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	};
 
 	const handleLogout = () => {
-		localStorage.removeItem("token");
+		window?.localStorage.removeItem("token");
 		dispatch(updateUser(null));
 	};
 
