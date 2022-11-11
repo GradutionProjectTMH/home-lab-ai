@@ -5,9 +5,11 @@ import logger from "redux-logger";
 import firebaseServiceSlice from "../slices/firebase-service.slice";
 import g2pServiceSlice from "../slices/g2p-service.slice";
 import textRazorServiceSlice from "../slices/textrazor-service.slice";
+import errorSlice from "../slices/error.slice";
 
 const rootReducer = {
 	user: userSlice,
+	error: errorSlice,
 	environment: environmentSlice,
 	firebaseService: firebaseServiceSlice,
 	g2pService: g2pServiceSlice,
