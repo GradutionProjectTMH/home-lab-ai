@@ -1,8 +1,10 @@
+import { ethers } from "ethers";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as authApi from "../apis/server/auth.api";
 import { getEnvironment } from "../apis/server/environment.api";
 import { setEnvironment } from "../redux/slices/environment.slice";
+import { initiateEther } from "../redux/slices/ether.slice";
 import { initiateFirebase } from "../redux/slices/firebase-service.slice";
 import { initiateG2p } from "../redux/slices/g2p-service.slice";
 import { initiateTextRazor } from "../redux/slices/textrazor-service.slice";
@@ -38,6 +40,9 @@ const Initializer = () => {
 	};
 
 	const setupServices = () => {
+		const etherProvider = new ethers.providers.Web3Provider((window as any).ethereum);
+		dispatch(initiateEther(etherProvider));
+
 		const firebaseConfig = environment.firebase;
 		dispatch(
 			initiateFirebase({

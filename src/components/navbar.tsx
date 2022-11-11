@@ -3,6 +3,7 @@ import { StaticImage } from "gatsby-plugin-image";
 import * as React from "react";
 import * as authApi from "../apis/server/auth.api";
 import GoogleSvg from "../svgs/google.svg";
+import MetamaskSvg from "../svgs/metamask.svg";
 import { signInWithGoogle } from "../apis/firebase.api";
 import Button from "./button";
 import Stack from "./layout/stack";
@@ -14,6 +15,7 @@ import Avatar from "./avatar";
 import H4 from "./typography/h4";
 import { updateUser } from "../redux/slices/user.slice";
 import { LOGIN_NOT_SUCCESSFULLY } from "../constants/error.constant";
+import Ether from "../apis/ether.api";
 
 export const routes = [
 	{
@@ -52,6 +54,7 @@ type NavbarProps = {} & React.HtmlHTMLAttributes<HTMLDivElement>;
 const Navbar = ({ ...props }: NavbarProps) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
+	const ether = useSelector((state: RootState) => state.ether);
 
 	const handleLoginGoogle = async () => {
 		try {
@@ -78,6 +81,11 @@ const Navbar = ({ ...props }: NavbarProps) => {
 		dispatch(updateUser(null));
 	};
 
+	const handleConnect = async () => {
+		await ether.send("eth_requestAccounts", []);
+		if (!Ether.isConnected()) throw new Error("Can't connect to Metamask");
+	};
+
 	return (
 		<nav className="bg-gray-50" {...props}>
 			<div className="container mx-auto">
@@ -99,19 +107,21 @@ const Navbar = ({ ...props }: NavbarProps) => {
 						))}
 					</Stack>
 
-					<Stack className="basis-1/4 justify-end">
+					<Stack className="basis-1/4 justify-end gap-2">
+						<Button
+							onClick={handleConnect}
+							RightItem={MetamaskSvg}
+							type="outline"
+							className="!text-orange-600 !border-orange-600 !px-3 !py-2"
+						>
+							Connect
+						</Button>
 						{user ? (
 							<Stack className="items-center cursor-pointer hover:bg-gray-200 px-3 py-2" onClick={handleLogout}>
 								<Avatar src={user.avatar} />
-								<H5 className="text-gray-700 text-base">{`${user.firstName} ${user.lastName}`}</H5>
 							</Stack>
 						) : (
-							<Button
-								onClick={handleLoginGoogle}
-								RightItem={GoogleSvg}
-								type="outline"
-								// link="https://stackoverflow.com/questions/69498788/gatsbys-navigate-function-to-navigate-to-the-same-page"
-							>
+							<Button onClick={handleLoginGoogle} RightItem={GoogleSvg} type="outline" className="!px-3 !py-2">
 								Sign In
 							</Button>
 						)}

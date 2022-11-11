@@ -1,7 +1,7 @@
 import { AnyAction } from "@reduxjs/toolkit";
 import React, { HtmlHTMLAttributes } from "react";
 import { connect, DispatchProp } from "react-redux";
-import { pushError } from "../../redux/slices/error.slice";
+import { pushError } from "../../redux/slices/message.slice";
 
 class ErrorBoundary extends React.Component<HtmlHTMLAttributes<HTMLDivElement> & DispatchProp<AnyAction>> {
 	handlePromiseRejection = ({ reason }: any) => {
@@ -17,8 +17,6 @@ class ErrorBoundary extends React.Component<HtmlHTMLAttributes<HTMLDivElement> &
 	}
 
 	componentDidCatch(error: Error) {
-		console.log(123123123123123);
-
 		this.props.dispatch(pushError(error.message));
 	}
 
