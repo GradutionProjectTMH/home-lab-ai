@@ -16,6 +16,8 @@ import H4 from "./typography/h4";
 import { updateUser } from "../redux/slices/user.slice";
 import { LOGIN_NOT_SUCCESSFULLY } from "../constants/error.constant";
 import Ether from "../apis/ether.api";
+import { pushSuccess } from "../redux/slices/message.slice";
+import { ethers } from "ethers";
 
 export const routes = [
 	{
@@ -55,6 +57,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
 	const ether = useSelector((state: RootState) => state.ether);
+	const [wallet, setWallet] = React.useState<string>();
 
 	const handleLoginGoogle = async () => {
 		try {
@@ -82,8 +85,12 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	};
 
 	const handleConnect = async () => {
-		await ether.send("eth_requestAccounts", []);
+		await ether.provider.send("eth_requestAccounts", []);
 		if (!Ether.isConnected()) throw new Error("Can't connect to Metamask");
+
+		const wallet = await ether.provider.getSigner().getAddress();
+		setWallet(`${wallet.substring(0, 7)}...`);
+		dispatch(pushSuccess("Connected to Metamask"));
 	};
 
 	return (
@@ -114,7 +121,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 							type="outline"
 							className="!text-orange-600 !border-orange-600 !px-3 !py-2"
 						>
-							Connect
+							{wallet || "Connect"}
 						</Button>
 						{user ? (
 							<Stack className="items-center cursor-pointer hover:bg-gray-200 px-3 py-2" onClick={handleLogout}>

@@ -24,8 +24,10 @@ import G2P from "../apis/g2p.api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
 import { UN_AUTHORIZED } from "../constants/error.constant";
+import { pushError } from "../redux/slices/message.slice";
 
 const BuildPage = ({ location }: any) => {
+	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
 
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
@@ -240,7 +242,10 @@ const BuildPage = ({ location }: any) => {
 	};
 
 	const handleMakeOrder = () => {
-		if (!user) throw new Error(UN_AUTHORIZED);
+		if (!user) {
+			dispatch(pushError(UN_AUTHORIZED));
+			throw new Error(UN_AUTHORIZED);
+		}
 		navigate("/hiring");
 	};
 
