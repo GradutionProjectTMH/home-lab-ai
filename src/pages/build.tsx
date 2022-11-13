@@ -241,10 +241,11 @@ const BuildPage = ({ location }: any) => {
 
 	const handleMakeOrder = () => {
 		if (!user) throw new Error(UN_AUTHORIZED);
-		navigate("/hiring");
+		navigate("/order/63692c2d58e7aecc25de2e02");
 	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
+
 	return (
 		<Body>
 			<section className="container mx-auto">
