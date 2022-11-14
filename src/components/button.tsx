@@ -18,6 +18,7 @@ type ButtonProps = {
 	LeftItem?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 	RightItem?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 	link?: string;
+	typeButton?: "button" | "submit" | "reset" | undefined;
 } & React.HTMLAttributes<HTMLElement>;
 
 const Button = ({
@@ -30,6 +31,7 @@ const Button = ({
 	children,
 	className = "",
 	onClick,
+	typeButton,
 	...props
 }: ButtonProps) => {
 	const handleClicked = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -47,6 +49,7 @@ const Button = ({
 			{...props}
 			disabled={disabled}
 			onClick={handleClicked}
+			type={typeButton}
 		>
 			<Stack className="items-center justify-center gap-2">
 				{LeftItem && <LeftItem className="w-4 h-4" />}

@@ -12,15 +12,19 @@ export const routes = [
 		path: "/order/:id",
 	},
 	{
-		name: "AddToMarketplace",
-		path: "/add-to-marketplace",
-	},
-	{
 		name: "Marketplace",
 		path: "/marketplace",
 	},
 	{
 		name: "DetailDrawing",
 		path: "/detail-drawing",
+	},
+	{
+		name: "RequestVerify",
+		path: "/request-verify",
+	},
+	{
+		name: "VerifyMaterial",
+		path: "/verify-material/:id",
 	},
 ] as const;

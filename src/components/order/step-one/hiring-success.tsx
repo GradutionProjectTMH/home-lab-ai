@@ -54,10 +54,10 @@ function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
 
 				<Stack className="basis-1/2 gap-2 items-stretch">
 					<div className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10">
-						<img src={detailDrawing?.boundaryImg} alt="suggested-design" className="object-cover" />
+						<img src={detailDrawing?.boundaryImg} alt="suggested-design" className="w-full h-full object-cover" />
 					</div>
 					<div className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10">
-						<img src={detailDrawing?.crossSectionImg} alt="suggested-design" />
+						<img src={detailDrawing?.crossSectionImg} alt="suggested-design" className="w-full h-full object-cover" />
 					</div>
 				</Stack>
 			</Stack>

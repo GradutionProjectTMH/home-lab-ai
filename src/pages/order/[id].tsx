@@ -19,7 +19,7 @@ import * as detailDrawingApi from "../../apis/detail-drawing.api";
 import HiringSuccess from "../../components/order/step-one/hiring-success";
 import Hiring from "../../components/order/step-one/hiring";
 
-const Order = ({ params }) => {
+const Order = ({ params }: any) => {
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
 

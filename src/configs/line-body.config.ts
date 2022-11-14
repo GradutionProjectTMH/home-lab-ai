@@ -39,7 +39,14 @@ export const lineByRoutes: Record<ListPage, Record<LineName, string> | null> = {
 		VLine2: "",
 		VLine3: "bg-gray-300 right-0",
 	},
-	AddToMarketplace: {
+	RequestVerify: {
+		HLine1: "bg-gray-300 top-36",
+		HLine2: "",
+		VLine1: "bg-gray-300 left-0",
+		VLine2: "",
+		VLine3: "bg-gray-300 right-0",
+	},
+	VerifyMaterial: {
 		HLine1: "bg-gray-300 top-36",
 		HLine2: "",
 		VLine1: "bg-gray-300 left-0",
