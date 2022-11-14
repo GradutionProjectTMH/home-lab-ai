@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { HeadFC } from "gatsby";
+import { HeadFC, navigate } from "gatsby";
 import Body from "../components/body";
 import Stack from "../components/layout/stack";
 import Seo from "../components/seo";
@@ -10,8 +10,26 @@ import Text from "../components/typography/text";
 import H3 from "../components/typography/h3";
 import Button from "../components/button";
 import H5 from "../components/typography/h5";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/stores/store.redux";
+import { pushSuccess } from "../redux/slices/message.slice";
 
 const HiringPage = () => {
+	const dispatch = useDispatch();
+	const ether = useSelector((state: RootState) => state.ether);
+
+	const handleOrdered = async () => {
+		const lastProjectId = await ether.contract.HomeLab.lastProjectId();
+		const project = await ether.contract.HomeLab.projects(lastProjectId);
+		const transaction = await ether.contract.HomeLab.connect(ether.provider.getSigner()).acceptedPhase(
+			lastProjectId,
+			project.lastPhaseId,
+		);
+		const receipt = await transaction.wait();
+		dispatch(pushSuccess(receipt.events![0].event));
+		navigate("/detail-drawing");
+	};
+
 	return (
 		<Body>
 			<section className="pt-36 container mx-auto">
@@ -63,7 +81,7 @@ const HiringPage = () => {
 										/>
 									</Stack>
 									<div>
-										<Button className="" type="outline">
+										<Button className="" type="outline" onClick={handleOrdered}>
 											Order Now
 										</Button>
 									</div>

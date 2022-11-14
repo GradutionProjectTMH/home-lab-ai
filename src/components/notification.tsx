@@ -39,7 +39,7 @@ const Notification = () => {
 					message ? "" : "hidden",
 				)}
 			>
-				<H5>{message.value}</H5>
+				<H5 className="break-words max-w-lg">{message.value}</H5>
 				{icons[message.type]}
 			</Stack>
 		)

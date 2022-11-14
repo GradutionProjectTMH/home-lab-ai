@@ -24,11 +24,15 @@ import G2P from "../apis/g2p.api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
 import { UN_AUTHORIZED } from "../constants/error.constant";
-import { pushError } from "../redux/slices/message.slice";
+import { pushError, pushSuccess } from "../redux/slices/message.slice";
+import { ethers } from "ethers";
+import Ether from "../apis/ether.api";
+import { parseEther } from "ethers/lib/utils";
 
 const BuildPage = ({ location }: any) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
+	const ether = useSelector((state: RootState) => state.ether);
 
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
@@ -241,11 +245,23 @@ const BuildPage = ({ location }: any) => {
 		setRightFloorPlan({ ...res.data, trainName, relations, isGenerated: false });
 	};
 
-	const handleMakeOrder = () => {
-		if (!user) {
-			dispatch(pushError(UN_AUTHORIZED));
-			throw new Error(UN_AUTHORIZED);
-		}
+	const handleMakeOrder = async () => {
+		if (!user) throw new Error(UN_AUTHORIZED);
+
+		const timestamp = await Ether.getTimestamp();
+		const value = parseEther("10");
+		const transaction = await ether.contract.HomeLab.connect(ether.provider.getSigner()).startProject(
+			"Test",
+			"ipfs://",
+			ethers.constants.AddressZero,
+			"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+			Ether.BN.from(timestamp).add(300),
+			value,
+			{ value: value },
+		);
+		const receipt = await transaction.wait();
+		dispatch(pushSuccess(receipt.events![0].event));
+
 		navigate("/hiring");
 	};
 

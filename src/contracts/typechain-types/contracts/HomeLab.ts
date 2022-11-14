@@ -68,6 +68,7 @@ export declare namespace HomeLab {
     client: PromiseOrValue<string>;
     bounty: PromiseOrValue<BigNumberish>;
     expiredAt: PromiseOrValue<BigNumberish>;
+    rejectTimes: PromiseOrValue<BigNumberish>;
     data: PromiseOrValue<string>;
   };
 
@@ -76,63 +77,83 @@ export declare namespace HomeLab {
     string,
     BigNumber,
     BigNumber,
+    BigNumber,
     string
   ] & {
     status: number;
     client: string;
     bounty: BigNumber;
     expiredAt: BigNumber;
+    rejectTimes: BigNumber;
     data: string;
   };
 }
 
 export interface HomeLabInterface extends utils.Interface {
   functions: {
-    "createProject(address,string,string)": FunctionFragment;
+    "acceptedPhase(uint256,uint256)": FunctionFragment;
+    "cancelPhase(uint256,uint256)": FunctionFragment;
     "finishPhase(uint256,uint256)": FunctionFragment;
+    "getPendingWithdraw(address)": FunctionFragment;
     "getPhase(uint256,uint256)": FunctionFragment;
     "initialize(address)": FunctionFragment;
+    "lastProjectId()": FunctionFragment;
     "owner()": FunctionFragment;
     "permittedTokens(address)": FunctionFragment;
     "projects(uint256)": FunctionFragment;
+    "rejectSubmitedPhase(uint256,uint256)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "serviceFeePercent()": FunctionFragment;
     "setPermittedToken(address,bool)": FunctionFragment;
+    "setServiceFeePercent(uint256)": FunctionFragment;
     "startPhase(uint256,address,uint256,uint256)": FunctionFragment;
-    "startProject(uint256,address,uint256,uint256)": FunctionFragment;
+    "startProject(string,string,address,address,uint256,uint256)": FunctionFragment;
     "submitPhase(uint256,uint256,string)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "updateProject(uint256,address,string,string)": FunctionFragment;
+    "withdraw(address,address)": FunctionFragment;
+    "withdrawExpiredPhase(uint256,uint256)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "createProject"
+      | "acceptedPhase"
+      | "cancelPhase"
       | "finishPhase"
+      | "getPendingWithdraw"
       | "getPhase"
       | "initialize"
+      | "lastProjectId"
       | "owner"
       | "permittedTokens"
       | "projects"
+      | "rejectSubmitedPhase"
       | "renounceOwnership"
+      | "serviceFeePercent"
       | "setPermittedToken"
+      | "setServiceFeePercent"
       | "startPhase"
       | "startProject"
       | "submitPhase"
       | "transferOwnership"
-      | "updateProject"
+      | "withdraw"
+      | "withdrawExpiredPhase"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "createProject",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>
-    ]
+    functionFragment: "acceptedPhase",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "cancelPhase",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "finishPhase",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getPendingWithdraw",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getPhase",
@@ -141,6 +162,10 @@ export interface HomeLabInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "initialize",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lastProjectId",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -152,12 +177,24 @@ export interface HomeLabInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
+    functionFragment: "rejectSubmitedPhase",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "serviceFeePercent",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "setPermittedToken",
     values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setServiceFeePercent",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "startPhase",
@@ -171,7 +208,9 @@ export interface HomeLabInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "startProject",
     values: [
-      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
@@ -190,25 +229,36 @@ export interface HomeLabInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateProject",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>
-    ]
+    functionFragment: "withdraw",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawExpiredPhase",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "createProject",
+    functionFragment: "acceptedPhase",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "cancelPhase",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "finishPhase",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPendingWithdraw",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getPhase", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "lastProjectId",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "permittedTokens",
@@ -216,11 +266,23 @@ export interface HomeLabInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "projects", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "rejectSubmitedPhase",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "serviceFeePercent",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setPermittedToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setServiceFeePercent",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "startPhase", data: BytesLike): Result;
@@ -236,44 +298,78 @@ export interface HomeLabInterface extends utils.Interface {
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "updateProject",
+    functionFragment: "withdrawExpiredPhase",
     data: BytesLike
   ): Result;
 
   events: {
-    "CreatedProject(uint256,tuple)": EventFragment;
+    "AcceptedPhase(uint256,tuple,uint256,tuple)": EventFragment;
+    "CanceledPhase(uint256,tuple,uint256,tuple)": EventFragment;
     "FinishedPhase(uint256,tuple,uint256,tuple)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
+    "RejectedSubmitedPhase(uint256,tuple,uint256,tuple)": EventFragment;
     "SetPermittedToken(address,bool)": EventFragment;
+    "SetServiceFeePercent(uint256,uint256)": EventFragment;
     "StartedPhase(uint256,tuple,uint256,tuple)": EventFragment;
     "StartedProject(uint256,tuple,uint256,tuple)": EventFragment;
     "SubmittedPhase(uint256,tuple,uint256,tuple)": EventFragment;
-    "UpdatedProject(uint256,tuple)": EventFragment;
+    "Withdrawn(address,address,uint256)": EventFragment;
+    "WithdrawnExpiredPhase(uint256,tuple,uint256,tuple)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "CreatedProject"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AcceptedPhase"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "CanceledPhase"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FinishedPhase"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RejectedSubmitedPhase"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetPermittedToken"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetServiceFeePercent"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StartedPhase"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StartedProject"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SubmittedPhase"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UpdatedProject"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Withdrawn"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WithdrawnExpiredPhase"): EventFragment;
 }
 
-export interface CreatedProjectEventObject {
+export interface AcceptedPhaseEventObject {
   projectId: BigNumber;
   project: HomeLab.ProjectStructOutput;
+  phaseId: BigNumber;
+  phase: HomeLab.PhaseStructOutput;
 }
-export type CreatedProjectEvent = TypedEvent<
-  [BigNumber, HomeLab.ProjectStructOutput],
-  CreatedProjectEventObject
+export type AcceptedPhaseEvent = TypedEvent<
+  [
+    BigNumber,
+    HomeLab.ProjectStructOutput,
+    BigNumber,
+    HomeLab.PhaseStructOutput
+  ],
+  AcceptedPhaseEventObject
 >;
 
-export type CreatedProjectEventFilter = TypedEventFilter<CreatedProjectEvent>;
+export type AcceptedPhaseEventFilter = TypedEventFilter<AcceptedPhaseEvent>;
+
+export interface CanceledPhaseEventObject {
+  projectId: BigNumber;
+  project: HomeLab.ProjectStructOutput;
+  phaseId: BigNumber;
+  phase: HomeLab.PhaseStructOutput;
+}
+export type CanceledPhaseEvent = TypedEvent<
+  [
+    BigNumber,
+    HomeLab.ProjectStructOutput,
+    BigNumber,
+    HomeLab.PhaseStructOutput
+  ],
+  CanceledPhaseEventObject
+>;
+
+export type CanceledPhaseEventFilter = TypedEventFilter<CanceledPhaseEvent>;
 
 export interface FinishedPhaseEventObject {
   projectId: BigNumber;
@@ -312,6 +408,25 @@ export type OwnershipTransferredEvent = TypedEvent<
 export type OwnershipTransferredEventFilter =
   TypedEventFilter<OwnershipTransferredEvent>;
 
+export interface RejectedSubmitedPhaseEventObject {
+  projectId: BigNumber;
+  project: HomeLab.ProjectStructOutput;
+  phaseId: BigNumber;
+  phase: HomeLab.PhaseStructOutput;
+}
+export type RejectedSubmitedPhaseEvent = TypedEvent<
+  [
+    BigNumber,
+    HomeLab.ProjectStructOutput,
+    BigNumber,
+    HomeLab.PhaseStructOutput
+  ],
+  RejectedSubmitedPhaseEventObject
+>;
+
+export type RejectedSubmitedPhaseEventFilter =
+  TypedEventFilter<RejectedSubmitedPhaseEvent>;
+
 export interface SetPermittedTokenEventObject {
   token: string;
   isPermitted: boolean;
@@ -323,6 +438,18 @@ export type SetPermittedTokenEvent = TypedEvent<
 
 export type SetPermittedTokenEventFilter =
   TypedEventFilter<SetPermittedTokenEvent>;
+
+export interface SetServiceFeePercentEventObject {
+  oldServiceFeePercent: BigNumber;
+  newServiceFeePercent: BigNumber;
+}
+export type SetServiceFeePercentEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  SetServiceFeePercentEventObject
+>;
+
+export type SetServiceFeePercentEventFilter =
+  TypedEventFilter<SetServiceFeePercentEvent>;
 
 export interface StartedPhaseEventObject {
   projectId: BigNumber;
@@ -378,16 +505,36 @@ export type SubmittedPhaseEvent = TypedEvent<
 
 export type SubmittedPhaseEventFilter = TypedEventFilter<SubmittedPhaseEvent>;
 
-export interface UpdatedProjectEventObject {
-  projectId: BigNumber;
-  project: HomeLab.ProjectStructOutput;
+export interface WithdrawnEventObject {
+  paymentToken: string;
+  receiver: string;
+  amount: BigNumber;
 }
-export type UpdatedProjectEvent = TypedEvent<
-  [BigNumber, HomeLab.ProjectStructOutput],
-  UpdatedProjectEventObject
+export type WithdrawnEvent = TypedEvent<
+  [string, string, BigNumber],
+  WithdrawnEventObject
 >;
 
-export type UpdatedProjectEventFilter = TypedEventFilter<UpdatedProjectEvent>;
+export type WithdrawnEventFilter = TypedEventFilter<WithdrawnEvent>;
+
+export interface WithdrawnExpiredPhaseEventObject {
+  projectId: BigNumber;
+  project: HomeLab.ProjectStructOutput;
+  phaseId: BigNumber;
+  phase: HomeLab.PhaseStructOutput;
+}
+export type WithdrawnExpiredPhaseEvent = TypedEvent<
+  [
+    BigNumber,
+    HomeLab.ProjectStructOutput,
+    BigNumber,
+    HomeLab.PhaseStructOutput
+  ],
+  WithdrawnExpiredPhaseEventObject
+>;
+
+export type WithdrawnExpiredPhaseEventFilter =
+  TypedEventFilter<WithdrawnExpiredPhaseEvent>;
 
 export interface HomeLab extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -416,10 +563,15 @@ export interface HomeLab extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    createProject(
-      _paymentToken: PromiseOrValue<string>,
-      _name: PromiseOrValue<string>,
-      _data: PromiseOrValue<string>,
+    acceptedPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    cancelPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -428,6 +580,11 @@ export interface HomeLab extends BaseContract {
       _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    getPendingWithdraw(
+      _paymentToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     getPhase(
       _projectId: PromiseOrValue<BigNumberish>,
@@ -439,6 +596,8 @@ export interface HomeLab extends BaseContract {
       _owner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    lastProjectId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -474,13 +633,26 @@ export interface HomeLab extends BaseContract {
       }
     >;
 
+    rejectSubmitedPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    serviceFeePercent(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     setPermittedToken(
       _token: PromiseOrValue<string>,
       _isPermitted: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setServiceFeePercent(
+      _newServiceFeePercent: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -493,7 +665,9 @@ export interface HomeLab extends BaseContract {
     ): Promise<ContractTransaction>;
 
     startProject(
-      _projectId: PromiseOrValue<BigNumberish>,
+      _name: PromiseOrValue<string>,
+      _data: PromiseOrValue<string>,
+      _paymentToken: PromiseOrValue<string>,
       _phase1Client: PromiseOrValue<string>,
       _phase1ExpiredAt: PromiseOrValue<BigNumberish>,
       _phase1Bounty: PromiseOrValue<BigNumberish>,
@@ -512,19 +686,28 @@ export interface HomeLab extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    updateProject(
-      _projectId: PromiseOrValue<BigNumberish>,
+    withdraw(
       _paymentToken: PromiseOrValue<string>,
-      _name: PromiseOrValue<string>,
-      _data: PromiseOrValue<string>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    withdrawExpiredPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
 
-  createProject(
-    _paymentToken: PromiseOrValue<string>,
-    _name: PromiseOrValue<string>,
-    _data: PromiseOrValue<string>,
+  acceptedPhase(
+    _projectId: PromiseOrValue<BigNumberish>,
+    _phaseId: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  cancelPhase(
+    _projectId: PromiseOrValue<BigNumberish>,
+    _phaseId: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -533,6 +716,11 @@ export interface HomeLab extends BaseContract {
     _phaseId: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  getPendingWithdraw(
+    _paymentToken: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   getPhase(
     _projectId: PromiseOrValue<BigNumberish>,
@@ -544,6 +732,8 @@ export interface HomeLab extends BaseContract {
     _owner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  lastProjectId(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -579,13 +769,26 @@ export interface HomeLab extends BaseContract {
     }
   >;
 
+  rejectSubmitedPhase(
+    _projectId: PromiseOrValue<BigNumberish>,
+    _phaseId: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   renounceOwnership(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  serviceFeePercent(overrides?: CallOverrides): Promise<BigNumber>;
+
   setPermittedToken(
     _token: PromiseOrValue<string>,
     _isPermitted: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setServiceFeePercent(
+    _newServiceFeePercent: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -598,7 +801,9 @@ export interface HomeLab extends BaseContract {
   ): Promise<ContractTransaction>;
 
   startProject(
-    _projectId: PromiseOrValue<BigNumberish>,
+    _name: PromiseOrValue<string>,
+    _data: PromiseOrValue<string>,
+    _paymentToken: PromiseOrValue<string>,
     _phase1Client: PromiseOrValue<string>,
     _phase1ExpiredAt: PromiseOrValue<BigNumberish>,
     _phase1Bounty: PromiseOrValue<BigNumberish>,
@@ -617,19 +822,28 @@ export interface HomeLab extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  updateProject(
-    _projectId: PromiseOrValue<BigNumberish>,
+  withdraw(
     _paymentToken: PromiseOrValue<string>,
-    _name: PromiseOrValue<string>,
-    _data: PromiseOrValue<string>,
+    _receiver: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  withdrawExpiredPhase(
+    _projectId: PromiseOrValue<BigNumberish>,
+    _phaseId: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    createProject(
-      _paymentToken: PromiseOrValue<string>,
-      _name: PromiseOrValue<string>,
-      _data: PromiseOrValue<string>,
+    acceptedPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    cancelPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -638,6 +852,11 @@ export interface HomeLab extends BaseContract {
       _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    getPendingWithdraw(
+      _paymentToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getPhase(
       _projectId: PromiseOrValue<BigNumberish>,
@@ -649,6 +868,8 @@ export interface HomeLab extends BaseContract {
       _owner: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    lastProjectId(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -684,11 +905,24 @@ export interface HomeLab extends BaseContract {
       }
     >;
 
+    rejectSubmitedPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    serviceFeePercent(overrides?: CallOverrides): Promise<BigNumber>;
 
     setPermittedToken(
       _token: PromiseOrValue<string>,
       _isPermitted: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setServiceFeePercent(
+      _newServiceFeePercent: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -701,7 +935,9 @@ export interface HomeLab extends BaseContract {
     ): Promise<void>;
 
     startProject(
-      _projectId: PromiseOrValue<BigNumberish>,
+      _name: PromiseOrValue<string>,
+      _data: PromiseOrValue<string>,
+      _paymentToken: PromiseOrValue<string>,
       _phase1Client: PromiseOrValue<string>,
       _phase1ExpiredAt: PromiseOrValue<BigNumberish>,
       _phase1Bounty: PromiseOrValue<BigNumberish>,
@@ -720,32 +956,56 @@ export interface HomeLab extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    updateProject(
-      _projectId: PromiseOrValue<BigNumberish>,
+    withdraw(
       _paymentToken: PromiseOrValue<string>,
-      _name: PromiseOrValue<string>,
-      _data: PromiseOrValue<string>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    withdrawExpiredPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
 
   filters: {
-    "CreatedProject(uint256,tuple)"(
-      projectId?: null,
-      project?: null
-    ): CreatedProjectEventFilter;
-    CreatedProject(projectId?: null, project?: null): CreatedProjectEventFilter;
+    "AcceptedPhase(uint256,tuple,uint256,tuple)"(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      project?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
+      phase?: null
+    ): AcceptedPhaseEventFilter;
+    AcceptedPhase(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      project?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
+      phase?: null
+    ): AcceptedPhaseEventFilter;
+
+    "CanceledPhase(uint256,tuple,uint256,tuple)"(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      project?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
+      phase?: null
+    ): CanceledPhaseEventFilter;
+    CanceledPhase(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      project?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
+      phase?: null
+    ): CanceledPhaseEventFilter;
 
     "FinishedPhase(uint256,tuple,uint256,tuple)"(
-      projectId?: null,
+      projectId?: PromiseOrValue<BigNumberish> | null,
       project?: null,
-      phaseId?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
       phase?: null
     ): FinishedPhaseEventFilter;
     FinishedPhase(
-      projectId?: null,
+      projectId?: PromiseOrValue<BigNumberish> | null,
       project?: null,
-      phaseId?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
       phase?: null
     ): FinishedPhaseEventFilter;
 
@@ -761,6 +1021,19 @@ export interface HomeLab extends BaseContract {
       newOwner?: PromiseOrValue<string> | null
     ): OwnershipTransferredEventFilter;
 
+    "RejectedSubmitedPhase(uint256,tuple,uint256,tuple)"(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      project?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
+      phase?: null
+    ): RejectedSubmitedPhaseEventFilter;
+    RejectedSubmitedPhase(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      project?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
+      phase?: null
+    ): RejectedSubmitedPhaseEventFilter;
+
     "SetPermittedToken(address,bool)"(
       token?: PromiseOrValue<string> | null,
       isPermitted?: PromiseOrValue<boolean> | null
@@ -770,57 +1043,89 @@ export interface HomeLab extends BaseContract {
       isPermitted?: PromiseOrValue<boolean> | null
     ): SetPermittedTokenEventFilter;
 
+    "SetServiceFeePercent(uint256,uint256)"(
+      oldServiceFeePercent?: PromiseOrValue<BigNumberish> | null,
+      newServiceFeePercent?: PromiseOrValue<BigNumberish> | null
+    ): SetServiceFeePercentEventFilter;
+    SetServiceFeePercent(
+      oldServiceFeePercent?: PromiseOrValue<BigNumberish> | null,
+      newServiceFeePercent?: PromiseOrValue<BigNumberish> | null
+    ): SetServiceFeePercentEventFilter;
+
     "StartedPhase(uint256,tuple,uint256,tuple)"(
-      projectId?: null,
+      projectId?: PromiseOrValue<BigNumberish> | null,
       project?: null,
-      phaseId?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
       phase?: null
     ): StartedPhaseEventFilter;
     StartedPhase(
-      projectId?: null,
+      projectId?: PromiseOrValue<BigNumberish> | null,
       project?: null,
-      phaseId?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
       phase?: null
     ): StartedPhaseEventFilter;
 
     "StartedProject(uint256,tuple,uint256,tuple)"(
-      projectId?: null,
+      projectId?: PromiseOrValue<BigNumberish> | null,
       project?: null,
-      phaseId?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
       phase?: null
     ): StartedProjectEventFilter;
     StartedProject(
-      projectId?: null,
+      projectId?: PromiseOrValue<BigNumberish> | null,
       project?: null,
-      phaseId?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
       phase?: null
     ): StartedProjectEventFilter;
 
     "SubmittedPhase(uint256,tuple,uint256,tuple)"(
-      projectId?: null,
+      projectId?: PromiseOrValue<BigNumberish> | null,
       project?: null,
-      phaseId?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
       phase?: null
     ): SubmittedPhaseEventFilter;
     SubmittedPhase(
-      projectId?: null,
+      projectId?: PromiseOrValue<BigNumberish> | null,
       project?: null,
-      phaseId?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
       phase?: null
     ): SubmittedPhaseEventFilter;
 
-    "UpdatedProject(uint256,tuple)"(
-      projectId?: null,
-      project?: null
-    ): UpdatedProjectEventFilter;
-    UpdatedProject(projectId?: null, project?: null): UpdatedProjectEventFilter;
+    "Withdrawn(address,address,uint256)"(
+      paymentToken?: PromiseOrValue<string> | null,
+      receiver?: PromiseOrValue<string> | null,
+      amount?: null
+    ): WithdrawnEventFilter;
+    Withdrawn(
+      paymentToken?: PromiseOrValue<string> | null,
+      receiver?: PromiseOrValue<string> | null,
+      amount?: null
+    ): WithdrawnEventFilter;
+
+    "WithdrawnExpiredPhase(uint256,tuple,uint256,tuple)"(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      project?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
+      phase?: null
+    ): WithdrawnExpiredPhaseEventFilter;
+    WithdrawnExpiredPhase(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      project?: null,
+      phaseId?: PromiseOrValue<BigNumberish> | null,
+      phase?: null
+    ): WithdrawnExpiredPhaseEventFilter;
   };
 
   estimateGas: {
-    createProject(
-      _paymentToken: PromiseOrValue<string>,
-      _name: PromiseOrValue<string>,
-      _data: PromiseOrValue<string>,
+    acceptedPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    cancelPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -828,6 +1133,11 @@ export interface HomeLab extends BaseContract {
       _projectId: PromiseOrValue<BigNumberish>,
       _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    getPendingWithdraw(
+      _paymentToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getPhase(
@@ -840,6 +1150,8 @@ export interface HomeLab extends BaseContract {
       _owner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    lastProjectId(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -853,13 +1165,26 @@ export interface HomeLab extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    rejectSubmitedPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    serviceFeePercent(overrides?: CallOverrides): Promise<BigNumber>;
+
     setPermittedToken(
       _token: PromiseOrValue<string>,
       _isPermitted: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setServiceFeePercent(
+      _newServiceFeePercent: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -872,7 +1197,9 @@ export interface HomeLab extends BaseContract {
     ): Promise<BigNumber>;
 
     startProject(
-      _projectId: PromiseOrValue<BigNumberish>,
+      _name: PromiseOrValue<string>,
+      _data: PromiseOrValue<string>,
+      _paymentToken: PromiseOrValue<string>,
       _phase1Client: PromiseOrValue<string>,
       _phase1ExpiredAt: PromiseOrValue<BigNumberish>,
       _phase1Bounty: PromiseOrValue<BigNumberish>,
@@ -891,20 +1218,29 @@ export interface HomeLab extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    updateProject(
-      _projectId: PromiseOrValue<BigNumberish>,
+    withdraw(
       _paymentToken: PromiseOrValue<string>,
-      _name: PromiseOrValue<string>,
-      _data: PromiseOrValue<string>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    withdrawExpiredPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    createProject(
-      _paymentToken: PromiseOrValue<string>,
-      _name: PromiseOrValue<string>,
-      _data: PromiseOrValue<string>,
+    acceptedPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    cancelPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -912,6 +1248,11 @@ export interface HomeLab extends BaseContract {
       _projectId: PromiseOrValue<BigNumberish>,
       _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getPendingWithdraw(
+      _paymentToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getPhase(
@@ -925,6 +1266,8 @@ export interface HomeLab extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    lastProjectId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     permittedTokens(
@@ -937,13 +1280,26 @@ export interface HomeLab extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    rejectSubmitedPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    serviceFeePercent(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     setPermittedToken(
       _token: PromiseOrValue<string>,
       _isPermitted: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setServiceFeePercent(
+      _newServiceFeePercent: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -956,7 +1312,9 @@ export interface HomeLab extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     startProject(
-      _projectId: PromiseOrValue<BigNumberish>,
+      _name: PromiseOrValue<string>,
+      _data: PromiseOrValue<string>,
+      _paymentToken: PromiseOrValue<string>,
       _phase1Client: PromiseOrValue<string>,
       _phase1ExpiredAt: PromiseOrValue<BigNumberish>,
       _phase1Bounty: PromiseOrValue<BigNumberish>,
@@ -975,11 +1333,15 @@ export interface HomeLab extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    updateProject(
-      _projectId: PromiseOrValue<BigNumberish>,
+    withdraw(
       _paymentToken: PromiseOrValue<string>,
-      _name: PromiseOrValue<string>,
-      _data: PromiseOrValue<string>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    withdrawExpiredPhase(
+      _projectId: PromiseOrValue<BigNumberish>,
+      _phaseId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };

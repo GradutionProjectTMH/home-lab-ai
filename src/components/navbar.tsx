@@ -18,6 +18,7 @@ import { LOGIN_NOT_SUCCESSFULLY } from "../constants/error.constant";
 import Ether from "../apis/ether.api";
 import { pushSuccess } from "../redux/slices/message.slice";
 import { ethers } from "ethers";
+import { connectWallet } from "../redux/slices/ether.slice";
 
 export const routes = [
 	{
@@ -57,7 +58,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
 	const ether = useSelector((state: RootState) => state.ether);
-	const [wallet, setWallet] = React.useState<string>();
+	const [walletAddress, setWalletAddress] = React.useState<string>();
 
 	const handleLoginGoogle = async () => {
 		try {
@@ -88,10 +89,11 @@ const Navbar = ({ ...props }: NavbarProps) => {
 		await ether.provider.send("eth_requestAccounts", []);
 		if (!Ether.isConnected()) throw new Error("Can't connect to Metamask");
 
-		const wallet = await ether.provider.getSigner().getAddress();
-		setWallet(`${wallet.substring(0, 7)}...`);
+		setWalletAddress(await ether.provider.getSigner().getAddress());
 		dispatch(pushSuccess("Connected to Metamask"));
 	};
+
+	const wallet = walletAddress && `${walletAddress.substring(0, 7)}...`;
 
 	return (
 		<nav className="bg-gray-50" {...props}>
