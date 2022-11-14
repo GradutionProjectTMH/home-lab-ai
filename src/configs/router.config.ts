@@ -9,11 +9,7 @@ export const routes = [
 	},
 	{
 		name: "Order",
-		path: "/order",
-	},
-	{
-		name: "Hiring",
-		path: "/hiring",
+		path: "/order/:id",
 	},
 	{
 		name: "AddToMarketplace",

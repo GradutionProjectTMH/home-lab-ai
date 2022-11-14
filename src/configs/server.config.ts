@@ -1,6 +1,9 @@
 import axios from "axios";
 import queryString from "query-string";
 // const token = window?.localStorage.getItem("token");
+import { store } from "../redux/stores/store.redux";
+
+const env = store.getState().environment.server;
 
 const axiosClient = axios.create({
 	baseURL: process.env.GATSBY_API_BASE_URL,
@@ -15,7 +18,11 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use(
 	function (config) {
-		// Do something before request is sent
+		const token = localStorage.getItem("token");
+		config.headers = {
+			Authorization: token ? `Bearer ${token}` : "",
+		};
+
 		return config;
 	},
 	function (error) {

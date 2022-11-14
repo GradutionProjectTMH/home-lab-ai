@@ -1,17 +1,17 @@
 import * as React from "react";
 import type { HeadFC } from "gatsby";
-import Body from "../components/body";
-import Stack from "../components/layout/stack";
-import Seo from "../components/seo";
-import Carousel from "../components/carousel";
+import Body from "../../components/body";
+import Stack from "../../components/layout/stack";
+import Seo from "../../components/seo";
+import Carousel from "../../components/carousel";
 import { StaticImage } from "gatsby-plugin-image";
-import Strong from "../components/typography/strong";
-import Button from "../components/button";
-import H5 from "../components/typography/h5";
-import H4 from "../components/typography/h4";
-import Small from "../components/typography/small";
-import AddTaskOutlinedSvg from "../svgs/add-task-outlined.svg";
-import TrashOutlined from "../svgs/trash-outlined.svg";
+import Strong from "../../components/typography/strong";
+import Button from "../../components/button";
+import H5 from "../../components/typography/h5";
+import H4 from "../../components/typography/h4";
+import Small from "../../components/typography/small";
+import AddTaskOutlinedSvg from "../../svgs/add-task-outlined.svg";
+import TrashOutlined from "../../svgs/trash-outlined.svg";
 
 const splittingRooms = [
 	{
@@ -104,7 +104,7 @@ const rewards = [
 	},
 ];
 
-const DetailDrawing = () => {
+const Index = () => {
 	const iFrameRef = React.useRef();
 	const [iFrameHeight, setIFrameHeight] = React.useState("0px");
 
@@ -311,6 +311,6 @@ const DetailDrawing = () => {
 	);
 };
 
-export default DetailDrawing;
+export default Index;
 
 export const Head: HeadFC = () => <Seo title="Add To Marketplace" />;

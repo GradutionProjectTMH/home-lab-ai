@@ -262,10 +262,11 @@ const BuildPage = ({ location }: any) => {
 		const receipt = await transaction.wait();
 		dispatch(pushSuccess(receipt.events![0].event));
 
-		navigate("/hiring");
+		navigate("/order/63692c2d58e7aecc25de2e02");
 	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
+
 	return (
 		<Body>
 			<section className="container mx-auto">
