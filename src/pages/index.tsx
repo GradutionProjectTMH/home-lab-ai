@@ -13,11 +13,16 @@ import LightBulbSvg from "../svgs/light-bulb.svg";
 import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
 import TextRazor from "../apis/text-razor.api";
+import { useDispatch } from "react-redux";
+import { pushInfo } from "../redux/slices/message.slice";
 
 const IndexPage = () => {
+	const dispatch = useDispatch();
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
 
 	const handleExtractorClicked = async () => {
+		dispatch(pushInfo("We are processing your dream"));
+
 		const res = await TextRazor.extract(textAreaRef.current!.value, [
 			"entities",
 			"topics",
@@ -35,6 +40,10 @@ const IndexPage = () => {
 				text_razor: res.data.response,
 			},
 		});
+	};
+
+	const handleTryItButtonClicked = () => {
+		textAreaRef.current?.focus();
 	};
 
 	return (
@@ -55,7 +64,9 @@ const IndexPage = () => {
 							</Text>
 
 							<Stack className="gap-4">
-								<Button type="fill">TRY IT NOW</Button>
+								<Button type="fill" onClick={handleTryItButtonClicked}>
+									TRY IT NOW
+								</Button>
 								<Button type="outline">READ MORE</Button>
 							</Stack>
 						</Stack>
@@ -78,9 +89,9 @@ const IndexPage = () => {
 				<div className="container mx-auto">
 					<Stack className="mt-14 items-stretch justify-between">
 						<Stack column className="bg-white shadow-xl shadow-blackAlpha-100">
-							<textarea cols={64} rows={3} className="resize-none !outline-none p-4" ref={textAreaRef} />
+							<textarea cols={64} rows={3} className="resize-none !outline-none p-4 border-0" ref={textAreaRef} />
 							<Stack className="justify-between items-center mx-4 mb-2">
-								<Small className="text-blue-200">Tell us your dream house will be...</Small>
+								<Small className="text-blue-500">Tell us your dream house will be...</Small>
 								<Stack className="gap-1">
 									<ButtonIcon Icon={MicSvg} className="w-10 h-10 !fill-gray-500" />
 									<ButtonIcon

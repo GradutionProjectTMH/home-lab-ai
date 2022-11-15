@@ -111,9 +111,14 @@ const numSearch = async (testName: string) => {
 	});
 };
 
-const getImageUrl = (trainName: string) => {
+const getTrainImageUrl = (trainName: string) => {
 	const imageEndpoint = store.getState().environment.g2p.IMAGE_ENDPOINT;
 	return `${imageEndpoint}snapshot_train/${trainName}`;
+};
+
+const getBoundaryImageUrl = (name: string) => {
+	const imageEndpoint = store.getState().environment.g2p.IMAGE_ENDPOINT;
+	return `${imageEndpoint}Img/${name}`;
 };
 
 const loadTrainHouse = async (roomID: string) => {
@@ -129,7 +134,8 @@ const G2P = {
 	adjustGraph,
 	loadTestBoundary,
 	numSearch,
-	getImageUrl,
+	getTrainImageUrl,
+	getBoundaryImageUrl,
 	loadTrainHouse,
 	transGraph,
 };
