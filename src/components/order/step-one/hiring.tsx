@@ -15,6 +15,7 @@ import * as designerApi from "../../../apis/designer.api";
 import * as hireApi from "../../../apis/hire.api";
 import { Hire } from "../../../interfaces/hire.interface";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
+import AddToMarketplacePage from "./add-to-marketplace";
 
 type HiringProp = {
 	setIsLoader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,6 +25,7 @@ type HiringProp = {
 const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 	const [designers, setDesigner] = React.useState<Designer[]>();
 	const [selectedDesigner, setSelectedDesigner] = React.useState<Designer>();
+	const [currentPage, setCurrentPage] = React.useState<"Order" | "Marketplace">("Order");
 
 	const fetchAllDesigner = async () => {
 		try {
@@ -64,6 +66,16 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 			throw error;
 		}
 	};
+
+	const handleAddToMarketplace = () => {
+		window.scrollTo(0, 0);
+		setCurrentPage("Marketplace");
+	};
+
+	if (currentPage === "Marketplace") {
+		return <AddToMarketplacePage detailDrawing={detailDrawing} setCurrentPage={setCurrentPage} />;
+	}
+
 	return (
 		<>
 			<Stack className="gap-x-8 p-6">
@@ -113,16 +125,17 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 					</Stack>
 
 					<Stack className="basis-1/2 gap-2 items-stretch">
-						<StaticImage
-							src="../images/suggested-designs/33.png"
-							alt="suggested-design"
-							className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
-						/>
-						<StaticImage
-							src="../images/suggested-designs/33.png"
-							alt="suggested-design"
-							className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
-						/>
+						<Stack className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10 ">
+							<img src={detailDrawing?.boundaryImg} alt="suggested-design" className="w-full object-cover" />
+						</Stack>
+
+						<Stack className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10 ">
+							<img
+								src={detailDrawing?.crossSectionImg}
+								alt="suggested-design"
+								className="w-full selection:object-cover"
+							/>
+						</Stack>
 					</Stack>
 				</Stack>
 				<div className="basis-1/2">
@@ -137,7 +150,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 									<img
 										src={designer.user?.avatar}
 										alt="suggested-design"
-										className=" rounded-full border-white border-2 w-[120px] h-[120px]  overflow-hidden"
+										className=" rounded-full border-white border-2 w-[100px] h-[100px]  "
 									/>
 									<Stack column={true} className="">
 										<H3 className="text-gray-700">
@@ -158,7 +171,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 
 			<Stack column={true} className="pb-8 p-6">
 				<div className="mt-8 ">
-					<Button className="px-8" type="outline">
+					<Button className="px-8" type="outline" onClick={handleAddToMarketplace}>
 						Add to Marketplace
 					</Button>
 				</div>
