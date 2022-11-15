@@ -24,21 +24,38 @@ import G2P from "../apis/g2p.api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
 import { UN_AUTHORIZED } from "../constants/error.constant";
-import { pushError, pushSuccess } from "../redux/slices/message.slice";
+import { pushError, pushInfo, pushSuccess } from "../redux/slices/message.slice";
 import { ethers } from "ethers";
 import Ether from "../apis/ether.api";
 import { parseEther } from "ethers/lib/utils";
+import Modal from "../components/modal";
 
 const BuildPage = ({ location }: any) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
-	const ether = useSelector((state: RootState) => state.ether);
+
+	const [isShownModalBoundary, setIsShownModalBoundary] = React.useState<boolean>(false);
+	const [boundaryNames, setBoundaryNames] = React.useState<string[]>([
+		"444.png",
+		"52.png",
+		"5458.png",
+		"8347.png",
+		"10473.png",
+		"9821.png",
+		"21501.png",
+		"27105.png",
+		"27025.png",
+		"28133.png",
+		"22946.png",
+		"22305.png",
+	]);
 
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
 
 	const [suggestedPlans, setSuggestedPlans] = React.useState<SuggestedPlan[]>([]);
 
+	const [boundaryName, setBoundaryName] = React.useState<string>("444.png");
 	const [boundary, setBoundary] = React.useState<Boundary>();
 	const [ideaPositions, setIdeaPositions] = React.useState<IdeaPosition[]>([]);
 	const [selectedIdeaPosition, setSelectedIdeaPosition] = React.useState<IdeaPosition>();
@@ -46,7 +63,7 @@ const BuildPage = ({ location }: any) => {
 
 	React.useEffect(() => {
 		rooms.forEach((room) => (room.currentIndex = 0));
-		G2P.loadTestBoundary("444.png").then((res) => {
+		G2P.loadTestBoundary(boundaryName).then((res) => {
 			const { data } = res;
 			const boundary: Boundary = {
 				door: data.door.trim().split(","),
@@ -58,11 +75,16 @@ const BuildPage = ({ location }: any) => {
 			setBoundary(boundary);
 		});
 
-		G2P.numSearch("444.png").then((res) => {
+		G2P.numSearch(boundaryName).then((res) => {
 			const { data } = res;
-			setSuggestedPlans(data.map((trainName: any) => ({ trainName, url: G2P.getImageUrl(trainName) })));
+			setSuggestedPlans(data.map((trainName: any) => ({ trainName, url: G2P.getTrainImageUrl(trainName) })));
 		});
-	}, []);
+	}, [boundaryName]);
+
+	const handleBoundaryClicked = (boundaryName: string) => {
+		setBoundaryName(boundaryName);
+		setIsShownModalBoundary(false);
+	};
 
 	const handleRoomClicked = (room: Room) => {
 		setCurrentRoom(room);
@@ -71,7 +93,7 @@ const BuildPage = ({ location }: any) => {
 	const handleLeftTransferButtonClicked = async () => {
 		rooms.forEach((room) => (room.currentIndex = 0));
 
-		const res = await G2P.transGraph("444.png", rightFloorPlan.trainName as string);
+		const res = await G2P.transGraph(boundaryName, rightFloorPlan.trainName as string);
 		const roomPositions = res.data.rmpos!;
 		const roomRelations = res.data.hsedge!;
 
@@ -104,11 +126,13 @@ const BuildPage = ({ location }: any) => {
 	};
 
 	const handleRightTransferButtonClicked = async () => {
+		dispatch(pushInfo("We are building your house"));
+
 		const res = await G2P.adjustGraph(
 			ideaPositions,
 			ideaRelations,
 			rightFloorPlan.transRoomPositions,
-			"444.png",
+			boundaryName,
 			rightFloorPlan.trainName,
 		);
 		const { hsedge, roomret } = res.data;
@@ -138,9 +162,21 @@ const BuildPage = ({ location }: any) => {
 			relations,
 			isGenerated: true,
 		});
+
+		dispatch(pushSuccess("Build finished"));
 	};
 
 	const { entities, sentences, nounPhrases }: any = location.state?.text_razor || {};
+	const filteredEntities =
+		entities &&
+		entities
+			.filter((entity: any) => entity.entityEnglishId != "")
+			.reduce((result: any[], entity: any) => {
+				const index = result.findIndex((item) => item.entityEnglishId == entity.entityEnglishId);
+				if (index == -1) result.push(entity);
+				return result;
+			}, []);
+
 	let currentSentenceKey = 0;
 	nounPhrases?.forEach((nounPhrase: any) => {
 		if (sentences[currentSentenceKey].words.slice(-1)[0].position < nounPhrase.wordPositions[0]) ++currentSentenceKey;
@@ -248,19 +284,19 @@ const BuildPage = ({ location }: any) => {
 	const handleMakeOrder = async () => {
 		if (!user) throw new Error(UN_AUTHORIZED);
 
-		const timestamp = await Ether.getTimestamp();
-		const value = parseEther("10");
-		const transaction = await ether.contract.HomeLab.connect(ether.provider.getSigner()).startProject(
-			"Test",
-			"ipfs://",
-			ethers.constants.AddressZero,
-			"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-			Ether.BN.from(timestamp).add(300),
-			value,
-			{ value: value },
-		);
-		const receipt = await transaction.wait();
-		dispatch(pushSuccess(receipt.events![0].event));
+		// const timestamp = await Ether.getTimestamp();
+		// const value = parseEther("10");
+		// const transaction = await ether.contract.HomeLab.connect(ether.provider.getSigner()).startProject(
+		// 	"Test",
+		// 	"ipfs://",
+		// 	ethers.constants.AddressZero,
+		// 	"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+		// 	Ether.BN.from(timestamp).add(300),
+		// 	value,
+		// 	{ value: value },
+		// );
+		// const receipt = await transaction.wait();
+		// dispatch(pushSuccess(receipt.events![0].event));
 
 		navigate("/order/63692c2d58e7aecc25de2e02");
 	};
@@ -268,356 +304,381 @@ const BuildPage = ({ location }: any) => {
 	const door = rightFloorPlan?.door.split(",").map(Number);
 
 	return (
-		<Body>
-			<section className="container mx-auto">
-				<Stack className="pt-36 items-stretch">
-					<Stack column className="grow gap-8 items-stretch">
-						<Stack column className="gap-1">
-							<H4 className="text-gray-500">Your Idea</H4>
-							<Stack className="h-[33rem] bg-white justify-center items-center">
-								<Stage
-									width={512}
-									height={512}
-									onDblClick={handleRoomAdded}
-									onContextMenu={handleResetSelectIdea}
-									className="border-gray-300 border"
-								>
-									<Layer scale={{ x: 2, y: 2 }}>
-										{boundary && (
-											<Line
-												points={[...boundary.exteriors, boundary.exteriors[0]].reduce(
-													(result: number[], exterior) => [...result, ...exterior],
-													[],
-												)}
-												stroke={(colors as any)["gray"][900]}
-												strokeWidth={2}
-											/>
-										)}
+		<>
+			<Body>
+				<section className="container mx-auto">
+					<Stack className="pt-36 items-stretch">
+						<Stack column className="grow gap-8 items-stretch">
+							<Stack column className="gap-1">
+								<H4 className="text-gray-500">Your Idea</H4>
+								<Stack className="h-[33rem] bg-white justify-center items-center">
+									<Stage
+										width={512}
+										height={512}
+										onDblClick={handleRoomAdded}
+										onContextMenu={handleResetSelectIdea}
+										className="border-gray-300 border"
+									>
+										<Layer scale={{ x: 2, y: 2 }}>
+											{boundary && (
+												<Line
+													points={[...boundary.exteriors, boundary.exteriors[0]].reduce(
+														(result: number[], exterior) => [...result, ...exterior],
+														[],
+													)}
+													stroke={(colors as any)["gray"][900]}
+													strokeWidth={2}
+												/>
+											)}
 
-										{boundary && (
-											<Line points={boundary.door} stroke={(colors as any)["yellow"][400]} strokeWidth={2} />
-										)}
+											{boundary && (
+												<Line points={boundary.door} stroke={(colors as any)["yellow"][400]} strokeWidth={2} />
+											)}
 
-										{ideaRelations.map(([ideaPositionA, ideaPositionB], index) => (
-											<Line
-												key={`${ideaPositionA.roomLabel}-${ideaPositionB.roomLabel}`}
-												points={[ideaPositionA.x, ideaPositionA.y, ideaPositionB.x, ideaPositionB.y]}
-												stroke={(colors as any)["gray"][900]}
-												strokeWidth={1.2}
-												onContextMenu={(event) => handleRightRelationClicked(event, index)}
-											/>
-										))}
+											{ideaRelations.map(([ideaPositionA, ideaPositionB], index) => (
+												<Line
+													key={`${ideaPositionA.roomLabel}-${ideaPositionB.roomLabel}`}
+													points={[ideaPositionA.x, ideaPositionA.y, ideaPositionB.x, ideaPositionB.y]}
+													stroke={(colors as any)["gray"][900]}
+													strokeWidth={1.2}
+													onContextMenu={(event) => handleRightRelationClicked(event, index)}
+												/>
+											))}
 
-										{ideaPositions.map((ideaPosition, index) => (
-											<Circle
-												key={`${ideaPosition.roomLabel}`}
-												x={ideaPosition.x}
-												y={ideaPosition.y}
-												width={10}
-												height={10}
-												fill={(colors as any)[findRoom(ideaPosition.roomLabel).colorTheme][500]}
-												stroke={
-													ideaPosition == selectedIdeaPosition
-														? (colors as any)["red"][500]
-														: (colors as any)["gray"][900]
-												}
-												strokeWidth={1.2}
-												draggable
-												onDragEnd={(event) => handleDragEnd(event, index)}
-												onContextMenu={(event) => handleRightIdeaClicked(event, index)}
-											/>
-										))}
-									</Layer>
-								</Stage>
+											{ideaPositions.map((ideaPosition, index) => (
+												<Circle
+													key={`${ideaPosition.roomLabel}`}
+													x={ideaPosition.x}
+													y={ideaPosition.y}
+													width={10}
+													height={10}
+													fill={(colors as any)[findRoom(ideaPosition.roomLabel).colorTheme][500]}
+													stroke={
+														ideaPosition == selectedIdeaPosition
+															? (colors as any)["red"][500]
+															: (colors as any)["gray"][900]
+													}
+													strokeWidth={1.2}
+													draggable
+													onDragEnd={(event) => handleDragEnd(event, index)}
+													onContextMenu={(event) => handleRightIdeaClicked(event, index)}
+												/>
+											))}
+										</Layer>
+									</Stage>
+								</Stack>
 							</Stack>
 						</Stack>
-					</Stack>
 
-					<Stack column className="mx-2 justify-center items-center gap-4">
-						<ButtonIcon
-							Icon={ChevronRightSvg}
-							className="w-12 h-12 fill-gray-500"
-							onClick={handleRightTransferButtonClicked}
-							disabled={ideaPositions.length == 0 || ideaRelations.length == 0}
-						/>
-						<H5 className="block [writing-mode:vertical-lr] rotate-180 font-medium text-gray-400 tracking-widest">
-							TRANSFER
-						</H5>
-						<ButtonIcon
-							Icon={ChevronLeftSvg}
-							className="w-12 h-12 fill-gray-500"
-							onClick={handleLeftTransferButtonClicked}
-						/>
-					</Stack>
+						<Stack column className="mx-2 justify-center items-center gap-4">
+							<ButtonIcon
+								Icon={ChevronRightSvg}
+								className="w-12 h-12 fill-gray-500"
+								onClick={handleRightTransferButtonClicked}
+								disabled={ideaPositions.length == 0 || ideaRelations.length == 0}
+							/>
+							<H5 className="block [writing-mode:vertical-lr] rotate-180 font-medium text-gray-400 tracking-widest">
+								TRANSFER
+							</H5>
+							<ButtonIcon
+								Icon={ChevronLeftSvg}
+								className="w-12 h-12 fill-gray-500"
+								onClick={handleLeftTransferButtonClicked}
+							/>
+						</Stack>
 
-					<Stack column className="grow gap-8 items-stretch">
-						<Stack column className="gap-1">
-							<H4 className="text-gray-500">Floor Plan</H4>
-							<Stack className="h-[33rem] bg-white justify-center items-center">
-								<Stage width={512} height={512}>
-									<Layer scale={{ x: 2, y: 2 }}>
-										{rightFloorPlan?.hsbox?.map((box: any[], index: number) => {
-											const [[x1, y1, x2, y2], [label]] = box;
-											const room = rooms.find((room) => room.labels.includes(label));
-											return (
-												<Rect
-													key={[x1, y1, x2, y2, label].join("-")}
-													x={x1}
-													y={y1}
-													width={x2 - x1}
-													height={y2 - y1}
-													fill={(colors as any)[room?.colorTheme!][200]}
-													stroke={(colors as any)["gray"][700]}
-												/>
-											);
-										})}
-										{rightFloorPlan?.roomret?.map((plan: any[], index: number) => {
-											const [[x1, y1, x2, y2], [label], id] = plan;
-											const room = findRoom(label);
-											return (
-												<Rect
-													key={id}
-													x={x1}
-													y={y1}
-													width={x2 - x1}
-													height={y2 - y1}
-													fill={(colors as any)[room?.colorTheme!][200]}
-													stroke={(colors as any)["gray"][700]}
-												/>
-											);
-										})}
-										{rightFloorPlan?.windows?.map((position: number[]) => {
-											const [x, y, width, height]: number[] = position;
-
-											return (
-												<Rect
-													key={position.join(",")}
-													x={x}
-													y={y}
-													width={width}
-													height={height}
-													fill={(colors as any)["white"]}
-													stroke={(colors as any)["gray"][700]}
-												/>
-											);
-										})}
-										{door && (
-											<Rect
-												x={door[0]}
-												y={door[1]}
-												width={door[2] - door[0]}
-												height={door[3] - door[1]}
-												stroke={(colors as any)["yellow"][400]}
-											/>
-										)}
-										{rightFloorPlan?.relations.map(
-											([positionA, positionB]: [IdeaPosition, IdeaPosition], index: string) => {
-												const { roomLabel: labelA, x: xA, y: yA } = positionA;
-												const { roomLabel: labelB, x: xB, y: yB } = positionB;
+						<Stack column className="grow gap-8 items-stretch">
+							<Stack column className="gap-1">
+								<H4 className="text-gray-500">Floor Plan</H4>
+								<Stack className="h-[33rem] bg-white justify-center items-center">
+									<Stage width={512} height={512}>
+										<Layer scale={{ x: 2, y: 2 }}>
+											{rightFloorPlan?.hsbox?.map((box: any[], index: number) => {
+												const [[x1, y1, x2, y2], [label]] = box;
+												const room = rooms.find((room) => room.labels.includes(label));
+												return (
+													<Rect
+														key={[x1, y1, x2, y2, label].join("-")}
+														x={x1}
+														y={y1}
+														width={x2 - x1}
+														height={y2 - y1}
+														fill={(colors as any)[room?.colorTheme!][200]}
+														stroke={(colors as any)["gray"][700]}
+													/>
+												);
+											})}
+											{rightFloorPlan?.roomret?.map((plan: any[], index: number) => {
+												const [[x1, y1, x2, y2], [label], id] = plan;
+												const room = findRoom(label);
+												return (
+													<Rect
+														key={id}
+														x={x1}
+														y={y1}
+														width={x2 - x1}
+														height={y2 - y1}
+														fill={(colors as any)[room?.colorTheme!][200]}
+														stroke={(colors as any)["gray"][700]}
+													/>
+												);
+											})}
+											{rightFloorPlan?.windows?.map((position: number[]) => {
+												const [x, y, width, height]: number[] = position;
 
 												return (
-													<Line
-														key={[xA, yA, labelA, xB, yB, labelB].join("-")}
-														points={[xA, yA, xB, yB]}
+													<Rect
+														key={position.join(",")}
+														x={x}
+														y={y}
+														width={width}
+														height={height}
+														fill={(colors as any)["white"]}
+														stroke={(colors as any)["gray"][700]}
+													/>
+												);
+											})}
+											{door && (
+												<Rect
+													x={door[0]}
+													y={door[1]}
+													width={door[2] - door[0]}
+													height={door[3] - door[1]}
+													stroke={(colors as any)["yellow"][400]}
+												/>
+											)}
+											{rightFloorPlan?.relations.map(
+												([positionA, positionB]: [IdeaPosition, IdeaPosition], index: string) => {
+													const { roomLabel: labelA, x: xA, y: yA } = positionA;
+													const { roomLabel: labelB, x: xB, y: yB } = positionB;
+
+													return (
+														<Line
+															key={[xA, yA, labelA, xB, yB, labelB].join("-")}
+															points={[xA, yA, xB, yB]}
+															stroke={(colors as any)["gray"][900]}
+															strokeWidth={1.2}
+														/>
+													);
+												},
+											)}
+											{rightFloorPlan?.rmpos?.map((position: any[], index: number) => {
+												const [_, label, x, y] = position;
+												return (
+													<Circle
+														key={[x, y, label].join("-")}
+														x={x}
+														y={y}
+														width={10}
+														height={10}
+														fill={(colors as any)[findRoom(label).colorTheme][500]}
 														stroke={(colors as any)["gray"][900]}
 														strokeWidth={1.2}
 													/>
 												);
-											},
-										)}
-										{rightFloorPlan?.rmpos?.map((position: any[], index: number) => {
-											const [_, label, x, y] = position;
-											return (
-												<Circle
-													key={[x, y, label].join("-")}
-													x={x}
-													y={y}
-													width={10}
-													height={10}
-													fill={(colors as any)[findRoom(label).colorTheme][500]}
-													stroke={(colors as any)["gray"][900]}
-													strokeWidth={1.2}
-												/>
-											);
-										})}
-									</Layer>
-								</Stage>
+											})}
+										</Layer>
+									</Stage>
+								</Stack>
 							</Stack>
 						</Stack>
 					</Stack>
-				</Stack>
 
-				<Stack column className="items-stretch mt-8">
-					<Stack className="justify-center gap-10">
-						{rooms.map((room) => {
-							const isCurrentRoom = currentRoom == room;
-							const isMaxRoom = room.currentIndex == room.labels.length;
-							const colorShade = isMaxRoom ? 200 : 500;
+					<Stack column className="items-stretch mt-8">
+						<Stack className="justify-center gap-10">
+							{rooms.map((room) => {
+								const isCurrentRoom = currentRoom == room;
+								const isMaxRoom = room.currentIndex == room.labels.length;
+								const colorShade = isMaxRoom ? 200 : 500;
 
-							return (
-								<Stack
-									column
-									key={room.name}
-									className="items-center gap-2 cursor-pointer"
-									onClick={() => handleRoomClicked(room)}
-								>
-									<div
-										className={joinTxts("rounded-full border-4 border-white", isCurrentRoom ? "w-10 h-10" : "w-8 h-8")}
-										style={{ backgroundColor: (colors as any)[room.colorTheme][colorShade] }}
-									/>
-									<Strong
-										style={{
-											color: (colors as any)[room.colorTheme][colorShade],
-										}}
+								return (
+									<Stack
+										column
+										key={room.name}
+										className="items-center gap-2 cursor-pointer"
+										onClick={() => handleRoomClicked(room)}
 									>
-										{room.name}
-									</Strong>
-								</Stack>
-							);
-						})}
+										<div
+											className={joinTxts(
+												"rounded-full border-4 border-white",
+												isCurrentRoom ? "w-10 h-10" : "w-8 h-8",
+											)}
+											style={{ backgroundColor: (colors as any)[room.colorTheme][colorShade] }}
+										/>
+										<Strong
+											style={{
+												color: (colors as any)[room.colorTheme][colorShade],
+											}}
+										>
+											{room.name}
+										</Strong>
+									</Stack>
+								);
+							})}
+						</Stack>
 					</Stack>
-				</Stack>
 
-				<Stack className="mt-4">
-					{suggestedPlans.map((suggestedPlan) => (
-						<Stack key={suggestedPlan.trainName} className="flex-grow">
+					<Stack className="mt-4">
+						{suggestedPlans.map((suggestedPlan) => (
+							<Stack key={suggestedPlan.trainName} className="flex-grow">
+								<img
+									src={suggestedPlan.url}
+									alt={`Suggested Design ${suggestedPlan.trainName}`}
+									className="w-full cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
+									onClick={() => handleSuggestedPlanClicked(suggestedPlan.trainName)}
+								/>
+							</Stack>
+						))}
+					</Stack>
+
+					<Stack className="mt-4 justify-center font-medium text-gray-400 tracking-widest">
+						<H5 className="">RECOMMENDED DESIGNS</H5>
+					</Stack>
+				</section>
+
+				<section className="container mx-auto mt-4">
+					<Carousel title="Advanced Section">
+						<Stack className="mt-4 px-6 flex-wrap items-start gap-y-4">
+							<Stack className="basis-1/2 items-end gap-12">
+								<Stack column className="items-end gap-4">
+									<H4 className="text-gray-700">House boundary</H4>
+									<Text className="text-gray-500">Width:</Text>
+									<Text className="text-gray-500">Length:</Text>
+									<Text className="text-gray-500">Height:</Text>
+								</Stack>
+								<Stack column className="items-start gap-4">
+									<Text className="text-blue-500">
+										50m<sup>2</sup>
+									</Text>
+									<Text className="text-blue-500">
+										50m<sup>2</sup>
+									</Text>
+									<Text className="text-blue-500">10m</Text>
+								</Stack>
+							</Stack>
+							<Stack className="basis-1/2 items-end gap-12">
+								<Stack column className="items-end gap-4">
+									<H4 className="text-gray-700">Budget</H4>
+									<Text className="text-gray-500">Width:</Text>
+									<Text className="text-gray-500">Height:</Text>
+								</Stack>
+								<Stack column className="items-start gap-4">
+									<H4 className="text-blue-500">2.000 Million VND</H4>
+									<Text className="text-blue-500">
+										50m<sup>2</sup>
+									</Text>
+									<Text className="text-blue-500">
+										50m<sup>2</sup>
+									</Text>
+								</Stack>
+							</Stack>
+						</Stack>
+
+						<div className="h-[1px] my-4 bg-gray-200"></div>
+
+						<Stack className="mt-4 px-6 flex-wrap gap-y-4">
+							<Stack column className="gap-4">
+								{sentences &&
+									sentences.map((sentence: any) => (
+										<Stack key={sentence.position} className="gap-2">
+											<H4 className="text-gray-700">
+												{sentence.position + 1 < 10 ? `0${sentence.position + 1}` : sentence.position + 1}.
+											</H4>
+											<Stack className="gap-2 flex-wrap">
+												{sentence.words.map((word: any) => (
+													<H4 key={word.position} className={word.isNounPhrase ? "text-blue-500" : "text-gray-500"}>
+														{word.token}
+													</H4>
+												))}
+											</Stack>
+										</Stack>
+									))}
+							</Stack>
+						</Stack>
+
+						<div className="h-[1px] my-4 bg-gray-200"></div>
+
+						<Stack className="mt-4 px-6 gap-4">
+							<Stack className="basis-1/2 gap-12">
+								<Stack column className="items-end gap-4">
+									<H4 className="text-gray-700">Entities list:</H4>
+									{entities &&
+										filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
+											<Text key={entity.entityId} className="text-gray-700">
+												{entity.entityEnglishId}
+											</Text>
+										))}
+								</Stack>
+								<Stack column className="items-start gap-4">
+									<H4 className="text-gray-500">Confidence score</H4>
+									{entities &&
+										filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
+											<Text key={entity.entityId} className="text-gray-500">
+												{entity.confidenceScore}
+											</Text>
+										))}
+								</Stack>
+							</Stack>
+
+							<Stack className="basis-1/2 gap-12">
+								<Stack column className="items-end gap-4">
+									<H4 className="text-gray-700">Entities list:</H4>
+									{entities &&
+										filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
+											<Text key={entity.entityId} className="text-gray-700">
+												{entity.entityEnglishId}
+											</Text>
+										))}
+								</Stack>
+								<Stack column className="items-start gap-4">
+									<H4 className="text-gray-500">Confidence score</H4>
+									{entities &&
+										filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
+											<Text key={entity.entityId} className="text-gray-500">
+												{entity.confidenceScore}
+											</Text>
+										))}
+								</Stack>
+							</Stack>
+						</Stack>
+					</Carousel>
+				</section>
+
+				<section className="container mx-auto py-4">
+					<Stack className="justify-center gap-4 mt-6">
+						<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
+							Save
+						</Button>
+						<Button
+							type="outline"
+							LeftItem={PencilSvg}
+							className="!px-4 !py-1"
+							onClick={() => setIsShownModalBoundary(true)}
+						>
+							Load
+						</Button>
+						<Button type="fill" className="!px-4 !py-1" onClick={handleMakeOrder}>
+							Make Order
+						</Button>
+					</Stack>
+				</section>
+			</Body>
+
+			<Modal title="Choose your boundary" isShown={isShownModalBoundary} onClose={() => setIsShownModalBoundary(false)}>
+				<Stack className="flex-wrap px-4 py-4">
+					{boundaryNames.map((boundaryName) => (
+						<Stack key={boundaryName} className="basis-1/4 items-center p-2 ">
 							<img
-								src={suggestedPlan.url}
-								alt={`Suggested Design ${suggestedPlan.trainName}`}
+								src={G2P.getBoundaryImageUrl(boundaryName)}
+								alt={`Boundary ${boundaryName}`}
 								className="w-full cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-								onClick={() => handleSuggestedPlanClicked(suggestedPlan.trainName)}
+								onClick={() => handleBoundaryClicked(boundaryName)}
 							/>
 						</Stack>
 					))}
 				</Stack>
-
-				<Stack className="mt-4 justify-center font-medium text-gray-400 tracking-widest">
-					<H5 className="">RECOMMENDED DESIGNS</H5>
-				</Stack>
-			</section>
-
-			<section className="container mx-auto mt-4">
-				<Carousel title="Advanced Section">
-					<Stack className="mt-4 px-6 flex-wrap items-start gap-y-4">
-						<Stack className="basis-1/2 items-end gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">House boundary</H4>
-								<Text className="text-gray-500">Width:</Text>
-								<Text className="text-gray-500">Length:</Text>
-								<Text className="text-gray-500">Height:</Text>
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<Text className="text-blue-500">
-									50m<sup>2</sup>
-								</Text>
-								<Text className="text-blue-500">
-									50m<sup>2</sup>
-								</Text>
-								<Text className="text-blue-500">10m</Text>
-							</Stack>
-						</Stack>
-						<Stack className="basis-1/2 items-end gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">Budget</H4>
-								<Text className="text-gray-500">Width:</Text>
-								<Text className="text-gray-500">Height:</Text>
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-blue-500">2.000 Million VND</H4>
-								<Text className="text-blue-500">
-									50m<sup>2</sup>
-								</Text>
-								<Text className="text-blue-500">
-									50m<sup>2</sup>
-								</Text>
-							</Stack>
-						</Stack>
-					</Stack>
-
-					<div className="h-[1px] my-4 bg-gray-200"></div>
-
-					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
-						<Stack column className="gap-4">
-							{sentences &&
-								sentences.map((sentence: any) => (
-									<Stack key={sentence.position} className="gap-2">
-										<H4 className="text-gray-700">
-											{sentence.position + 1 < 10 ? `0${sentence.position + 1}` : sentence.position + 1}.
-										</H4>
-										<Stack className="gap-2">
-											{sentence.words.map((word: any) => (
-												<H4 key={word.position} className={word.isNounPhrase ? "text-blue-500" : "text-gray-500"}>
-													{word.token}
-												</H4>
-											))}
-										</Stack>
-									</Stack>
-								))}
-						</Stack>
-					</Stack>
-
-					<div className="h-[1px] my-4 bg-gray-200"></div>
-
-					<Stack className="mt-4 px-6 gap-4">
-						<Stack className="basis-1/2 gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">Entities list:</H4>
-								{entities &&
-									entities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-700">
-											{entity.entityEnglishId}
-										</Text>
-									))}
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-gray-500">Confidence score</H4>
-								{entities &&
-									entities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-500">
-											{entity.confidenceScore}
-										</Text>
-									))}
-							</Stack>
-						</Stack>
-
-						<Stack className="basis-1/2 gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">Entities list:</H4>
-								{entities &&
-									entities.slice(Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-700">
-											{entity.entityEnglishId}
-										</Text>
-									))}
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-gray-500">Confidence score</H4>
-								{entities &&
-									entities.slice(Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-500">
-											{entity.confidenceScore}
-										</Text>
-									))}
-							</Stack>
-						</Stack>
-					</Stack>
-				</Carousel>
-			</section>
-
-			<section className="container mx-auto py-4">
-				<Stack className="justify-center gap-4 mt-6">
-					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
-						Save
-					</Button>
-					<Button type="outline" LeftItem={PencilSvg} className="!px-4 !py-1">
-						Load
-					</Button>
-					<Button type="fill" className="!px-4 !py-1" onClick={handleMakeOrder}>
-						Make Order
-					</Button>
-				</Stack>
-			</section>
-		</Body>
+			</Modal>
+		</>
 	);
 };
 
