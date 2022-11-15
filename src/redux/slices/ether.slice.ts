@@ -10,7 +10,9 @@ import { Material } from "../../contracts/typechain-types";
 import { HomeLab } from "../../contracts/typechain-types";
 
 type EtherState = {
+	initiated: boolean;
 	provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider;
+	walletAddress?: string;
 	contract: {
 		Material: Material;
 		HomeLab: HomeLab;
@@ -22,6 +24,7 @@ const defaultProvider = new ethers.providers.JsonRpcProvider();
 const etherSlice = createSlice<EtherState, SliceCaseReducers<EtherState>>({
 	name: "etherSlice",
 	initialState: {
+		initiated: false,
 		provider: defaultProvider,
 		contract: {
 			Material: new ethers.Contract(MaterialAddress, MaterialAbi) as Material,
@@ -40,6 +43,7 @@ const etherSlice = createSlice<EtherState, SliceCaseReducers<EtherState>>({
 			(window as any).HomeLab = HomeLab;
 
 			return {
+				initiated: true,
 				provider,
 				contract: {
 					Material,
@@ -47,9 +51,12 @@ const etherSlice = createSlice<EtherState, SliceCaseReducers<EtherState>>({
 				},
 			};
 		},
+		setWalletAddress: (state, action: PayloadAction<string>) => {
+			state.walletAddress = action.payload;
+		},
 	},
 });
 
-export const { initiateEther, connectWallet } = etherSlice.actions;
+export const { initiateEther, setWalletAddress } = etherSlice.actions;
 
 export default etherSlice.reducer;
