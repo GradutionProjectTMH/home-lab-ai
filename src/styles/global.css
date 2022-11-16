@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "~react-image-gallery/styles/css/image-gallery.css";
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
@@ -9,4 +10,27 @@
     @apply default:text-gray-700;
     @apply transition-all;
   }
+}
+
+.image-gallery {
+  width: 100%;
+}
+
+.image-gallery-slide{
+  width: 100%;
+  height: 450px !important;
+}
+
+.image-gallery-slide img {
+  width: 100%;
+  height: 100%;
+  max-height: 80vh;
+  object-fit: cover !important;
+  overflow: hidden;
+  object-position: center center;
+  align-items: center;
+}
+
+.fullscreen .image-gallery-slide img {
+  max-height: 100vh;
 }

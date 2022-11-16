@@ -186,18 +186,25 @@ const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplac
 							<H4 className="text-gray-700">Additional Information:</H4>
 						</Stack>
 						<Stack column={true} className="gap-4 items-stretch">
-							{Object.keys(detailDrawing?.additionalInformation || {}).map((info, i) => {
-								return (
-									<Stack className="pl-6 items-stretch" key={i}>
-										<Stack className="gap-2 items-center basis-1/2">
-											<H5 className="text-gray-500">{info}:</H5>
+							{detailDrawing?.additionalInformation &&
+								Object.keys(detailDrawing?.additionalInformation).map((info, i) => {
+									return (
+										<Stack className="pl-6 items-stretch" key={i}>
+											<Stack className="gap-2 items-center basis-1/2">
+												<H5 className="text-gray-500">{info}:</H5>
+											</Stack>
+											<Stack className="basis-2/3">
+												<H5 className="text-blue-700">
+													{String(
+														detailDrawing?.additionalInformation[
+															info as keyof typeof detailDrawing.additionalInformation
+														],
+													)}
+												</H5>
+											</Stack>
 										</Stack>
-										<Stack className="basis-2/3">
-											<H5 className="text-blue-700">{detailDrawing?.additionalInformation[info]}</H5>
-										</Stack>
-									</Stack>
-								);
-							})}
+									);
+								})}
 						</Stack>
 					</Stack>
 				</Stack>

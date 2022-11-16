@@ -12,70 +12,14 @@ import H4 from "../../components/typography/h4";
 import Small from "../../components/typography/small";
 import AddTaskOutlinedSvg from "../../svgs/add-task-outlined.svg";
 import TrashOutlined from "../../svgs/trash-outlined.svg";
-
-const splittingRooms = [
-	{
-		color: "#718096",
-		name: "Public Area",
-		amount: 1,
-	},
-	{
-		color: "#38A169",
-		name: "Bedroom",
-		amount: 1,
-	},
-	{
-		color: "#3182CE",
-		name: "Bathroom",
-		amount: 1,
-	},
-	{
-		color: "#805AD5",
-		name: "Kitchen",
-		amount: 1,
-	},
-	{
-		color: "#D53F8C",
-		name: "Balcony",
-		amount: 1,
-	},
-	{
-		color: "#D69E2E",
-		name: "Living Room",
-		amount: 1,
-	},
-];
-
-const info = [
-	{
-		key: "Members",
-		value: "Mother, Father, 2 Son, 1 Daughter, 1 Baby",
-	},
-	{
-		key: "Titles",
-		value: "Basic, Ancent",
-	},
-	{
-		key: "Wallpaper",
-		value: "Yes",
-	},
-	{
-		key: "Budget",
-		value: "3M VND - 5M VND",
-	},
-	{
-		key: "Location",
-		value: "Danang City",
-	},
-	{
-		key: "Located at alley",
-		value: "Yes",
-	},
-	{
-		key: "Business in house",
-		value: "Yes",
-	},
-];
+import { DetailDrawing } from "../../interfaces/detail-drawing.interface";
+import * as detailDrawingApi from "../../apis/detail-drawing.api";
+import * as hireApi from "../../apis/hire.api";
+import { splittingRoomColor } from "../../utils/room-color";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/stores/store.redux";
+import { ROLE } from "../../enums/user.enum";
+import { STATUS_HIRE } from "../../enums/hiring.enum";
 
 const rewards = [
 	{
@@ -104,13 +48,50 @@ const rewards = [
 	},
 ];
 
-const Index = () => {
+const DetailDrawingPage = ({ params }: any) => {
+	const [isLoader, setIsLoader] = React.useState<boolean>(true);
+	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
 	const iFrameRef = React.useRef();
 	const [iFrameHeight, setIFrameHeight] = React.useState("0px");
+
+	const user = useSelector((state: RootState) => state.user);
 
 	const handleClick = (data: any) => {
 		console.log(data);
 	};
+
+	const fetchDetailDrawing = async () => {
+		if (!params.id) return;
+		try {
+			const result = await detailDrawingApi.getById("63692c2d58e7aecc25de2e02");
+
+			setDetailDrawing(result);
+		} catch (error: any) {
+			throw error;
+		} finally {
+			setIsLoader(false);
+		}
+	};
+
+	React.useEffect(() => {
+		fetchDetailDrawing();
+	}, [isLoader]);
+
+	const handleClickAccept = async () => {
+		try {
+			if (detailDrawing?.hire._id) {
+				await hireApi.updateHire(detailDrawing.hire._id, { status: STATUS_HIRE.ACCEPT });
+				const newDetailDrawing = { ...detailDrawing };
+				newDetailDrawing.hire.status = STATUS_HIRE.ACCEPT;
+				setDetailDrawing(newDetailDrawing);
+			}
+		} catch (error) {
+			throw error;
+		}
+	};
+
+	if (isLoader) return <></>;
+
 	return (
 		<Body>
 			<section className="pt-36 container mx-auto">
@@ -164,8 +145,14 @@ const Index = () => {
 										className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
 									/>
 								</Stack>
-								<Button className="!px-4 !py-1 justify-center items-center" type="outline">
-									Working in stage 1
+								<Button className="!px-4 !py-1 justify-center items-center" type="outline" onClick={handleClickAccept}>
+									{detailDrawing?.hire.status === STATUS_HIRE.ACCEPT
+										? "Working in stage 1"
+										: detailDrawing?.hire.status === STATUS_HIRE.PENDING && detailDrawing?.hire.designerId === user?._id
+										? "Accept"
+										: detailDrawing?.hire.status === STATUS_HIRE.PENDING
+										? "Waiting for the designer to accept"
+										: "Working in stage 1"}
 								</Button>
 							</Stack>
 						</Stack>
@@ -175,18 +162,18 @@ const Index = () => {
 								<Stack className="pl-6 gap-12 ">
 									<H4 className="text-gray-700">Spliting Rooms:</H4>
 								</Stack>
-								{splittingRooms.map((splittingRoom, i) => {
+								{detailDrawing?.rooms.map((room, i) => {
 									return (
 										<Stack className="ml-32 items-stretch" key={i}>
 											<Stack className="gap-2 items-center basis-1/3">
 												<div
 													className={`w-4 h-4 rounded-full border-white border-2`}
-													style={{ backgroundColor: splittingRoom.color }}
+													style={{ backgroundColor: splittingRoomColor[room.name] }}
 												/>
-												<Small style={{ color: splittingRoom.color }}>{splittingRoom.name}</Small>
+												<Small style={{ color: splittingRoomColor[room.name] }}>{room.name}</Small>
 											</Stack>
 											<Stack className="basis-2/3">
-												<Small className="text-blue-700">{splittingRoom.amount} Rooms</Small>
+												<Small className="text-blue-700">{room.amount} Rooms</Small>
 											</Stack>
 										</Stack>
 									);
@@ -198,7 +185,9 @@ const Index = () => {
 										<H4 className="text-gray-700">Number Of Floors:</H4>
 									</Stack>
 									<Stack className="basis-2/3">
-										<H4 className="text-blue-700">3 Floors</H4>
+										<H4 className="text-blue-700">
+											{Number.isInteger(detailDrawing?.numberOfFloors) ? detailDrawing?.numberOfFloors : "_"} Floors
+										</H4>
 									</Stack>
 								</Stack>
 								<Stack className="ml-32 items-stretch">
@@ -206,7 +195,9 @@ const Index = () => {
 										<Small className="text-gray-500">Height of each:</Small>
 									</Stack>
 									<Stack className="basis-2/3">
-										<Small className="text-blue-700">10 m</Small>
+										<Small className="text-blue-700">
+											{Number.isInteger(detailDrawing?.heightOfEachFloors) ? detailDrawing?.heightOfEachFloors : "_"} m
+										</Small>
 									</Stack>
 								</Stack>
 								<Stack className="ml-32 items-stretch">
@@ -214,7 +205,7 @@ const Index = () => {
 										<H4 className="text-gray-700">Theme Colors:</H4>
 									</Stack>
 									<Stack className="basis-2/3">
-										<H4 className="text-blue-700">White, Yellow</H4>
+										<H4 className="text-blue-700">{detailDrawing?.themeColor || "_"}</H4>
 									</Stack>
 								</Stack>
 							</Stack>
@@ -226,18 +217,25 @@ const Index = () => {
 									<H4 className="text-gray-700">Additional Information:</H4>
 								</Stack>
 								<Stack column={true} className="gap-4 items-stretch">
-									{info.map((e, i) => {
-										return (
-											<Stack className="pl-6 items-stretch" key={i}>
-												<Stack className="gap-2 items-center basis-1/2">
-													<H5 className="text-gray-500">{e.key}:</H5>
+									{detailDrawing?.additionalInformation &&
+										Object.keys(detailDrawing?.additionalInformation).map((info, i) => {
+											return (
+												<Stack className="pl-6 items-stretch" key={i}>
+													<Stack className="gap-2 items-center basis-1/2">
+														<H5 className="text-gray-500">{info}:</H5>
+													</Stack>
+													<Stack className="basis-2/3">
+														<H5 className="text-blue-700">
+															{String(
+																detailDrawing?.additionalInformation[
+																	info as keyof typeof detailDrawing.additionalInformation
+																],
+															)}
+														</H5>
+													</Stack>
 												</Stack>
-												<Stack className="basis-2/3">
-													<H5 className="text-blue-700">{e.value}</H5>
-												</Stack>
-											</Stack>
-										);
-									})}
+											);
+										})}
 								</Stack>
 							</Stack>
 							<Stack column={true} className="basis-1/2 gap-8 items-end justify-end pr-28">
@@ -248,9 +246,9 @@ const Index = () => {
 										<Small className="text-gray-500">Length:</Small>
 									</Stack>
 									<Stack column={true} className="gap-3">
-										<H4 className="text-blue-700">35m2</H4>
-										<Small className="text-gray-500">5 m</Small>
-										<Small className="text-gray-500">10</Small>
+										<H4 className="text-blue-700">{detailDrawing?.houseBoundary || "_"}m²</H4>
+										<Small className="text-gray-500">{detailDrawing?.width || "_"} m</Small>
+										<Small className="text-gray-500">{detailDrawing?.height || "_"} m</Small>
 									</Stack>
 								</Stack>
 							</Stack>
@@ -263,10 +261,10 @@ const Index = () => {
 					<Stack column={true} className="p-8 gap-8">
 						<Stack>
 							<div className="bg-white p-1 w-full">
-								<iframe
+								{/* <iframe
 									src="https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO3W8MXUB63&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US"
 									className="w-full h-[700px]"
-								></iframe>
+								></iframe> */}
 							</div>
 						</Stack>
 						<Stack className="gap-8">
@@ -311,6 +309,6 @@ const Index = () => {
 	);
 };
 
-export default Index;
+export default DetailDrawingPage;
 
 export const Head: HeadFC = () => <Seo title="Add To Marketplace" />;

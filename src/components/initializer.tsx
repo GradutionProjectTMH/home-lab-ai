@@ -130,11 +130,10 @@ const Initializer = () => {
 	};
 
 	useEffect(() => {
-		if (environment.isReady) {
-			const handleListenersRemoved = setupMetamaskEvents();
-
-			return () => handleListenersRemoved();
-		}
+		// if (environment.isReady) {
+		// 	const handleListenersRemoved = setupMetamaskEvents();
+		// 	return () => handleListenersRemoved();
+		// }
 	}, [environment]);
 
 	return <div></div>;

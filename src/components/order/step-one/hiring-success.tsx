@@ -11,6 +11,7 @@ import AddTaskOutlinedSvg from "../../../svgs/add-task-outlined.svg";
 import ForwardToInboxOutlinedSvg from "../../../svgs/forward-to-inbox-outlined.svg";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
 import { Link } from "gatsby";
+import { STATUS_HIRE } from "../../../enums/hiring.enum";
 
 type HiringSuccessProp = {
 	detailDrawing: DetailDrawing | undefined;
@@ -62,62 +63,82 @@ function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
 				</Stack>
 			</Stack>
 
-			<Stack className="pt-8 justify-between items-center mx-6">
-				<H4>Choose 3D model for your first floor:</H4>
-				<Button type="ghost" className="px-4 py-1 text-red-500 fill-red-500" LeftItem={TrashOutlinedSvg}>
-					Reject all drafts
-				</Button>
-			</Stack>
-
-			<Stack className="mx-6 mt-2 gap-4">
-				<Stack column className="basis-1/3 items-stretch">
-					<StaticImage
-						src="../images/fake-2d.png"
-						alt="suggested-design"
-						className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<Stack className="gap-4 mt-2">
-						<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
-							I choose this
-						</Button>
-						<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
-							Send message
-						</Button>
-					</Stack>
-				</Stack>
-
-				<Stack column className="basis-1/3 items-stretch">
-					<StaticImage
-						src="../images/fake-2d.png"
-						alt="suggested-design"
-						className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<Stack className="gap-4 mt-2">
-						<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
-							I choose this
-						</Button>
-						<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
-							Send message
+			{detailDrawing?.hire.status === STATUS_HIRE.PENDING ? (
+				<>
+					<Button className="!px-4 !py-1 justify-center items-center" type="outline" disabled={true}>
+						Waiting for the designer to accept
+					</Button>
+				</>
+			) : detailDrawing?.hire.status === STATUS_HIRE.CANCELED ? (
+				<>
+					<Button
+						className="!px-4 !py-1 justify-center items-center border-red-500 text-red-500"
+						type="outline"
+						disabled={true}
+					>
+						This job has been cancelled
+					</Button>
+				</>
+			) : (
+				<>
+					<Stack className="pt-8 justify-between items-center mx-6">
+						<H4>Choose 3D model for your first floor:</H4>
+						<Button type="ghost" className="px-4 py-1 text-red-500 fill-red-500" LeftItem={TrashOutlinedSvg}>
+							Reject all drafts
 						</Button>
 					</Stack>
-				</Stack>
 
-				<Stack column className="basis-1/3 items-stretch">
-					<StaticImage
-						src="../images/fake-2d.png"
-						alt="suggested-design"
-						className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-					/>
-					<Stack className="gap-4 mt-2">
-						<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
-							I choose this
-						</Button>
-						<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
-							Send message
-						</Button>
+					<Stack className="mx-6 mt-2 gap-4">
+						<Stack column className="basis-1/3 items-stretch">
+							<StaticImage
+								src="../images/fake-2d.png"
+								alt="suggested-design"
+								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
+							/>
+							<Stack className="gap-4 mt-2">
+								<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
+									I choose this
+								</Button>
+								<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
+									Send message
+								</Button>
+							</Stack>
+						</Stack>
+
+						<Stack column className="basis-1/3 items-stretch">
+							<StaticImage
+								src="../images/fake-2d.png"
+								alt="suggested-design"
+								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
+							/>
+							<Stack className="gap-4 mt-2">
+								<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
+									I choose this
+								</Button>
+								<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
+									Send message
+								</Button>
+							</Stack>
+						</Stack>
+
+						<Stack column className="basis-1/3 items-stretch">
+							<StaticImage
+								src="../images/fake-2d.png"
+								alt="suggested-design"
+								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
+							/>
+							<Stack className="gap-4 mt-2">
+								<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
+									I choose this
+								</Button>
+								<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
+									Send message
+								</Button>
+							</Stack>
+						</Stack>
 					</Stack>
-				</Stack>
-			</Stack>
+				</>
+			)}
 		</>
 	);
 }

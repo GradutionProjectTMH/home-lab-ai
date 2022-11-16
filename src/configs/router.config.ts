@@ -17,7 +17,7 @@ export const routes = [
 	},
 	{
 		name: "DetailDrawing",
-		path: "/detail-drawing",
+		path: "/detail-drawing/:id",
 	},
 	{
 		name: "RequestVerify",

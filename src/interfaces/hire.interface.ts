@@ -14,6 +14,7 @@ type FloorDesign = {
 };
 
 export interface Hire {
+	_id?: string;
 	userId?: string;
 	designerId?: string;
 	designer?: Designer;
@@ -21,5 +22,5 @@ export interface Hire {
 	detailDrawingId?: string;
 	floorDesigns?: FloorDesign[];
 	houseDesigns?: ItemDesign[];
-	status?: STATUS_HIRE;
+	status: STATUS_HIRE;
 }
