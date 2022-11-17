@@ -2,7 +2,6 @@ import * as React from "react";
 import type { HeadFC } from "gatsby";
 import Body from "../components/body";
 import Stack from "../components/layout/stack";
-import Seo from "../components/seo";
 import Carousel from "../components/carousel";
 import { StaticImage } from "gatsby-plugin-image";
 import Strong from "../components/typography/strong";
@@ -37,7 +36,7 @@ const coins = [
 	},
 ];
 
-const Marketplace = () => {
+const MarketplacePage = () => {
 	return (
 		<Body>
 			<section className="pt-36 container mx-auto">
@@ -132,6 +131,4 @@ const Marketplace = () => {
 	);
 };
 
-export default Marketplace;
-
-export const Head: HeadFC = () => <Seo title="Make Order" />;
+export default MarketplacePage;

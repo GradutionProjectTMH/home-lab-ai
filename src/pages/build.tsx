@@ -9,7 +9,6 @@ import { matchArea } from "../utils/konva.util";
 import Body from "../components/body";
 import Stack from "../components/layout/stack";
 import H4 from "../components/typography/h4";
-import Seo from "../components/seo";
 import ButtonIcon from "../components/button-icon";
 import Strong from "../components/typography/strong";
 import H5 from "../components/typography/h5";
@@ -683,5 +682,3 @@ const BuildPage = ({ location }: any) => {
 };
 
 export default BuildPage;
-
-export const Head: HeadFC = () => <Seo title="Building" />;

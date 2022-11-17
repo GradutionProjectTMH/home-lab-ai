@@ -2,7 +2,6 @@ import * as React from "react";
 import { HeadFC, navigate } from "gatsby";
 import { StaticImage } from "gatsby-plugin-image";
 import Body from "../components/body";
-import Seo from "../components/seo";
 import H1 from "../components/typography/h1";
 import Stack from "../components/layout/stack";
 import Text from "../components/typography/text";
@@ -16,7 +15,7 @@ import TextRazor from "../apis/text-razor.api";
 import { useDispatch } from "react-redux";
 import { pushInfo } from "../redux/slices/message.slice";
 
-const IndexPage = () => {
+const HomePage = () => {
 	const dispatch = useDispatch();
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -130,6 +129,4 @@ const IndexPage = () => {
 	);
 };
 
-export default IndexPage;
-
-export const Head: HeadFC = () => <Seo title="Home" />;
+export default HomePage;

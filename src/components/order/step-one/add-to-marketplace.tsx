@@ -1,7 +1,6 @@
 import * as React from "react";
 import type { HeadFC } from "gatsby";
 import Stack from "../../layout/stack";
-import Seo from "../../seo";
 import { StaticImage } from "gatsby-plugin-image";
 import Button from "../../button";
 import H5 from "../../typography/h5";
@@ -265,5 +264,3 @@ const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplac
 };
 
 export default AddToMarketplacePage;
-
-export const Head: HeadFC = () => <Seo title="Add To Marketplace" />;

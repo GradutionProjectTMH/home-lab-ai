@@ -2,7 +2,6 @@ import * as React from "react";
 import type { HeadFC } from "gatsby";
 import Body from "../../components/body";
 import Stack from "../../components/layout/stack";
-import Seo from "../../components/seo";
 import Carousel from "../../components/carousel";
 import { StaticImage } from "gatsby-plugin-image";
 import Strong from "../../components/typography/strong";
@@ -310,5 +309,3 @@ const DetailDrawingPage = ({ params }: any) => {
 };
 
 export default DetailDrawingPage;
-
-export const Head: HeadFC = () => <Seo title="Add To Marketplace" />;

@@ -1,13 +1,12 @@
 import { createSlice, PayloadAction, SliceCaseReducers } from "@reduxjs/toolkit";
 import { ethers } from "ethers";
-import {
-	Material_proxy as MaterialAddress,
-	HomeLab_proxy as HomeLabAddress,
-} from "../../contracts/contract_addresses.json";
+import * as contractAddresses from "../../contracts/contract_addresses.json";
 import MaterialAbi from "../../contracts/artifacts/Material.json";
 import HomeLabAbi from "../../contracts/artifacts/HomeLab.json";
 import { Material } from "../../contracts/typechain-types";
 import { HomeLab } from "../../contracts/typechain-types";
+
+const { Material_proxy: MaterialAddress, HomeLab_proxy: HomeLabAddress } = contractAddresses;
 
 type EtherState = {
 	initiated: boolean;
