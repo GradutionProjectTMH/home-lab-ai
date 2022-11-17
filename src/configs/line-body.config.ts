@@ -1,4 +1,4 @@
-import { routes } from "./router.config";
+import { routes } from "../pages/navigator";
 
 export type LineName = "HLine1" | "HLine2" | "VLine1" | "VLine2" | "VLine3";
 type ListPage = typeof routes[number]["name"];

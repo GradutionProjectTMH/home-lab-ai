@@ -1,15 +1,11 @@
 import * as React from "react";
-import Navbar from "./navbar";
-import { useMatch } from "@reach/router";
+import Navbar from "../components/navbar";
+import { RouteComponentProps, Router, useMatch } from "@reach/router";
 import { joinTxts } from "../utils/text.util";
-import { routes } from "../configs/router.config";
 import { lineByRoutes, LineName } from "../configs/line-body.config";
+import { routes } from "./navigator";
 
-type MainLayoutProps = {
-	children: React.ReactNode;
-};
-
-const Body = ({ children }: MainLayoutProps) => {
+const Body = ({ children }: RouteComponentProps<React.HTMLAttributes<HTMLElement>>) => {
 	const matchedRoute = routes.find((route) => useMatch(route.path));
 	const lines = lineByRoutes[matchedRoute!.name];
 
@@ -33,7 +29,6 @@ const Body = ({ children }: MainLayoutProps) => {
 							))}
 				</div>
 			</div>
-
 			<Navbar className="absolute top-0 left-0 w-full z-10" />
 			<div className="relative w-full h-full z-0">{children}</div>
 		</main>

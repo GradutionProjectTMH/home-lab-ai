@@ -1,23 +1,19 @@
 import * as React from "react";
-import type { HeadFC } from "gatsby";
-import Body from "../../components/body";
 import Stack from "../../components/layout/stack";
 import Carousel from "../../components/carousel";
-import { StaticImage } from "gatsby-plugin-image";
 import Strong from "../../components/typography/strong";
 import Button from "../../components/button";
 import H5 from "../../components/typography/h5";
 import H4 from "../../components/typography/h4";
 import Small from "../../components/typography/small";
-import AddTaskOutlinedSvg from "../../svgs/add-task-outlined.svg";
-import TrashOutlined from "../../svgs/trash-outlined.svg";
+import { ReactComponent as AddTaskOutlinedSvg } from "../../svgs/add-task-outlined.svg";
+import { ReactComponent as TrashOutlined } from "../../svgs/trash-outlined.svg";
 import { DetailDrawing } from "../../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../../apis/detail-drawing.api";
 import * as hireApi from "../../apis/hire.api";
 import { splittingRoomColor } from "../../utils/room-color";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
-import { ROLE } from "../../enums/user.enum";
 import { STATUS_HIRE } from "../../enums/hiring.enum";
 
 const rewards = [
@@ -92,7 +88,7 @@ const DetailDrawingPage = ({ params }: any) => {
 	if (isLoader) return <></>;
 
 	return (
-		<Body>
+		<>
 			<section className="pt-36 container mx-auto">
 				<Carousel title="Requirements" defaultOpened>
 					<Stack column={true} className="mt-8">
@@ -108,11 +104,10 @@ const DetailDrawingPage = ({ params }: any) => {
 										return (
 											<Stack column={true} className="pl-6 gap-4 items-stretch" key={i}>
 												<Stack className="gap-2 items-center basis-1/2">
-													<StaticImage
+													<img
 														src={"https://cryptologos.cc/logos/avalanche-avax-logo.png"}
 														alt="suggested-design"
 														className=" rounded-full border-white border-2 "
-														aspectRatio={1}
 														width={32}
 														height={32}
 													/>
@@ -133,12 +128,12 @@ const DetailDrawingPage = ({ params }: any) => {
 
 							<Stack column={true} className="basis-1/2 gap-8 items-stretch ">
 								<Stack className="basis-1/2 gap-2 items-stretch">
-									<StaticImage
+									<img
 										src="../images/suggested-designs/33.png"
 										alt="suggested-design"
 										className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
 									/>
-									<StaticImage
+									<img
 										src="../images/suggested-designs/33.png"
 										alt="suggested-design"
 										className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
@@ -272,7 +267,7 @@ const DetailDrawingPage = ({ params }: any) => {
 								.map((_, index) => {
 									return (
 										<div className="bg-white p-1 basis-1/3" key={index} onClick={() => handleClick(index)}>
-											<StaticImage
+											<img
 												src="../images/suggested-designs/33.png"
 												alt="suggested-design"
 												className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10  w-full"
@@ -304,7 +299,7 @@ const DetailDrawingPage = ({ params }: any) => {
 					</Stack>
 				</Stack>
 			</section>
-		</Body>
+		</>
 	);
 };
 

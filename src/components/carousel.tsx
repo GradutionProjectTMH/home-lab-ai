@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Transition } from "react-transition-group";
 import Stack from "./layout/stack";
-import ExpandMoreSvg from "../svgs/expand-more.svg";
-import ExpandLessSvg from "../svgs/expand-less.svg";
+import { ReactComponent as ExpandMoreSvg } from "../svgs/expand-more.svg";
+import { ReactComponent as ExpandLessSvg } from "../svgs/expand-less.svg";
 import H3 from "./typography/h3";
 import { joinTxts } from "../utils/text.util";
 

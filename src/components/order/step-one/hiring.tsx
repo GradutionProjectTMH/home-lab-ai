@@ -1,9 +1,5 @@
 import * as React from "react";
-import { HeadFC, Link } from "gatsby";
-import Body from "../../body";
 import Stack from "../../layout/stack";
-import Carousel from "../../carousel";
-import { StaticImage } from "gatsby-plugin-image";
 import Strong from "../../typography/strong";
 import Text from "../../typography/text";
 import H3 from "../../typography/h3";
@@ -16,6 +12,7 @@ import { Hire } from "../../../interfaces/hire.interface";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
 import AddToMarketplacePage from "./add-to-marketplace";
 import { STATUS_HIRE } from "../../../enums/hiring.enum";
+import { Link } from "@reach/router";
 
 type HiringProp = {
 	setIsLoader: React.Dispatch<React.SetStateAction<boolean>>;

@@ -1,12 +1,10 @@
 import * as React from "react";
-import type { HeadFC } from "gatsby";
 import Stack from "../../layout/stack";
-import { StaticImage } from "gatsby-plugin-image";
 import Button from "../../button";
 import H5 from "../../typography/h5";
 import H4 from "../../typography/h4";
 import Small from "../../typography/small";
-import AddCircleOutline from "../../../svgs/add_circle_outline.svg";
+import { ReactComponent as AddCircleOutline } from "../../../svgs/add_circle_outline.svg";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
 import { splittingRoomColor } from "../../../utils/room-color";
 
@@ -219,11 +217,10 @@ const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplac
 								return (
 									<Stack column={true} className="pl-6 gap-4 items-stretch" key={i}>
 										<Stack className="gap-2 items-center basis-1/2">
-											<StaticImage
+											<img
 												src={"https://cryptologos.cc/logos/avalanche-avax-logo.png"}
 												alt="suggested-design"
 												className=" rounded-full border-white border-2 "
-												aspectRatio={1}
 												width={32}
 												height={32}
 											/>
