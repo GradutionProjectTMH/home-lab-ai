@@ -20,7 +20,7 @@ const initialState = {
 		MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
 	},
 	server: {
-		API_BASE_URL: process.env.GATSBY_API_BASE_URL,
+		API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
 	},
 	isReady: false,
 };

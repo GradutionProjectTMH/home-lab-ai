@@ -1,22 +1,20 @@
 import * as React from "react";
-import { HeadFC, navigate } from "gatsby";
-import { StaticImage } from "gatsby-plugin-image";
-import Body from "../components/body";
-import Seo from "../components/seo";
 import H1 from "../components/typography/h1";
 import Stack from "../components/layout/stack";
 import Text from "../components/typography/text";
 import Button from "../components/button";
 import H4 from "../components/typography/h4";
-import MicSvg from "../svgs/mic-outlined.svg";
-import LightBulbSvg from "../svgs/light-bulb.svg";
+import { ReactComponent as MicSvg } from "../svgs/mic-outlined.svg";
+import { ReactComponent as LightBulbSvg } from "../svgs/light-bulb.svg";
 import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
 import TextRazor from "../apis/text-razor.api";
 import { useDispatch } from "react-redux";
 import { pushInfo } from "../redux/slices/message.slice";
+import { RouteComponentProps, useNavigate } from "@reach/router";
 
-const IndexPage = () => {
+const HomePage = (props: RouteComponentProps) => {
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -47,7 +45,7 @@ const IndexPage = () => {
 	};
 
 	return (
-		<Body>
+		<>
 			<section className="container mx-auto">
 				<Stack className="pt-48 items-stretch">
 					<Stack column className="basis-1/2 gap-8 justify-center">
@@ -73,14 +71,14 @@ const IndexPage = () => {
 					</Stack>
 
 					<Stack className="basis-1/2 gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
-						<StaticImage
+						<img
 							src="../images/living-room-1.jpg"
 							alt="living-room-1"
 							width={296}
 							className="h-[32rem]"
 							placeholder="blurred"
 						/>
-						<StaticImage src="../images/living-room-2.jpg" alt="living-room-2" width={296} className="h-[32rem]" />
+						<img src="../images/living-room-2.jpg" alt="living-room-2" width={296} className="h-[32rem]" />
 					</Stack>
 				</Stack>
 			</section>
@@ -126,10 +124,8 @@ const IndexPage = () => {
 					</Stack>
 				</div>
 			</section>
-		</Body>
+		</>
 	);
 };
 
-export default IndexPage;
-
-export const Head: HeadFC = () => <Seo title="Home" />;
+export default HomePage;

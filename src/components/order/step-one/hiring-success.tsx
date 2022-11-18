@@ -1,4 +1,3 @@
-import { StaticImage } from "gatsby-plugin-image";
 import React from "react";
 import Stack from "../../layout/stack";
 import H3 from "../../typography/h3";
@@ -6,12 +5,12 @@ import Strong from "../../typography/strong";
 import Text from "../../../components/typography/text";
 import H4 from "../../typography/h4";
 import Button from "../../button";
-import TrashOutlinedSvg from "../../../svgs/trash-outlined.svg";
-import AddTaskOutlinedSvg from "../../../svgs/add-task-outlined.svg";
-import ForwardToInboxOutlinedSvg from "../../../svgs/forward-to-inbox-outlined.svg";
+import { ReactComponent as TrashOutlinedSvg } from "../../../svgs/trash-outlined.svg";
+import { ReactComponent as AddTaskOutlinedSvg } from "../../../svgs/add-task-outlined.svg";
+import { ReactComponent as ForwardToInboxOutlinedSvg } from "../../../svgs/forward-to-inbox-outlined.svg";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
-import { Link } from "gatsby";
 import { STATUS_HIRE } from "../../../enums/hiring.enum";
+import { Link } from "@reach/router";
 
 type HiringSuccessProp = {
 	detailDrawing: DetailDrawing | undefined;
@@ -90,7 +89,7 @@ function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
 
 					<Stack className="mx-6 mt-2 gap-4">
 						<Stack column className="basis-1/3 items-stretch">
-							<StaticImage
+							<img
 								src="../images/fake-2d.png"
 								alt="suggested-design"
 								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
@@ -106,7 +105,7 @@ function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
 						</Stack>
 
 						<Stack column className="basis-1/3 items-stretch">
-							<StaticImage
+							<img
 								src="../images/fake-2d.png"
 								alt="suggested-design"
 								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
@@ -122,7 +121,7 @@ function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
 						</Stack>
 
 						<Stack column className="basis-1/3 items-stretch">
-							<StaticImage
+							<img
 								src="../images/fake-2d.png"
 								alt="suggested-design"
 								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"

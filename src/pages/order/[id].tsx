@@ -1,18 +1,7 @@
 import * as React from "react";
-import type { HeadFC } from "gatsby";
-import Body from "../../components/body";
 import Stack from "../../components/layout/stack";
-import Seo from "../../components/seo";
 import Carousel from "../../components/carousel";
-import { StaticImage } from "gatsby-plugin-image";
-import Strong from "../../components/typography/strong";
-import Text from "../../components/typography/text";
-import H3 from "../../components/typography/h3";
-import H4 from "../../components/typography/h4";
 import Button from "../../components/button";
-import TrashOutlinedSvg from "../../svgs/trash-outlined.svg";
-import AddTaskOutlinedSvg from "../../svgs/add-task-outlined.svg";
-import ForwardToInboxOutlinedSvg from "../../svgs/forward-to-inbox-outlined.svg";
 import H1 from "../../components/typography/h1";
 import { DetailDrawing } from "../../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../../apis/detail-drawing.api";
@@ -43,7 +32,7 @@ const Order = ({ params }: any) => {
 	if (isLoader) return <></>;
 
 	return (
-		<Body>
+		<>
 			<section className="pt-36 container mx-auto">
 				<Carousel title="Step 01: Complete your design (Task 01)" defaultOpened>
 					{detailDrawing?.hire ? (
@@ -69,7 +58,7 @@ const Order = ({ params }: any) => {
 						</Stack>
 
 						<Stack className="basis-1/3 gap-2 items-stretch">
-							<StaticImage
+							<img
 								src="../images/living-room.webp"
 								alt="suggested-design"
 								className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
@@ -78,10 +67,8 @@ const Order = ({ params }: any) => {
 					</Stack>
 				</Carousel>
 			</section>
-		</Body>
+		</>
 	);
 };
 
 export default Order;
-
-export const Head: HeadFC = () => <Seo title="Make Order" />;

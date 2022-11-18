@@ -1,10 +1,5 @@
 import * as React from "react";
-import { HeadFC, Link } from "gatsby";
-import Body from "../../body";
 import Stack from "../../layout/stack";
-import Seo from "../../seo";
-import Carousel from "../../carousel";
-import { StaticImage } from "gatsby-plugin-image";
 import Strong from "../../typography/strong";
 import Text from "../../typography/text";
 import H3 from "../../typography/h3";
@@ -16,6 +11,8 @@ import * as hireApi from "../../../apis/hire.api";
 import { Hire } from "../../../interfaces/hire.interface";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
 import AddToMarketplacePage from "./add-to-marketplace";
+import { STATUS_HIRE } from "../../../enums/hiring.enum";
+import { Link } from "@reach/router";
 
 type HiringProp = {
 	setIsLoader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,6 +49,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		const hiring: Hire = {
 			designerId: selectedDesigner.userId,
 			detailDrawingId: detailDrawing._id,
+			status: STATUS_HIRE.ACCEPT,
 			floorDesigns: [],
 			houseDesigns: [],
 		};
@@ -194,5 +192,3 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 };
 
 export default Hiring;
-
-export const Head: HeadFC = () => <Seo title="Make Order" />;

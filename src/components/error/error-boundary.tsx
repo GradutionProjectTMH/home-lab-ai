@@ -5,7 +5,7 @@ import { pushError } from "../../redux/slices/message.slice";
 
 class ErrorBoundary extends React.Component<HtmlHTMLAttributes<HTMLDivElement> & DispatchProp<AnyAction>> {
 	handlePromiseRejection = ({ reason }: any) => {
-		this.props.dispatch(pushError(reason.message));
+		this.props.dispatch(pushError(reason?.message));
 	};
 
 	componentDidMount() {
@@ -17,7 +17,7 @@ class ErrorBoundary extends React.Component<HtmlHTMLAttributes<HTMLDivElement> &
 	}
 
 	componentDidCatch(error: Error) {
-		this.props.dispatch(pushError(error.message));
+		this.props.dispatch(pushError(error?.message));
 	}
 
 	render() {

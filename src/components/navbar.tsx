@@ -1,9 +1,8 @@
-import { Link } from "gatsby";
-import { StaticImage } from "gatsby-plugin-image";
 import * as React from "react";
+import { Link } from "@reach/router";
 import * as authApi from "../apis/server/auth.api";
-import GoogleSvg from "../svgs/google.svg";
-import MetamaskSvg from "../svgs/metamask.svg";
+import { ReactComponent as GoogleSvg } from "../svgs/google.svg";
+import { ReactComponent as MetamaskSvg } from "../svgs/metamask.svg";
 import { signInWithGoogle } from "../apis/firebase.api";
 import Button from "./button";
 import Stack from "./layout/stack";
@@ -17,31 +16,9 @@ import Ether from "../apis/ether.api";
 import { pushSuccess } from "../redux/slices/message.slice";
 import { setWalletAddress } from "../redux/slices/ether.slice";
 import { formatAddress } from "../utils/text.util";
-
-export const routes = [
-	{
-		name: "Home",
-		path: "/",
-	},
-	{
-		name: "Build",
-		path: "/build",
-	},
-	{
-		name: "Order",
-		path: "/order",
-	},
-	{
-		name: "Marketplace",
-		path: "/marketplace",
-	},
-];
+import { routes } from "../pages/navigator";
 
 type NavbarProps = {} & React.HtmlHTMLAttributes<HTMLDivElement>;
-
-<Link to="/">
-	<H5 className="text-gray-700">Home</H5>
-</Link>;
 
 const Navbar = ({ ...props }: NavbarProps) => {
 	const dispatch = useDispatch();
@@ -49,7 +26,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	const ether = useSelector((state: RootState) => state.ether);
 	const [wallet, setWallet] = React.useState<string>();
 
-	const handleLoginGoogle = async () => {
+	const handleLoginGoogle = async (): Promise<void> => {
 		try {
 			const token = await signInWithGoogle();
 			if (!token) throw new Error(LOGIN_NOT_SUCCESSFULLY);
@@ -57,7 +34,8 @@ const Navbar = ({ ...props }: NavbarProps) => {
 			const user = await authApi.loginByGoogle(token);
 			if (user.token) {
 				window?.localStorage.setItem("token", user.token);
-				return dispatch(updateUser(user));
+				dispatch(updateUser(user));
+				return;
 			}
 
 			throw new Error(LOGIN_NOT_SUCCESSFULLY);
@@ -96,20 +74,23 @@ const Navbar = ({ ...props }: NavbarProps) => {
 			<div className="container mx-auto">
 				<Stack className="pt-12 pb-6 items-center">
 					<Link to="/" className="basis-1/4">
-						<StaticImage src="../images/logo-full-horizontal.png" alt="Logo" height={64} />
+						<img src="../images/logo-full-horizontal.png" alt="Logo" height={64} />
 					</Link>
 					<Stack className="basis-1/2 justify-center gap-14">
-						{routes.map((route) => (
-							<Link
-								to={route.path}
-								key={route.name}
-								className="text-gray-500 hover:text-gray-600"
-								activeClassName="text-gray-600"
-								partiallyActive={route.path == "/" ? false : true}
-							>
-								<H5>{route.name}</H5>
-							</Link>
-						))}
+						{routes
+							.filter((route) => route.isNav)
+							.map((route) => (
+								<Link
+									to={route.path}
+									key={route.name}
+									className="text-gray-500 hover:text-gray-600"
+									getProps={({ isPartiallyCurrent }) => ({
+										className: isPartiallyCurrent ? "text-gray-600" : "",
+									})}
+								>
+									<H5>{route.name}</H5>
+								</Link>
+							))}
 					</Stack>
 
 					<Stack className="basis-1/4 justify-end gap-2">

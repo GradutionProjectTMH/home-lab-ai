@@ -6,7 +6,7 @@ import { store } from "../redux/stores/store.redux";
 const env = store.getState().environment.server;
 
 const axiosClient = axios.create({
-	baseURL: process.env.GATSBY_API_BASE_URL,
+	baseURL: process.env.REACT_APP_API_BASE_URL,
 	headers: {
 		"Content-Type": "application/json",
 		// Authorization: token ? `Bearer ${token}` : "",

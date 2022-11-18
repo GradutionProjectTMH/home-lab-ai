@@ -1,5 +1,5 @@
 import * as React from "react";
-import Body from "../../components/body";
+import Body from "../body";
 import Button from "../../components/button";
 import Input from "../../components/input";
 import Stack from "../../components/layout/stack";
@@ -44,41 +44,39 @@ const VerifyMaterial = ({ params }: any) => {
 
 	if (isLoader) return <></>;
 	return (
-		<Body>
-			<section className="pt-36 container mx-auto">
-				<Stack className="items-stretch p-6 gap-10">
-					<Stack className="basis-1/2 h-[400px]">{material?.images && <Slider images={material?.images} />}</Stack>
-					<Stack column={true} className="basis-1/2  justify-between">
-						<Stack column={true} className="gap-3">
-							<div>
-								<H4 className="text-2xl text-gray-700">{material?.name}</H4>
-								<Stack className="gap-4 items-center">
-									<H5 className="text-gray-500 !text-base !font-normal">Origin: ...</H5> |{" "}
-									<H5 className="text-gray-500 !text-base !font-normal">Reviews:</H5>
-									<Stack className="gap-1">
-										<Star />
-										<Star />
-										<Star />
-										<Star />
-										<Star />
-									</Stack>
+		<section className="pt-36 container mx-auto">
+			<Stack className="items-stretch p-6 gap-10">
+				<Stack className="basis-1/2 h-[400px]">{material?.images && <Slider images={material?.images} />}</Stack>
+				<Stack column={true} className="basis-1/2  justify-between">
+					<Stack column={true} className="gap-3">
+						<div>
+							<H4 className="text-2xl text-gray-700">{material?.name}</H4>
+							<Stack className="gap-4 items-center">
+								<H5 className="text-gray-500 !text-base !font-normal">Origin: ...</H5> |{" "}
+								<H5 className="text-gray-500 !text-base !font-normal">Reviews:</H5>
+								<Stack className="gap-1">
+									<Star />
+									<Star />
+									<Star />
+									<Star />
+									<Star />
 								</Stack>
-							</div>
-							<H3 className="!text-5xl text-blue-300">
-								{material?.price.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")} $
-							</H3>
-							<Stack className="gap-4 ">
-								<H5 className="!text-base !font-normal text-gray-500">Inspection status: </H5>
-								<H5 className="!text-base !font-black text-red-500">Untested</H5>
 							</Stack>
-
-							<H5 className="!text-base !font-normal text-gray-500">{material?.description}</H5>
+						</div>
+						<H3 className="!text-5xl text-blue-300">
+							{material?.price.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")} $
+						</H3>
+						<Stack className="gap-4 ">
+							<H5 className="!text-base !font-normal text-gray-500">Inspection status: </H5>
+							<H5 className="!text-base !font-black text-red-500">Untested</H5>
 						</Stack>
-						<Button>Verify now</Button>
+
+						<H5 className="!text-base !font-normal text-gray-500">{material?.description}</H5>
 					</Stack>
+					<Button>Verify now</Button>
 				</Stack>
-			</section>
-		</Body>
+			</Stack>
+		</section>
 	);
 };
 

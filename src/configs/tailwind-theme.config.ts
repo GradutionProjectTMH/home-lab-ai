@@ -1,6 +1,3 @@
-import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "../../tailwind.config.js";
+import colors from "../presets/colors.preset";
 
-const fullConfig = resolveConfig(tailwindConfig);
-
-export const colors = fullConfig.theme?.colors;
+export { colors };
