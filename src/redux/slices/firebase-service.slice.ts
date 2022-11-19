@@ -13,11 +13,11 @@ type FirebaseConfig = {
 };
 
 type FirebaseService = {
-	app: FirebaseApp;
-	auth: Auth;
-} | null;
+	app?: FirebaseApp;
+	auth?: Auth;
+};
 
-const firebaseSlice = createSlice<FirebaseService, SliceCaseReducers<FirebaseService>>({
+const firebaseSlice = createSlice<FirebaseService | null, SliceCaseReducers<FirebaseService | null>>({
 	name: "firebaseApi",
 	initialState: null,
 	reducers: {
@@ -25,7 +25,7 @@ const firebaseSlice = createSlice<FirebaseService, SliceCaseReducers<FirebaseSer
 			const app = initializeApp(action.payload);
 			const auth = getAuth(app);
 
-			return { app, auth };
+			return { isReady: true, app, auth };
 		},
 	},
 });

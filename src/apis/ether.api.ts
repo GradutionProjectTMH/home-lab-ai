@@ -5,7 +5,7 @@ import { store } from "../redux/stores/store.redux";
 const isConnected = () => (window as any).ethereum.isConnected();
 
 async function getBlock(): Promise<Block> {
-	const { provider } = store.getState().ether;
+	const { provider } = store.getState().ether!;
 	const latestBlock = await provider.getBlock("latest");
 	return latestBlock;
 }

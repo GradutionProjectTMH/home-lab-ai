@@ -13,7 +13,7 @@ const ipfsSlice = createSlice<IPFSHTTPClient | null, SliceCaseReducers<IPFSHTTPC
 	initialState: null,
 	reducers: {
 		initiateIpfs: (state, { payload }: PayloadAction<IpfsState>) => {
-			const auth = "Basic " + Buffer.from(payload.projectId + ":" + payload.apiKeySecret).toString("base64");
+			const auth = "Basic " + btoa(payload.projectId + ":" + payload.apiKeySecret);
 			return create({
 				url: payload.ipfsApiEndpoint,
 				headers: {

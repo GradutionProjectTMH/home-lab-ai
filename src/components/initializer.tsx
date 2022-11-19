@@ -18,6 +18,13 @@ import { User } from "../types/common";
 const Initializer = () => {
 	const dispatch = useDispatch();
 	const environment = useSelector((state: RootState) => state.environment);
+	const ether = useSelector((state: RootState) => state.ether);
+	const firebaseService = useSelector((state: RootState) => state.firebaseService);
+	const g2pService = useSelector((state: RootState) => state.g2pService);
+	const ipfsService = useSelector((state: RootState) => state.ipfsService);
+	const message = useSelector((state: RootState) => state.message);
+	const textRazorService = useSelector((state: RootState) => state.textRazorService);
+	const user = useSelector((state: RootState) => state.user);
 
 	// ---------------Setup Environment---------------
 

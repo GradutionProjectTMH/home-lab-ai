@@ -53,21 +53,21 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	};
 
 	const handleConnect = async () => {
-		await ether.provider.send("eth_requestAccounts", []);
-		if (!Ether.isConnected()) throw new Error("Can't connect to Metamask");
+		await ether!.provider.send("eth_requestAccounts", []);
+		if (!Ether!.isConnected()) throw new Error("Can't connect to Metamask");
 
-		const walletAddress = await ether.provider.getSigner().getAddress();
+		const walletAddress = await ether!.provider.getSigner().getAddress();
 		dispatch(setWalletAddress(walletAddress));
 		dispatch(pushSuccess("Connected to Metamask"));
 	};
 
 	React.useEffect(() => {
 		(async () => {
-			if (ether.walletAddress) {
-				setWallet(formatAddress(ether.walletAddress));
+			if (ether?.walletAddress) {
+				setWallet(formatAddress(ether!.walletAddress));
 			}
 		})();
-	}, [ether.initiated, ether.walletAddress]);
+	}, [ether, ether?.walletAddress]);
 
 	return (
 		<nav className="bg-gray-50" {...props}>

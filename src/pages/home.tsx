@@ -13,11 +13,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { pushInfo } from "../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
 import IPFS from "../apis/ipfs.api";
+import { RootState } from "../redux/stores/store.redux";
 
 const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+	const ipfsService = useSelector((state: RootState) => state.ipfsService);
 
 	const handleExtractorClicked = async () => {
 		dispatch(pushInfo("We are processing your dream"));
@@ -41,7 +43,15 @@ const HomePage = (props: RouteComponentProps) => {
 		});
 	};
 
-	React.useEffect(() => {});
+	React.useEffect(() => {
+		if (ipfsService) {
+			IPFS.upload(
+				JSON.stringify({
+					text: "hello",
+				}),
+			).then(console.log);
+		}
+	}, [ipfsService]);
 
 	const handleTryItButtonClicked = () => {
 		textAreaRef.current?.focus();
