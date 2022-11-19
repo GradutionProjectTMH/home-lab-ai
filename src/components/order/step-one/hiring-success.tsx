@@ -23,7 +23,7 @@ function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
 				<Stack className="basis-1/2 gap-8 items-stretch">
 					<div className="">
 						<img
-							src={detailDrawing?.hire?.designer?.user?.avatar}
+							src={detailDrawing?.hire?.designer?.avatar}
 							alt="suggested-design"
 							className=" rounded-full border-white border-2 w-[200px] h-[200px]"
 						/>
@@ -31,16 +31,16 @@ function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
 					<Stack column className="gap-4">
 						<Stack className="items-end gap-2">
 							<H3 className="text-gray-700">
-								{detailDrawing?.hire.designer?.user?.firstName} {detailDrawing?.hire.designer?.user?.lastName}
+								{detailDrawing?.hire.designer?.firstName} {detailDrawing?.hire.designer?.lastName}
 							</H3>
 							<Strong className="text-gray-500">
 								{/* {detailDrawing?.hire.designer?.user.address.city}/{detailDrawing?.hire.designer?.user.address.city} */}
 							</Strong>
 						</Stack>
-						<Text className="text-gray-500">{detailDrawing?.hire.designer?.experience}</Text>
+						<Text className="text-gray-500">{detailDrawing?.hire.designer?.profile?.experience}</Text>
 						<Strong className="text-blue-700">Public design</Strong>
 						<Stack className="gap-2">
-							{detailDrawing?.hire?.designer?.projects.map((project, index) => {
+							{detailDrawing?.hire?.designer?.profile?.projects?.map((project, index) => {
 								return (
 									<Link key={index} to={project.url} target="_blank">
 										<img src={project.tool.logo} alt={project.tool.name} className="w-8 h-8 rounded" />

@@ -20,6 +20,18 @@ type User = {
 		street: string;
 		detail: string;
 	};
+	profile?: {
+		experience?: string;
+		projects?: [
+			{
+				tool: {
+					name: string;
+					logo: string;
+				};
+				url: string;
+			},
+		];
+	};
 };
 
 type UserLogin = User & {

@@ -7,15 +7,20 @@ import { DetailDrawing } from "../../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../../apis/detail-drawing.api";
 import HiringSuccess from "../../components/order/step-one/hiring-success";
 import Hiring from "../../components/order/step-one/hiring";
+import { RouteComponentProps } from "@reach/router";
 
-const Order = ({ params }: any) => {
+type OrderProps = {
+	id?: string;
+} & RouteComponentProps;
+
+const Order = ({ id }: OrderProps) => {
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
 
 	const fetchDetailDrawing = async () => {
-		if (!params.id) return;
+		if (!id) return;
 		try {
-			const result = await detailDrawingApi.getById(params.id);
+			const result = await detailDrawingApi.getById(id);
 
 			setDetailDrawing(result);
 		} catch (error: any) {

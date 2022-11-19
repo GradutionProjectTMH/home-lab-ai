@@ -1,5 +1,5 @@
 import { STATUS_HIRE } from "../enums/hiring.enum";
-import { Designer } from "./designer.interface";
+import { User } from "../types/common";
 
 type ItemDesign = {
 	image: string;
@@ -17,7 +17,7 @@ export interface Hire {
 	_id?: string;
 	userId?: string;
 	designerId?: string;
-	designer?: Designer;
+	designer?: User;
 	detailDrawing?: string;
 	detailDrawingId?: string;
 	floorDesigns?: FloorDesign[];
