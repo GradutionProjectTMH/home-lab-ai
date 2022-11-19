@@ -19,6 +19,12 @@ const initialState = {
 		APP_ID: process.env.FIREBASE_APP_ID,
 		MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
 	},
+	infura: {
+		PROJECT_ID: process.env.INFURA_PROJECT_ID,
+		API_KEY_SECRET: process.env.INFURA_API_KEY_SECRET,
+		IPFS_API_ENDPOINT: process.env.INFURA_IPFS_API_ENDPOINT,
+		DEDICATED_GATEWAY_SUBDOMAIN: process.env.INFURA_DEDICATED_GATEWAY_SUBDOMAIN,
+	},
 	server: {
 		API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
 	},
@@ -50,6 +56,14 @@ const environment = createSlice({
 				MESSAGING_SENDER_ID: payload.FIREBASE_MESSAGING_SENDER_ID || state.firebase.MESSAGING_SENDER_ID,
 				APP_ID: payload.FIREBASE_APP_ID || state.firebase.APP_ID,
 				MEASUREMENT_ID: payload.FIREBASE_MEASUREMENT_ID || state.firebase.MEASUREMENT_ID,
+			};
+
+			state.infura = {
+				PROJECT_ID: payload.INFURA_PROJECT_ID || state.infura.PROJECT_ID,
+				API_KEY_SECRET: payload.INFURA_API_KEY_SECRET || state.infura.API_KEY_SECRET,
+				IPFS_API_ENDPOINT: payload.INFURA_IPFS_API_ENDPOINT || state.infura.IPFS_API_ENDPOINT,
+				DEDICATED_GATEWAY_SUBDOMAIN:
+					payload.INFURA_DEDICATED_GATEWAY_SUBDOMAIN || state.infura.DEDICATED_GATEWAY_SUBDOMAIN,
 			};
 
 			state.isReady = true;

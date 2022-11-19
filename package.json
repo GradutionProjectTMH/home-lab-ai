@@ -19,6 +19,7 @@
     "ethers": "^5.7.2",
     "firebase": "^9.13.0",
     "install": "^0.13.0",
+    "ipfs-http-client": "^59.0.0",
     "konva": "^8.3.13",
     "npm": "^9.1.2",
     "postcss": "^8.4.16",

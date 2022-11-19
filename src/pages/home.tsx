@@ -9,9 +9,10 @@ import { ReactComponent as LightBulbSvg } from "../svgs/light-bulb.svg";
 import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
 import TextRazor from "../apis/text-razor.api";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { pushInfo } from "../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
+import IPFS from "../apis/ipfs.api";
 
 const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -39,6 +40,8 @@ const HomePage = (props: RouteComponentProps) => {
 			},
 		});
 	};
+
+	React.useEffect(() => {});
 
 	const handleTryItButtonClicked = () => {
 		textAreaRef.current?.focus();

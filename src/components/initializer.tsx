@@ -8,6 +8,7 @@ import { setEnvironment } from "../redux/slices/environment.slice";
 import { setWalletAddress, initiateEther } from "../redux/slices/ether.slice";
 import { initiateFirebase } from "../redux/slices/firebase-service.slice";
 import { initiateG2p } from "../redux/slices/g2p-service.slice";
+import { initiateIpfs } from "../redux/slices/ipfs.slice";
 import { pushInfo } from "../redux/slices/message.slice";
 import { initiateTextRazor } from "../redux/slices/textrazor-service.slice";
 import { updateUser } from "../redux/slices/user.slice";
@@ -69,6 +70,16 @@ const Initializer = () => {
 			initiateTextRazor({
 				endPoint: textRazorConfig.API_ENDPOINT,
 				apiKey: textRazorConfig.API_KEY,
+			}),
+		);
+
+		const ipfsConfig = environment.infura;
+		dispatch(
+			initiateIpfs({
+				projectId: ipfsConfig.PROJECT_ID,
+				apiKeySecret: ipfsConfig.API_KEY_SECRET,
+				ipfsApiEndpoint: ipfsConfig.IPFS_API_ENDPOINT,
+				dedicatedGatewayDomain: ipfsConfig.DEDICATED_GATEWAY_SUBDOMAIN,
 			}),
 		);
 	};
