@@ -33,7 +33,7 @@ const Order = ({ params }: any) => {
 
 	return (
 		<>
-			<section className="pt-36 container mx-auto">
+			<section className="container mx-auto">
 				<Carousel title="Step 01: Complete your design (Task 01)" defaultOpened>
 					{detailDrawing?.hire ? (
 						<HiringSuccess detailDrawing={detailDrawing} />

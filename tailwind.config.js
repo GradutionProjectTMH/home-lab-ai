@@ -5,7 +5,7 @@ const colors = require("./src/presets/colors.preset");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: ["./src/pages/**/*.{js,jsx,ts,tsx}", "./src/components/**/*.{js,jsx,ts,tsx}"],
-	plugins: [],
+	plugins: [require("@tailwindcss/forms")],
 	theme: {
 		colors,
 		fontFamily: {

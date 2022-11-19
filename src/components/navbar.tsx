@@ -74,7 +74,9 @@ const Navbar = ({ ...props }: NavbarProps) => {
 			<div className="container mx-auto">
 				<Stack className="pt-12 pb-6 items-center">
 					<Link to="/" className="basis-1/4">
-						<img src="../images/logo-full-horizontal.png" alt="Logo" height={64} />
+						<Stack className="w-72">
+							<img src="../images/logo-full-horizontal.png" alt="Logo" />
+						</Stack>
 					</Link>
 					<Stack className="basis-1/2 justify-center gap-14">
 						{routes

@@ -15,7 +15,7 @@ const RequestVerify = () => {
 	};
 
 	return (
-		<section className="pt-36 container mx-auto">
+		<section className="container mx-auto">
 			<Stack className="justify-center items-center h-full">
 				<form onSubmit={onSubmit}>
 					<div className="mb-4">

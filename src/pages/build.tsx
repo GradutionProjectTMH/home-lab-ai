@@ -28,6 +28,8 @@ import Ether from "../apis/ether.api";
 import { parseEther } from "ethers/lib/utils";
 import Modal from "../components/modal";
 import { RouteComponentProps, useNavigate } from "@reach/router";
+import Input from "../components/input";
+import Select from "../components/select";
 
 const BuildPage = ({ location }: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -306,7 +308,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	return (
 		<>
 			<section className="container mx-auto">
-				<Stack className="pt-36 items-stretch">
+				<Stack className="items-stretch">
 					<Stack column className="grow gap-8 items-stretch">
 						<Stack column className="gap-1">
 							<H4 className="text-gray-500">Your Idea</H4>
@@ -534,38 +536,98 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 			<section className="container mx-auto mt-4">
 				<Carousel title="Advanced Section">
-					<Stack className="mt-4 px-6 flex-wrap items-start gap-y-4">
-						<Stack className="basis-1/2 items-end gap-12">
-							<Stack column className="items-end gap-4">
+					<Stack className="mt-4 px-6 flex-wrap items-start justify-around gap-y-4">
+						<Stack className="items-end gap-12">
+							<Stack column className="gap-4">
 								<H4 className="text-gray-700">House boundary</H4>
-								<Text className="text-gray-500">Width:</Text>
-								<Text className="text-gray-500">Length:</Text>
-								<Text className="text-gray-500">Height:</Text>
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<Text className="text-blue-500">
-									50m<sup>2</sup>
-								</Text>
-								<Text className="text-blue-500">
-									50m<sup>2</sup>
-								</Text>
-								<Text className="text-blue-500">10m</Text>
+								<Stack column className="gap-4">
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-16">Width:</Text>
+										<Input
+											placeholder="50"
+											className="!text-blue-500 w-32"
+											type="number"
+											after={
+												<Text className="text-blue-500">
+													m<sup>2</sup>
+												</Text>
+											}
+										/>
+									</Stack>
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-16">Length:</Text>
+										<Input
+											placeholder="50"
+											className="!text-blue-500 w-32"
+											type="number"
+											after={
+												<Text className="text-blue-500">
+													m<sup>2</sup>
+												</Text>
+											}
+										/>
+									</Stack>
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-16">Height:</Text>
+										<Input
+											placeholder="50"
+											className="!text-blue-500 w-32"
+											type="number"
+											after={
+												<Text className="text-blue-500">
+													m<sup>2</sup>
+												</Text>
+											}
+										/>
+									</Stack>
+								</Stack>
 							</Stack>
 						</Stack>
-						<Stack className="basis-1/2 items-end gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">Budget</H4>
-								<Text className="text-gray-500">Width:</Text>
-								<Text className="text-gray-500">Height:</Text>
+						<Stack className="items-end gap-12">
+							<Stack column className="gap-4">
+								<H4 className="text-gray-700">Additional information</H4>
+								<Stack column className="gap-4">
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-28">Budget:</Text>
+										<Input
+											placeholder="50"
+											className="!text-blue-500 w-full"
+											type="number"
+											after={<Text className="text-blue-500">Million VND</Text>}
+										/>
+									</Stack>
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-28">Members:</Text>
+										<Input placeholder="Mother, Father, Children" className="!text-blue-500 w-full" />
+									</Stack>
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-28">Theme:</Text>
+										<Input placeholder="White, Yellow" className="!text-blue-500 w-full" />
+									</Stack>
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-28">Location:</Text>
+										<Input placeholder="Danang" className="!text-blue-500 w-full" />
+									</Stack>
+								</Stack>
 							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-blue-500">2.000 Million VND</H4>
-								<Text className="text-blue-500">
-									50m<sup>2</sup>
-								</Text>
-								<Text className="text-blue-500">
-									50m<sup>2</sup>
-								</Text>
+						</Stack>
+						<Stack className="items-end gap-12">
+							<Stack column className="gap-4">
+								<H4 className="text-gray-700">Quick questions</H4>
+								<Stack column className="gap-4">
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-40">Located at alley:</Text>
+										<input type="checkbox" checked={true} />
+									</Stack>
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-40">Business in house:</Text>
+										<input type="checkbox" checked={true} />
+									</Stack>
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-40">In the corner:</Text>
+										<input type="checkbox" checked={true} />
+									</Stack>
+								</Stack>
 							</Stack>
 						</Stack>
 					</Stack>
@@ -594,49 +656,47 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 					<div className="h-[1px] my-4 bg-gray-200"></div>
 
-					<Stack className="mt-4 px-6 gap-4">
-						<Stack className="basis-1/2 gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">Entities list:</H4>
-								{entities &&
-									filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
+					{entities && (
+						<Stack className="mt-4 px-6 gap-4">
+							<Stack className="basis-1/2 gap-12">
+								<Stack column className="items-end gap-4">
+									<H4 className="text-gray-700">Entities list:</H4>
+									{filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
 										<Text key={entity.entityId} className="text-gray-700">
 											{entity.entityEnglishId}
 										</Text>
 									))}
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-gray-500">Confidence score</H4>
-								{entities &&
-									filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
+								</Stack>
+								<Stack column className="items-start gap-4">
+									<H4 className="text-gray-500">Confidence score</H4>
+									{filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
 										<Text key={entity.entityId} className="text-gray-500">
 											{entity.confidenceScore}
 										</Text>
 									))}
+								</Stack>
 							</Stack>
-						</Stack>
 
-						<Stack className="basis-1/2 gap-12">
-							<Stack column className="items-end gap-4">
-								<H4 className="text-gray-700">Entities list:</H4>
-								{entities &&
-									filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
+							<Stack className="basis-1/2 gap-12">
+								<Stack column className="items-end gap-4">
+									<H4 className="text-gray-700">Entities list:</H4>
+									{filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
 										<Text key={entity.entityId} className="text-gray-700">
 											{entity.entityEnglishId}
 										</Text>
 									))}
-							</Stack>
-							<Stack column className="items-start gap-4">
-								<H4 className="text-gray-500">Confidence score</H4>
-								{entities &&
-									filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
+								</Stack>
+								<Stack column className="items-start gap-4">
+									<H4 className="text-gray-500">Confidence score</H4>
+									{filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
 										<Text key={entity.entityId} className="text-gray-500">
 											{entity.confidenceScore}
 										</Text>
 									))}
+								</Stack>
 							</Stack>
 						</Stack>
-					</Stack>
+					)}
 				</Carousel>
 			</section>
 

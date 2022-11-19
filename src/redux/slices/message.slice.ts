@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, SliceCaseReducers } from "@reduxjs/toolkit";
 
-export type MessageType = "ERROR" | "WARNING" | "INFO" | "SUCCESS";
+export type MessageType = "ERROR" | "WARNING" | "INFO" | "SUCCESS" | "LOADING";
 export type Message = {
 	type: MessageType;
 	value: string;
@@ -39,6 +39,13 @@ const MessageSlice = createSlice<MessageState, SliceCaseReducers<MessageState>>(
 			});
 		},
 
+		pushLoading: (state, action: PayloadAction<string>) => {
+			state.push({
+				type: "LOADING",
+				value: action.payload,
+			});
+		},
+
 		popMessage: (state, action: PayloadAction<boolean>) => {
 			if (action.payload) return [];
 
@@ -48,6 +55,6 @@ const MessageSlice = createSlice<MessageState, SliceCaseReducers<MessageState>>(
 	},
 });
 
-export const { pushError, pushWarning, pushInfo, pushSuccess, popMessage } = MessageSlice.actions;
+export const { pushError, pushWarning, pushInfo, pushSuccess, popMessage, pushLoading } = MessageSlice.actions;
 
 export default MessageSlice.reducer;
