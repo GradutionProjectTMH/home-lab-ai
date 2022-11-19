@@ -128,7 +128,7 @@ const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplac
 						<Stack className="pl-6 gap-12 ">
 							<H4 className="text-gray-700">Splitting Rooms:</H4>
 						</Stack>
-						{detailDrawing?.rooms.map((room, i) => {
+						{detailDrawing?.rooms?.map((room, i) => {
 							return (
 								<Stack className="ml-32 items-stretch" key={i}>
 									<Stack className="gap-2 items-center basis-1/3">

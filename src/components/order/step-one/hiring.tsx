@@ -5,14 +5,15 @@ import Text from "../../typography/text";
 import H3 from "../../typography/h3";
 import Button from "../../button";
 import H5 from "../../typography/h5";
-import { Designer } from "../../../interfaces/designer.interface";
-import * as designerApi from "../../../apis/designer.api";
+import * as userApi from "../../../apis/user.api";
 import * as hireApi from "../../../apis/hire.api";
 import { Hire } from "../../../interfaces/hire.interface";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
 import AddToMarketplacePage from "./add-to-marketplace";
 import { STATUS_HIRE } from "../../../enums/hiring.enum";
 import { Link } from "@reach/router";
+import { ROLE } from "../../../enums/user.enum";
+import { User } from "../../../types/common";
 
 type HiringProp = {
 	setIsLoader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,13 +21,13 @@ type HiringProp = {
 };
 
 const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
-	const [designers, setDesigner] = React.useState<Designer[]>();
-	const [selectedDesigner, setSelectedDesigner] = React.useState<Designer>();
+	const [designers, setDesigner] = React.useState<User[]>();
+	const [selectedDesigner, setSelectedDesigner] = React.useState<User>();
 	const [currentPage, setCurrentPage] = React.useState<"Order" | "Marketplace">("Order");
 
 	const fetchAllDesigner = async () => {
 		try {
-			const result = await designerApi.getAll();
+			const result = await userApi.getAllUser({ typeUser: ROLE.DESIGNER });
 			console.log(result);
 			setDesigner(result.data);
 			setSelectedDesigner(result.data[0]);
@@ -39,7 +40,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		fetchAllDesigner();
 	}, []);
 
-	const handleClickDesigner = (designer: Designer) => {
+	const handleClickDesigner = (designer: User) => {
 		setSelectedDesigner(designer);
 	};
 
@@ -47,7 +48,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		if (!selectedDesigner || !detailDrawing) return;
 
 		const hiring: Hire = {
-			designerId: selectedDesigner.userId,
+			designerId: selectedDesigner._id,
 			detailDrawingId: detailDrawing._id,
 			status: STATUS_HIRE.ACCEPT,
 			floorDesigns: [],
@@ -89,7 +90,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 					<Stack className="gap-8">
 						<div>
 							<img
-								src={selectedDesigner?.user?.avatar}
+								src={selectedDesigner?.avatar}
 								alt="suggested-design"
 								className=" rounded-full border-white border-2 w-[200px] h-[200px]"
 							/>
@@ -97,16 +98,16 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 						<Stack column className=" gap-4">
 							<Stack className="items-end gap-2">
 								<H3 className="text-gray-700">
-									{selectedDesigner?.user?.firstName} {selectedDesigner?.user?.lastName}
+									{selectedDesigner?.firstName} {selectedDesigner?.lastName}
 								</H3>
 								<Strong className="text-gray-500">
 									{/* {selectedDesigner?.user.address.city}/{selectedDesigner?.user.address.country} */}
 								</Strong>
 							</Stack>
-							<Text className="text-gray-500">{selectedDesigner?.experience}</Text>
+							<Text className="text-gray-500">{selectedDesigner?.profile?.experience}</Text>
 							<Strong className="text-blue-700">Public design</Strong>
 							<Stack className="gap-2">
-								{selectedDesigner?.projects.map((project, index) => {
+								{selectedDesigner?.profile?.projects?.map((project, index) => {
 									return (
 										<Link key={index} to={project.url} target="_blank">
 											<img src={project.tool.logo} alt={project.tool.name} className="w-8 h-8 rounded" />
@@ -146,15 +147,15 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 									onClick={() => handleClickDesigner(designer)}
 								>
 									<img
-										src={designer.user?.avatar}
+										src={designer.avatar}
 										alt="suggested-design"
 										className=" rounded-full border-white border-2 w-[100px] h-[100px]  "
 									/>
 									<Stack column={true} className="">
 										<H3 className="text-gray-700">
-											{designer.user?.firstName} {designer.user?.lastName}
+											{designer.firstName} {designer.lastName}
 										</H3>
-										<Text className="text-gray-500">{designer.experience}</Text>
+										<Text className="text-gray-500">{designer.profile?.experience}</Text>
 										<Text className="text-gray-500">
 											{/* {designer.user.address.city}/{designer.user.address.country} */}
 											USA

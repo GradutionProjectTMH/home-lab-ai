@@ -35,9 +35,9 @@ export interface DetailDrawing {
 			amount: number;
 		},
 	];
-	rooms: Room[];
+	rooms?: Room[];
 	hire: Hire;
 	bountyRewards: BountyReward[];
-	additionalInformation: AdditionalInformation;
+	additionalInformation: Partial<AdditionalInformation>;
 	status: DETAIL_DRAWING;
 }

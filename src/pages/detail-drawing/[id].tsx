@@ -15,6 +15,7 @@ import { splittingRoomColor } from "../../utils/room-color";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
 import { STATUS_HIRE } from "../../enums/hiring.enum";
+import { RouteComponentProps } from "@reach/router";
 
 const rewards = [
 	{
@@ -43,7 +44,11 @@ const rewards = [
 	},
 ];
 
-const DetailDrawingPage = ({ params }: any) => {
+type DetailDrawingProps = {
+	id?: string;
+} & RouteComponentProps;
+
+const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
 	const iFrameRef = React.useRef();
@@ -56,9 +61,9 @@ const DetailDrawingPage = ({ params }: any) => {
 	};
 
 	const fetchDetailDrawing = async () => {
-		if (!params.id) return;
+		if (!id) return;
 		try {
-			const result = await detailDrawingApi.getById("63692c2d58e7aecc25de2e02");
+			const result = await detailDrawingApi.getById(id);
 
 			setDetailDrawing(result);
 		} catch (error: any) {
@@ -127,17 +132,21 @@ const DetailDrawingPage = ({ params }: any) => {
 							</Stack>
 
 							<Stack column={true} className="basis-1/2 gap-8 items-stretch ">
-								<Stack className="basis-1/2 gap-2 items-stretch">
-									<img
-										src="../images/suggested-designs/33.png"
-										alt="suggested-design"
-										className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
-									/>
-									<img
-										src="../images/suggested-designs/33.png"
-										alt="suggested-design"
-										className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
-									/>
+								<Stack>
+									<Stack className="basis-1/2 gap-2 items-stretch">
+										<img
+											src="../images/suggested-designs/33.png"
+											alt="suggested-design"
+											className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
+										/>
+									</Stack>
+									<Stack className="basis-1/2 gap-2 items-stretch">
+										<img
+											src="../images/suggested-designs/33.png"
+											alt="suggested-design"
+											className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
+										/>
+									</Stack>
 								</Stack>
 								<Button className="!px-4 !py-1 justify-center items-center" type="outline" onClick={handleClickAccept}>
 									{detailDrawing?.hire.status === STATUS_HIRE.ACCEPT
@@ -156,7 +165,7 @@ const DetailDrawingPage = ({ params }: any) => {
 								<Stack className="pl-6 gap-12 ">
 									<H4 className="text-gray-700">Spliting Rooms:</H4>
 								</Stack>
-								{detailDrawing?.rooms.map((room, i) => {
+								{detailDrawing?.rooms?.map((room, i) => {
 									return (
 										<Stack className="ml-32 items-stretch" key={i}>
 											<Stack className="gap-2 items-center basis-1/3">

@@ -30,6 +30,8 @@ import Modal from "../components/modal";
 import { RouteComponentProps, useNavigate } from "@reach/router";
 import Input from "../components/input";
 import Select from "../components/select";
+import { DetailDrawing } from "../interfaces/detail-drawing.interface";
+import * as detailDrawingApi from "../apis/detail-drawing.api";
 
 const BuildPage = ({ location }: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -286,6 +288,25 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const handleMakeOrder = async () => {
 		if (!user) throw new Error(UN_AUTHORIZED);
 
+		const detailDrawing: Partial<DetailDrawing> = {
+			houseBoundary: 50,
+			width: 50,
+			height: 50,
+			boundaryImg: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1667836921029-641790842.png",
+			crossSectionImg: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1667836921029-340586306.png",
+			additionalInformation: {
+				budget: "2.000 Million VND",
+				location: "adadadadad",
+			},
+		};
+
+		try {
+			const result = await detailDrawingApi.create(detailDrawing);
+			navigate(`/order/${result._id}`);
+		} catch (error) {
+			throw error;
+		}
+
 		// const timestamp = await Ether.getTimestamp();
 		// const value = parseEther("10");
 		// const transaction = await ether.contract.HomeLab.connect(ether.provider.getSigner()).startProject(
@@ -299,8 +320,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		// );
 		// const receipt = await transaction.wait();
 		// dispatch(pushSuccess(receipt.events![0].event));
-
-		navigate("/order/63692c2d58e7aecc25de2e02");
 	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
