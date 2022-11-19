@@ -11,7 +11,11 @@ export type EnvironmentKey =
 	| "FIREBASE_STORAGE_BUCKET"
 	| "FIREBASE_MESSAGING_SENDER_ID"
 	| "FIREBASE_APP_ID"
-	| "FIREBASE_MEASUREMENT_ID";
+	| "FIREBASE_MEASUREMENT_ID"
+	| "INFURA_PROJECT_ID"
+	| "INFURA_API_KEY_SECRET"
+	| "INFURA_IPFS_API_ENDPOINT"
+	| "INFURA_DEDICATED_GATEWAY_SUBDOMAIN";
 
 export const getEnvironment = async (): Promise<Record<EnvironmentKey, string>> =>
 	axiosClient.get<Record<EnvironmentKey, string>, Record<EnvironmentKey, string>>("environment");

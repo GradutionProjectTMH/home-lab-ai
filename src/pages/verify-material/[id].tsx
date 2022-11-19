@@ -44,7 +44,7 @@ const VerifyMaterial = ({ params }: any) => {
 
 	if (isLoader) return <></>;
 	return (
-		<section className="pt-36 container mx-auto">
+		<section className="container mx-auto">
 			<Stack className="items-stretch p-6 gap-10">
 				<Stack className="basis-1/2 h-[400px]">{material?.images && <Slider images={material?.images} />}</Stack>
 				<Stack column={true} className="basis-1/2  justify-between">

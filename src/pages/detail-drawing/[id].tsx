@@ -94,7 +94,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 	return (
 		<>
-			<section className="pt-36 container mx-auto">
+			<section className="container mx-auto">
 				<Carousel title="Requirements" defaultOpened>
 					<Stack column={true} className="mt-8">
 						{/* 1 */}
@@ -259,7 +259,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 					</Stack>
 				</Carousel>
 			</section>
-			<section className="pt-36 container mx-auto">
+			<section className="container mx-auto">
 				<Carousel title="First floor 3D model " defaultOpened>
 					<Stack column={true} className="p-8 gap-8">
 						<Stack>

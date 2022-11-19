@@ -29,8 +29,8 @@ const Body = ({ children }: RouteComponentProps<React.HTMLAttributes<HTMLElement
 							))}
 				</div>
 			</div>
-			<Navbar className="absolute top-0 left-0 w-full z-10" />
-			<div className="relative w-full h-full z-0">{children}</div>
+			<Navbar className="relative w-full z-10" />
+			<div className="relative w-full h-full z-10">{children}</div>
 		</main>
 	);
 };

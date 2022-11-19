@@ -3,7 +3,7 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { store } from "../redux/stores/store.redux";
 
 export const signInWithGoogle = async () => {
-	const auth = store.getState().firebaseService!.auth;
+	const auth = store.getState().firebaseService!.auth!;
 	const provider = new GoogleAuthProvider();
 
 	await signInWithPopup(auth, provider);

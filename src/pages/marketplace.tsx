@@ -32,7 +32,7 @@ const coins = [
 
 const MarketplacePage = (props: RouteComponentProps) => {
 	return (
-		<section className="pt-36 container mx-auto">
+		<section className="container mx-auto">
 			<Stack>
 				<div className="basis-1/2">
 					<H2 className="!text-5xl text-blue-700 !leading-tight">

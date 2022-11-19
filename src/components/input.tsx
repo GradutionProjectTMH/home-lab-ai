@@ -1,27 +1,28 @@
-import React from "react";
+import React, { HTMLAttributes } from "react";
+import { joinTxts } from "../utils/text.util";
+import Stack from "./layout/stack";
+import Text from "./typography/text";
 
-interface InputProps {
-	label?: string;
-	type?: React.HTMLInputTypeAttribute;
-	placeholder?: string;
-	value: string;
-	onChange: React.ChangeEventHandler<HTMLInputElement>;
+type InputProps = {
 	error?: string;
-}
+	after?: JSX.Element;
+} & React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
 
-const Input = ({ label, type = "text", placeholder = "", value, onChange, error }: InputProps) => {
+const Input = ({ type = "text", placeholder = "", value, onChange, error, after, className = "" }: InputProps) => {
 	return (
-		<div>
-			{label && <label className="block text-gray-500 text-sm font-bold mb-2">Material</label>}
-			<input
-				className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-				value={value}
-				onChange={onChange}
-				type={type}
-				placeholder={placeholder}
-			/>
-			{error && <p className="text-red-500 text-xs italic">Please choose a password.</p>}
-		</div>
+		<Stack className={joinTxts("gap-2 items-center", className)}>
+			<Stack column className="gap-1 flex-grow">
+				<input
+					className="font-body font-medium text-base flex-grow w-full px-2 py-1"
+					value={value}
+					onChange={onChange}
+					type={type}
+					placeholder={placeholder}
+				/>
+				{error && <Text className="text-red-500">{error}</Text>}
+			</Stack>
+			{after}
+		</Stack>
 	);
 };
 

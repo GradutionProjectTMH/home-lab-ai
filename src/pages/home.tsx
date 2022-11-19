@@ -9,17 +9,20 @@ import { ReactComponent as LightBulbSvg } from "../svgs/light-bulb.svg";
 import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
 import TextRazor from "../apis/text-razor.api";
-import { useDispatch } from "react-redux";
-import { pushInfo } from "../redux/slices/message.slice";
+import { useDispatch, useSelector } from "react-redux";
+import { pushLoading } from "../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
+import IPFS from "../apis/ipfs.api";
+import { RootState } from "../redux/stores/store.redux";
 
 const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+	const ipfsService = useSelector((state: RootState) => state.ipfsService);
 
 	const handleExtractorClicked = async () => {
-		dispatch(pushInfo("We are processing your dream"));
+		dispatch(pushLoading("We are processing your dream"));
 
 		const res = await TextRazor.extract(textAreaRef.current!.value, [
 			"entities",
@@ -40,6 +43,16 @@ const HomePage = (props: RouteComponentProps) => {
 		});
 	};
 
+	// React.useEffect(() => {
+	// 	if (ipfsService) {
+	// 		IPFS.upload(
+	// 			JSON.stringify({
+	// 				text: "hello",
+	// 			}),
+	// 		).then(console.log);
+	// 	}
+	// }, [ipfsService]);
+
 	const handleTryItButtonClicked = () => {
 		textAreaRef.current?.focus();
 	};
@@ -47,7 +60,7 @@ const HomePage = (props: RouteComponentProps) => {
 	return (
 		<>
 			<section className="container mx-auto">
-				<Stack className="pt-48 items-stretch">
+				<Stack className="items-stretch">
 					<Stack column className="basis-1/2 gap-8 justify-center">
 						<Stack column className="gap-6">
 							<H1 className="!font-display !text-7xl text-blue-700">Make house</H1>

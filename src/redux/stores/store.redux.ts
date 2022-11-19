@@ -7,6 +7,7 @@ import g2pServiceSlice from "../slices/g2p-service.slice";
 import textRazorServiceSlice from "../slices/textrazor-service.slice";
 import messageSlice from "../slices/message.slice";
 import etherSlice from "../slices/ether.slice";
+import ipfsServiceSlice from "../slices/ipfs.slice";
 
 const rootReducer = {
 	user: userSlice,
@@ -16,6 +17,7 @@ const rootReducer = {
 	firebaseService: firebaseServiceSlice,
 	g2pService: g2pServiceSlice,
 	textRazorService: textRazorServiceSlice,
+	ipfsService: ipfsServiceSlice,
 };
 
 export const store = configureStore({

@@ -8,6 +8,7 @@ import { setEnvironment } from "../redux/slices/environment.slice";
 import { setWalletAddress, initiateEther } from "../redux/slices/ether.slice";
 import { initiateFirebase } from "../redux/slices/firebase-service.slice";
 import { initiateG2p } from "../redux/slices/g2p-service.slice";
+import { initiateIpfs } from "../redux/slices/ipfs.slice";
 import { pushInfo } from "../redux/slices/message.slice";
 import { initiateTextRazor } from "../redux/slices/textrazor-service.slice";
 import { updateUser } from "../redux/slices/user.slice";
@@ -17,6 +18,13 @@ import { User } from "../types/common";
 const Initializer = () => {
 	const dispatch = useDispatch();
 	const environment = useSelector((state: RootState) => state.environment);
+	const ether = useSelector((state: RootState) => state.ether);
+	const firebaseService = useSelector((state: RootState) => state.firebaseService);
+	const g2pService = useSelector((state: RootState) => state.g2pService);
+	const ipfsService = useSelector((state: RootState) => state.ipfsService);
+	const message = useSelector((state: RootState) => state.message);
+	const textRazorService = useSelector((state: RootState) => state.textRazorService);
+	const user = useSelector((state: RootState) => state.user);
 
 	// ---------------Setup Environment---------------
 
@@ -69,6 +77,16 @@ const Initializer = () => {
 			initiateTextRazor({
 				endPoint: textRazorConfig.API_ENDPOINT,
 				apiKey: textRazorConfig.API_KEY,
+			}),
+		);
+
+		const ipfsConfig = environment.infura;
+		dispatch(
+			initiateIpfs({
+				projectId: ipfsConfig.PROJECT_ID,
+				apiKeySecret: ipfsConfig.API_KEY_SECRET,
+				ipfsApiEndpoint: ipfsConfig.IPFS_API_ENDPOINT,
+				dedicatedGatewayDomain: ipfsConfig.DEDICATED_GATEWAY_SUBDOMAIN,
 			}),
 		);
 	};
