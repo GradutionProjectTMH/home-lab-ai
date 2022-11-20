@@ -14,6 +14,13 @@ import { STATUS_HIRE } from "../../../enums/hiring.enum";
 import { Link } from "@reach/router";
 import { ROLE } from "../../../enums/user.enum";
 import { User } from "../../../types/common";
+import Ether from "../../../apis/ether.api";
+import { parseEther } from "ethers/lib/utils";
+import { ethers } from "ethers";
+import { useDispatch, useSelector } from "react-redux";
+import { pushSuccess } from "../../../redux/slices/message.slice";
+import { RootState } from "../../../redux/stores/store.redux";
+import IPFS from "../../../apis/ipfs.api";
 
 type HiringProp = {
 	setIsLoader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,19 +28,19 @@ type HiringProp = {
 };
 
 const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
+	const dispatch = useDispatch();
+	const ether = useSelector((state: RootState) => state.ether);
+
 	const [designers, setDesigner] = React.useState<User[]>();
 	const [selectedDesigner, setSelectedDesigner] = React.useState<User>();
 	const [currentPage, setCurrentPage] = React.useState<"Order" | "Marketplace">("Order");
 
 	const fetchAllDesigner = async () => {
-		try {
-			const result = await userApi.getAllUser({ typeUser: ROLE.DESIGNER });
-			console.log(result);
-			setDesigner(result.data);
-			setSelectedDesigner(result.data[0]);
-		} catch (error) {
-			console.log(error);
-		}
+		const result = await userApi.getAllUser({ typeUser: ROLE.DESIGNER });
+		console.log(result);
+
+		setDesigner(result);
+		setSelectedDesigner(result[0]);
 	};
 
 	React.useEffect(() => {
@@ -56,6 +63,29 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		};
 
 		try {
+			const timestamp = await Ether.getTimestamp();
+			const value = parseEther("10");
+			const expiredIn = Ether.BN.from(timestamp).add(300);
+			const dataIpfs = await IPFS.upload(
+				JSON.stringify({
+					drawing: detailDrawing,
+					designer: selectedDesigner,
+					bounty: value,
+					expiredIn,
+				}),
+			);
+			const transaction = await ether!.contract.HomeLab.connect(ether!.provider.getSigner()).startProject(
+				detailDrawing._id,
+				IPFS.getIPFSUrlFromPath(dataIpfs.path),
+				ethers.constants.AddressZero,
+				"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+				expiredIn,
+				value,
+				{ value: value },
+			);
+			const receipt = await transaction.wait();
+			dispatch(pushSuccess(receipt.events![0].event));
+
 			const result = await hireApi.createHire(hiring);
 			console.log("hiring: ", result);
 

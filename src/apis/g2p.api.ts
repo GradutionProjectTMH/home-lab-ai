@@ -91,6 +91,13 @@ const adjustGraph = async (
 	});
 };
 
+const getTestNames = async (skip: number, take: number) => {
+	const api = store.getState().g2pService!;
+	return api.get("GetTestNames", {
+		params: { skip, take },
+	});
+};
+
 const loadTestBoundary = async (testName: string) => {
 	const api = store.getState().g2pService!;
 	return api.get("LoadTestBoundary", {
@@ -138,6 +145,7 @@ const G2P = {
 	getBoundaryImageUrl,
 	loadTrainHouse,
 	transGraph,
+	getTestNames,
 };
 
 export default G2P;

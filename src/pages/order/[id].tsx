@@ -20,9 +20,9 @@ const Order = ({ id }: OrderProps) => {
 	const fetchDetailDrawing = async () => {
 		if (!id) return;
 		try {
-			const result = await detailDrawingApi.getById(id);
+			const result: any = await detailDrawingApi.getById(id);
 
-			setDetailDrawing(result);
+			setDetailDrawing(result[0]);
 		} catch (error: any) {
 			throw error;
 		} finally {

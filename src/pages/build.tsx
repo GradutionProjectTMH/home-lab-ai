@@ -22,7 +22,7 @@ import G2P from "../apis/g2p.api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
 import { UN_AUTHORIZED } from "../constants/error.constant";
-import { pushError, pushInfo, pushSuccess } from "../redux/slices/message.slice";
+import { pushError, pushInfo, pushLoading, pushSuccess } from "../redux/slices/message.slice";
 import { ethers } from "ethers";
 import Ether from "../apis/ether.api";
 import { parseEther } from "ethers/lib/utils";
@@ -32,27 +32,32 @@ import Input from "../components/input";
 import Select from "../components/select";
 import { DetailDrawing } from "../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../apis/detail-drawing.api";
+import { useIsInViewport } from "../hooks/useIsInViewPort";
 
 const BuildPage = ({ location }: RouteComponentProps) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const g2pService = useSelector((state: RootState) => state.g2pService);
+
+	const boundaryObserverTargetRef = React.useRef<HTMLImageElement>(null);
+	const isIntersecting = useIsInViewport(boundaryObserverTargetRef);
+
 	const user = useSelector((state: RootState) => state.user);
+	const [detailDrawing, setDetailDrawing] = React.useState<Record<string, any>>({
+		width: "",
+		length: "",
+		area: "",
+		budget: "",
+		members: "",
+		theme: "",
+		location: "",
+		locatedAtAlley: false,
+		businessInHouse: false,
+		inTheCorner: false,
+	});
 
 	const [isShownModalBoundary, setIsShownModalBoundary] = React.useState<boolean>(false);
-	const [boundaryNames, setBoundaryNames] = React.useState<string[]>([
-		"444.png",
-		"52.png",
-		"5458.png",
-		"8347.png",
-		"10473.png",
-		"9821.png",
-		"21501.png",
-		"27105.png",
-		"27025.png",
-		"28133.png",
-		"22946.png",
-		"22305.png",
-	]);
+	const [boundaryNames, setBoundaryNames] = React.useState<string[]>([]);
 
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
@@ -66,24 +71,47 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const [ideaRelations, setIdeaRelations] = React.useState<[IdeaPosition, IdeaPosition][]>([]);
 
 	React.useEffect(() => {
-		rooms.forEach((room) => (room.currentIndex = 0));
-		G2P.loadTestBoundary(boundaryName).then((res) => {
-			const { data } = res;
-			const boundary: Boundary = {
-				door: data.door.trim().split(","),
-				exteriors: data.exterior
-					.trim()
-					.split(" ")
-					.map((exterior: any) => exterior.split(",")),
-			};
-			setBoundary(boundary);
-		});
+		if (g2pService)
+			G2P.getTestNames(0, 20).then((res) => {
+				setBoundaryNames(res.data);
+			});
+	}, [g2pService]);
 
-		G2P.numSearch(boundaryName).then((res) => {
-			const { data } = res;
-			setSuggestedPlans(data.map((trainName: any) => ({ trainName, url: G2P.getTrainImageUrl(trainName) })));
+	React.useEffect(() => {
+		isIntersecting &&
+			G2P.getTestNames(boundaryNames.length, 20).then((res) => {
+				setBoundaryNames([...boundaryNames, ...res.data]);
+			});
+	}, [isIntersecting]);
+
+	React.useEffect(() => {
+		if (g2pService) {
+			rooms.forEach((room) => (room.currentIndex = 0));
+			G2P.loadTestBoundary(boundaryName).then((res) => {
+				const { data } = res;
+				const boundary: Boundary = {
+					door: data.door.trim().split(","),
+					exteriors: data.exterior
+						.trim()
+						.split(" ")
+						.map((exterior: any) => exterior.split(",")),
+				};
+				setBoundary(boundary);
+			});
+
+			G2P.numSearch(boundaryName).then((res) => {
+				const { data } = res;
+				setSuggestedPlans(data.map((trainName: any) => ({ trainName, url: G2P.getTrainImageUrl(trainName) })));
+			});
+		}
+	}, [g2pService, boundaryName]);
+
+	const handleUserInfoChanged = (key: string, value: any) => {
+		setDetailDrawing({
+			...detailDrawing,
+			[key]: value,
 		});
-	}, [boundaryName]);
+	};
 
 	const handleBoundaryClicked = (boundaryName: string) => {
 		setBoundaryName(boundaryName);
@@ -130,7 +158,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 
 	const handleRightTransferButtonClicked = async () => {
-		dispatch(pushInfo("We are building your house"));
+		dispatch(pushLoading("We are building your house"));
 
 		const res = await G2P.adjustGraph(
 			ideaPositions,
@@ -288,38 +316,29 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const handleMakeOrder = async () => {
 		if (!user) throw new Error(UN_AUTHORIZED);
 
-		const detailDrawing: Partial<DetailDrawing> = {
-			houseBoundary: 50,
-			width: 50,
-			height: 50,
+		const data: Partial<DetailDrawing> = {
+			houseBoundary: detailDrawing.area,
+			width: detailDrawing.width,
+			height: detailDrawing.height,
 			boundaryImg: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1667836921029-641790842.png",
 			crossSectionImg: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1667836921029-340586306.png",
 			additionalInformation: {
-				budget: "2.000 Million VND",
-				location: "adadadadad",
+				budget: `${detailDrawing.budget} Million VND`,
+				members: detailDrawing.members,
+				theme: detailDrawing.theme,
+				location: detailDrawing.location,
+				locatedAtAlley: detailDrawing.locatedAtAlley,
+				businessInHouse: detailDrawing.businessInHouse,
+				inTheCorner: detailDrawing.inTheCorner,
 			},
 		};
 
 		try {
-			const result = await detailDrawingApi.create(detailDrawing);
+			const result = await detailDrawingApi.create(data);
 			navigate(`/order/${result._id}`);
 		} catch (error) {
 			throw error;
 		}
-
-		// const timestamp = await Ether.getTimestamp();
-		// const value = parseEther("10");
-		// const transaction = await ether.contract.HomeLab.connect(ether.provider.getSigner()).startProject(
-		// 	"Test",
-		// 	"ipfs://",
-		// 	ethers.constants.AddressZero,
-		// 	"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-		// 	Ether.BN.from(timestamp).add(300),
-		// 	value,
-		// 	{ value: value },
-		// );
-		// const receipt = await transaction.wait();
-		// dispatch(pushSuccess(receipt.events![0].event));
 	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
@@ -566,11 +585,9 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 											placeholder="50"
 											className="!text-blue-500 w-32"
 											type="number"
-											after={
-												<Text className="text-blue-500">
-													m<sup>2</sup>
-												</Text>
-											}
+											value={detailDrawing.width}
+											onChange={(event) => handleUserInfoChanged("width", Number(event?.target.value))}
+											after={<Text className="text-blue-500">m</Text>}
 										/>
 									</Stack>
 									<Stack className="items-center">
@@ -579,11 +596,9 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 											placeholder="50"
 											className="!text-blue-500 w-32"
 											type="number"
-											after={
-												<Text className="text-blue-500">
-													m<sup>2</sup>
-												</Text>
-											}
+											value={detailDrawing.height}
+											onChange={(event) => handleUserInfoChanged("height", Number(event?.target.value))}
+											after={<Text className="text-blue-500">m</Text>}
 										/>
 									</Stack>
 									<Stack className="items-center">
@@ -592,6 +607,8 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 											placeholder="50"
 											className="!text-blue-500 w-32"
 											type="number"
+											value={detailDrawing.area}
+											onChange={(event) => handleUserInfoChanged("area", Number(event?.target.value))}
 											after={
 												<Text className="text-blue-500">
 													m<sup>2</sup>
@@ -612,20 +629,37 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 											placeholder="50"
 											className="!text-blue-500 w-full"
 											type="number"
+											value={detailDrawing.budget}
+											onChange={(event) => handleUserInfoChanged("budget", event?.target.value)}
 											after={<Text className="text-blue-500">Million VND</Text>}
 										/>
 									</Stack>
 									<Stack className="items-center">
 										<Text className="text-gray-500 w-28">Members:</Text>
-										<Input placeholder="Mother, Father, Children" className="!text-blue-500 w-full" />
+										<Input
+											value={detailDrawing.members}
+											onChange={(event) => handleUserInfoChanged("members", event?.target.value)}
+											placeholder="Mother, Father, Children"
+											className="!text-blue-500 w-full"
+										/>
 									</Stack>
 									<Stack className="items-center">
 										<Text className="text-gray-500 w-28">Theme:</Text>
-										<Input placeholder="White, Yellow" className="!text-blue-500 w-full" />
+										<Input
+											value={detailDrawing.theme}
+											onChange={(event) => handleUserInfoChanged("theme", event?.target.value)}
+											placeholder="White, Yellow"
+											className="!text-blue-500 w-full"
+										/>
 									</Stack>
 									<Stack className="items-center">
 										<Text className="text-gray-500 w-28">Location:</Text>
-										<Input placeholder="Danang" className="!text-blue-500 w-full" />
+										<Input
+											value={detailDrawing.location}
+											onChange={(event) => handleUserInfoChanged("location", event?.target.value)}
+											placeholder="Danang"
+											className="!text-blue-500 w-full"
+										/>
 									</Stack>
 								</Stack>
 							</Stack>
@@ -636,15 +670,27 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 								<Stack column className="gap-4">
 									<Stack className="items-center">
 										<Text className="text-gray-500 w-40">Located at alley:</Text>
-										<input type="checkbox" checked={true} />
+										<input
+											type="checkbox"
+											checked={detailDrawing.locatedAtAlley}
+											onChange={(event) => handleUserInfoChanged("locatedAtAlley", !detailDrawing.locatedAtAlley)}
+										/>
 									</Stack>
 									<Stack className="items-center">
 										<Text className="text-gray-500 w-40">Business in house:</Text>
-										<input type="checkbox" checked={true} />
+										<input
+											type="checkbox"
+											checked={detailDrawing.businessInHouse}
+											onChange={(event) => handleUserInfoChanged("businessInHouse", !detailDrawing.businessInHouse)}
+										/>
 									</Stack>
 									<Stack className="items-center">
 										<Text className="text-gray-500 w-40">In the corner:</Text>
-										<input type="checkbox" checked={true} />
+										<input
+											type="checkbox"
+											checked={detailDrawing.inTheCorner}
+											onChange={(event) => handleUserInfoChanged("inTheCorner", !detailDrawing.inTheCorner)}
+										/>
 									</Stack>
 								</Stack>
 							</Stack>
@@ -740,11 +786,12 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 			<Modal title="Choose your boundary" isShown={isShownModalBoundary} onClose={() => setIsShownModalBoundary(false)}>
 				<Stack className="flex-wrap px-4 py-4">
-					{boundaryNames.map((boundaryName) => (
-						<Stack key={boundaryName} className="basis-1/4 items-center p-2 ">
+					{boundaryNames.map((boundaryName, index) => (
+						<Stack key={boundaryName} className="basis-1/4 items-center p-2">
 							<img
 								src={G2P.getBoundaryImageUrl(boundaryName)}
 								alt={`Boundary ${boundaryName}`}
+								ref={index == boundaryNames.length - 1 ? boundaryObserverTargetRef : null}
 								className="w-full cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 								onClick={() => handleBoundaryClicked(boundaryName)}
 							/>

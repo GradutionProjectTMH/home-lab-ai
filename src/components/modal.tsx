@@ -13,12 +13,12 @@ const Modal = ({ title, isShown, children, onClose }: ModalProps) => {
 	return (
 		<div
 			className={joinTxts(
-				"fixed bg-blackAlpha-400 overflow-y-auto overflow-x-hidden top-0 right-0 left-0 md:inset-0 h-modal md:h-full z-50",
+				"fixed bg-blackAlpha-400 overflow-y-auto overflow-x-hidden top-0 right-0 left-0 md:inset-0 h-screen z-50",
 				!isShown ? "hidden" : "",
 			)}
 		>
-			<div className="relative p-4 w-full h-full md:max-w-6xl md:h-auto mx-auto">
-				<div className="relative bg-gray-50 rounded-lg shadow dark:bg-gray-700">
+			<div className="relative py-4 w-full h-full md:max-w-6xl mx-auto">
+				<Stack column className="relative bg-gray-50 rounded-lg shadow dark:bg-gray-700 h-full">
 					<button
 						type="button"
 						className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
@@ -43,8 +43,8 @@ const Modal = ({ title, isShown, children, onClose }: ModalProps) => {
 					<H3 className="px-4 py-3">{title}</H3>
 					<div className="h-[1px] bg-gray-200"></div>
 
-					{children}
-				</div>
+					<Stack className="flex-grow overflow-y-scroll">{children}</Stack>
+				</Stack>
 			</div>
 		</div>
 	);
