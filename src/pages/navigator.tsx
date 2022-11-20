@@ -61,7 +61,7 @@ export const Navigator = () => {
 				{routes.map((route) => {
 					const Page = route.page;
 
-					return <Page path={route.path} />;
+					return <Page key={route.path} path={route.path} />;
 				})}
 			</Body>
 		</Router>

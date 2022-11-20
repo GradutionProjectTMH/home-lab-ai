@@ -1,7 +1,7 @@
 import { store } from "../redux/stores/store.redux";
 import { AddResult } from "ipfs-core-types/src/root";
 
-const getIPFSUrlFromPath = ({ path }: { path: string }) => {
+const getIPFSUrlFromPath = (path: string) => {
 	return `ipfs://${path}`;
 };
 

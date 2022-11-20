@@ -19,7 +19,6 @@ const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
-	const ipfsService = useSelector((state: RootState) => state.ipfsService);
 
 	const handleExtractorClicked = async () => {
 		dispatch(pushLoading("We are processing your dream"));

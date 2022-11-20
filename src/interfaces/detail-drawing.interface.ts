@@ -6,13 +6,13 @@ interface BountyReward {
 	amount: number;
 }
 interface AdditionalInformation {
-	members: string;
-	titles: string;
-	wallpaper: boolean;
 	budget: string;
+	members: string;
+	theme: string;
 	location: string;
 	locatedAtAlley: boolean;
 	businessInHouse: boolean;
+	inTheCorner: boolean;
 }
 
 interface Room {

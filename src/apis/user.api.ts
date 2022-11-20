@@ -9,10 +9,10 @@ interface UserQuery {
 	typeUser?: ROLE;
 }
 
-export const getAllUser = async (query: UserQuery): Promise<ResponseAllData<User>> => {
+export const getAllUser = async (query: UserQuery): Promise<User[]> => {
 	console.log(query);
 
-	return axiosClient.get<string, ResponseAllData<User>>("user", {
+	return axiosClient.get<string, User[]>("user", {
 		params: query,
 	});
 };
