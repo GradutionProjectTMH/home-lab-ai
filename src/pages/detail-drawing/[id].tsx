@@ -16,6 +16,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
 import { STATUS_HIRE } from "../../enums/hiring.enum";
 import { RouteComponentProps } from "@reach/router";
+import Modal from "../../components/modal";
+import { special } from "../../utils/ordinal-digit";
+import UploadFile from "../../components/upload-file";
+import Input from "../../components/input";
+import Text from "../../components/typography/text";
+import ModelDetailDrawing from "../../components/detail-drawing/model.detail-drawing";
 
 const rewards = [
 	{
@@ -51,6 +57,9 @@ type DetailDrawingProps = {
 const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
+	const [isShownModal, setIsShownModal] = React.useState<boolean>(false);
+	const [numberFloor, setNumberFloor] = React.useState<number>(0);
+
 	const iFrameRef = React.useRef();
 	const [iFrameHeight, setIFrameHeight] = React.useState("0px");
 
@@ -88,6 +97,11 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 		} catch (error) {
 			throw error;
 		}
+	};
+
+	const handleClickUpload = async (floor: number) => {
+		setNumberFloor(floor);
+		setIsShownModal(true);
 	};
 
 	if (isLoader) return <></>;
@@ -308,6 +322,17 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 					</Stack>
 				</Stack>
 			</section>
+
+			{detailDrawing?.hire._id && (
+				<ModelDetailDrawing
+					numberFloor={numberFloor}
+					idHire={detailDrawing?.hire._id}
+					floorDesigns={detailDrawing.hire.floorDesigns}
+					isShownModal={isShownModal}
+					setIsShownModal={setIsShownModal}
+					setIsLoader={setIsLoader}
+				/>
+			)}
 		</>
 	);
 };

@@ -54,3 +54,7 @@
 .fullscreen .image-gallery-slide img {
   max-height: 100vh;
 }
+
+.drop-file-input.dragover {
+  opacity: 0.6;
+}

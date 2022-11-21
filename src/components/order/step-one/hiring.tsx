@@ -54,7 +54,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 	const handleClickOrder = async () => {
 		if (!selectedDesigner || !detailDrawing) return;
 
-		const hiring: Hire = {
+		const hiring: Partial<Hire> = {
 			designerId: selectedDesigner._id,
 			detailDrawingId: detailDrawing._id,
 			status: STATUS_HIRE.ACCEPT,
