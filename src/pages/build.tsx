@@ -602,7 +602,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 										/>
 									</Stack>
 									<Stack className="items-center">
-										<Text className="text-gray-500 w-16">Height:</Text>
+										<Text className="text-gray-500 w-16">Area:</Text>
 										<Input
 											placeholder="50"
 											className="!text-blue-500 w-32"

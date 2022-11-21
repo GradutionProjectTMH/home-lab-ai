@@ -264,10 +264,10 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 					<Stack column={true} className="p-8 gap-8">
 						<Stack>
 							<div className="bg-white p-1 w-full">
-								{/* <iframe
+								<iframe
 									src="https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO3W8MXUB63&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US"
 									className="w-full h-[700px]"
-								></iframe> */}
+								></iframe>
 							</div>
 						</Stack>
 						<Stack className="gap-8">
