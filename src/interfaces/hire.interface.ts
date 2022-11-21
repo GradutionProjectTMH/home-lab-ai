@@ -7,14 +7,13 @@ type ItemDesign = {
 	isChoose: boolean;
 };
 
-type FloorDesign = {
-	image: string;
-	coHomeUrl: string;
-	isChoose: boolean;
+export type FloorDesign = {
+	floor: number;
+	designs: ItemDesign[];
 };
 
 export interface Hire {
-	_id?: string;
+	_id: string;
 	userId?: string;
 	designerId?: string;
 	designer?: User;
