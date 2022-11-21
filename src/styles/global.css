@@ -10,6 +10,26 @@
     @apply default:text-gray-700;
     @apply transition-all;
   }
+
+  ::-webkit-scrollbar {
+    @apply w-2;
+    @apply h-2;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-r from-cyan-500 to-blue-500;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gradient-to-r from-cyan-600 to-blue-600;
+  }
 }
 
 .image-gallery {
