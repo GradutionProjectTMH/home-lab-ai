@@ -554,13 +554,13 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 					</Stack>
 				</Stack>
 
-				<Stack className="mt-4">
+				<Stack className="flex-nowrap overflow-visible overflow-x-scroll scroll-smooth scroll-mx-4 snap-mandatory snap-x max-h-min py-8 mt-4 scroll">
 					{suggestedPlans.map((suggestedPlan) => (
-						<Stack key={suggestedPlan.trainName} className="flex-grow">
+						<Stack key={suggestedPlan.trainName} className="flex-none basis-1/6">
 							<img
 								src={suggestedPlan.url}
 								alt={`Suggested Design ${suggestedPlan.trainName}`}
-								className="w-full cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
+								className="h-full object-cover cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 								onClick={() => handleSuggestedPlanClicked(suggestedPlan.trainName)}
 							/>
 						</Stack>
