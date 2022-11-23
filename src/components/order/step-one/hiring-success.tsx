@@ -11,12 +11,16 @@ import { ReactComponent as ForwardToInboxOutlinedSvg } from "../../../svgs/forwa
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
 import { STATUS_HIRE } from "../../../enums/hiring.enum";
 import { Link } from "@reach/router";
+import { special } from "../../../utils/ordinal-digit";
+import Modal from "../../modal";
 
 type HiringSuccessProp = {
 	detailDrawing: DetailDrawing | undefined;
 };
 
 function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
+	const [isShownModal, setIsShownModal] = React.useState<boolean>(false);
+	const [iFrameSrc, setIFrameSrc] = React.useState<string | null>();
 	return (
 		<>
 			<Stack className="items-stretch px-6 py-12">
@@ -80,64 +84,64 @@ function HiringSuccess({ detailDrawing }: HiringSuccessProp) {
 				</>
 			) : (
 				<>
-					<Stack className="pt-8 justify-between items-center mx-6">
-						<H4>Choose 3D model for your first floor:</H4>
-						<Button type="ghost" className="px-4 py-1 text-red-500 fill-red-500" LeftItem={TrashOutlinedSvg}>
-							Reject all drafts
-						</Button>
-					</Stack>
+					{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
+						return (
+							<div key={index}>
+								<Stack className="pt-8 justify-between items-center mx-6">
+									<H4>Choose 3D model for your {special[index + 1]} floor:</H4>
+									<Button type="ghost" className="px-4 py-1 text-red-500 fill-red-500" LeftItem={TrashOutlinedSvg}>
+										Reject all drafts
+									</Button>
+								</Stack>
 
-					<Stack className="mx-6 mt-2 gap-4">
-						<Stack column className="basis-1/3 items-stretch">
-							<img
-								src="../images/fake-2d.png"
-								alt="suggested-design"
-								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-							/>
-							<Stack className="gap-4 mt-2">
-								<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
-									I choose this
-								</Button>
-								<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
-									Send message
-								</Button>
-							</Stack>
-						</Stack>
-
-						<Stack column className="basis-1/3 items-stretch">
-							<img
-								src="../images/fake-2d.png"
-								alt="suggested-design"
-								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-							/>
-							<Stack className="gap-4 mt-2">
-								<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
-									I choose this
-								</Button>
-								<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
-									Send message
-								</Button>
-							</Stack>
-						</Stack>
-
-						<Stack column className="basis-1/3 items-stretch">
-							<img
-								src="../images/fake-2d.png"
-								alt="suggested-design"
-								className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
-							/>
-							<Stack className="gap-4 mt-2">
-								<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
-									I choose this
-								</Button>
-								<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
-									Send message
-								</Button>
-							</Stack>
-						</Stack>
-					</Stack>
+								<Stack className="mx-6 mt-2 gap-4">
+									{floorDesign.designs.map((design, i) => {
+										return (
+											<Stack
+												column
+												className="basis-1/3 items-stretch"
+												key={i}
+												onClick={() => {
+													setIsShownModal(true);
+													setIFrameSrc(design.coHomeUrl);
+												}}
+											>
+												<img
+													src={design.image}
+													alt="suggested-design"
+													className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10 h-[400px]"
+												/>
+												<Stack className="gap-4 mt-2">
+													<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
+														I choose this
+													</Button>
+													<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
+														Send message
+													</Button>
+												</Stack>
+											</Stack>
+										);
+									})}
+								</Stack>
+							</div>
+						);
+					})}
 				</>
 			)}
+			<Modal
+				isShown={isShownModal}
+				onClose={() => {
+					setIsShownModal(false);
+					setIFrameSrc(null);
+				}}
+				withFull={true}
+			>
+				{iFrameSrc && (
+					<div className="bg-white p-1 w-full">
+						<iframe src={iFrameSrc} className="w-full h-full"></iframe>
+					</div>
+				)}
+			</Modal>
 		</>
 	);
 }

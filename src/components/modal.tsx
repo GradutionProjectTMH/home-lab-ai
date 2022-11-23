@@ -4,20 +4,23 @@ import Stack from "./layout/stack";
 import H3 from "./typography/h3";
 
 interface ModalProps extends React.HTMLAttributes<HTMLElement> {
-	title: string;
+	title?: string | undefined;
 	isShown: boolean;
 	onClose: () => void;
+	withFull?: boolean;
 }
 
-const Modal = ({ title, isShown, children, onClose }: ModalProps) => {
+const Modal = ({ title, isShown, children, onClose, withFull = false }: ModalProps) => {
 	return (
 		<div
 			className={joinTxts(
-				"fixed bg-blackAlpha-400 overflow-y-auto overflow-x-hidden top-0 right-0 left-0 md:inset-0 h-screen z-50",
+				"fixed bg-blackAlpha-400 overflow-y-auto overflow-x-hidden top-0 right-0 left-0 md:inset-0 h-screen z-50 ",
 				!isShown ? "hidden" : "",
 			)}
 		>
-			<div className="relative py-4 w-full h-full md:max-w-6xl mx-auto">
+			<div
+				className={joinTxts("relative py-4 w-full h-full md:max-w-6xl mx-auto", withFull ? "md:max-w-full px-4" : "")}
+			>
 				<Stack column className="relative bg-gray-50 rounded-lg shadow dark:bg-gray-700 h-full">
 					<button
 						type="button"
@@ -40,8 +43,12 @@ const Modal = ({ title, isShown, children, onClose }: ModalProps) => {
 						<span className="sr-only">Close modal</span>
 					</button>
 
-					<H3 className="px-4 py-3">{title}</H3>
-					<div className="h-[1px] bg-gray-200"></div>
+					{title && (
+						<>
+							<H3 className="px-4 py-3">{title}</H3>
+							<div className="h-[1px] bg-gray-200"></div>
+						</>
+					)}
 
 					<Stack className="flex-grow overflow-y-scroll">{children}</Stack>
 				</Stack>

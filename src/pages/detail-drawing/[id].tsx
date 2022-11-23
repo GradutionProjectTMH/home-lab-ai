@@ -60,13 +60,12 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 	const [isShownModal, setIsShownModal] = React.useState<boolean>(false);
 	const [numberFloor, setNumberFloor] = React.useState<number>(0);
 
-	const iFrameRef = React.useRef();
-	const [iFrameHeight, setIFrameHeight] = React.useState("0px");
+	const [iFrameSrc, setIFrameSrc] = React.useState<string | null>();
 
 	const user = useSelector((state: RootState) => state.user);
 
-	const handleClick = (data: any) => {
-		console.log(data);
+	const handleClick = (src: string) => {
+		setIFrameSrc(src);
 	};
 
 	const fetchDetailDrawing = async () => {
@@ -255,6 +254,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 										})}
 								</Stack>
 							</Stack>
+
 							<Stack column={true} className="basis-1/2 gap-8 items-end justify-end pr-28">
 								<Stack className="pl-6 gap-12 ">
 									<Stack column={true} className="items-end gap-3">
@@ -274,41 +274,58 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 				</Carousel>
 			</section>
 			<section className="container mx-auto">
-				<Carousel title="First floor 3D model " defaultOpened>
-					<Stack column={true} className="p-8 gap-8">
-						<Stack>
-							<div className="bg-white p-1 w-full">
-								<iframe
-									src="https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO3W8MXUB63&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US"
-									className="w-full h-[700px]"
-								></iframe>
-							</div>
-						</Stack>
-						<Stack className="gap-8">
-							{Array(3)
-								.fill(0)
-								.map((_, index) => {
-									return (
-										<div className="bg-white p-1 basis-1/3" key={index} onClick={() => handleClick(index)}>
-											<img
-												src="../images/suggested-designs/33.png"
-												alt="suggested-design"
-												className="cursor-pointer hover:scale-110 hover:shadow-md hover:z-10  w-full"
-											/>
-										</div>
-									);
-								})}
-						</Stack>
-						<Stack className="gap-4 mt-2 justify-center">
-							<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
-								<Strong className="text-sm">I choose this</Strong>
-							</Button>
-							<Button type="ghost" className="px-4 py-1 text-red-500 !fill-red-500" LeftItem={TrashOutlined}>
-								<Strong className="text-sm">Send message</Strong>
-							</Button>
-						</Stack>
+				{iFrameSrc && (
+					<Stack>
+						<div className="bg-white p-1 w-full">
+							<iframe src={iFrameSrc} className="w-full h-[700px]"></iframe>
+						</div>
 					</Stack>
-				</Carousel>
+				)}
+
+				{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
+					return (
+						<Carousel
+							title={`${special[index + 1].charAt(0).toUpperCase() + special[index + 1].slice(1)} floor 3D model `}
+							defaultOpened
+						>
+							<Stack column={true} className="p-8 gap-8">
+								<Stack className="gap-8">
+									{floorDesign.designs.map((design) => {
+										return (
+											<Stack column={true} className="basis-1/3 ">
+												<div
+													className="bg-white p-1  hover:scale-110 hover:shadow-md hover:z-10"
+													key={index}
+													onClick={() => handleClick(design.coHomeUrl)}
+												>
+													<img src={design.image} alt="suggested-design" className="cursor-pointer w-full h-[400px]" />
+												</div>
+												<Stack className="gap-4 mt-2 justify-center">
+													<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
+														<Strong className="text-sm">I choose this</Strong>
+													</Button>
+													<Button
+														type="ghost"
+														className="px-4 py-1 text-red-500 !fill-red-500"
+														LeftItem={TrashOutlined}
+													>
+														<Strong className="text-sm">Send message</Strong>
+													</Button>
+												</Stack>
+											</Stack>
+										);
+									})}
+									{floorDesign.designs.length < 3 && (
+										<div className="p-1 basis-1/3" onClick={() => handleClickUpload(index + 1)}>
+											<UploadFile />
+										</div>
+									)}
+								</Stack>
+							</Stack>
+						</Carousel>
+					);
+				})}
+
 				<div className="h-[1px] my-4 bg-gray-300"></div>
 				<Stack column={true} className="pb-20 px-6">
 					<H5 className="text-green-500 my-8">13 days remaining to finish your work</H5>
