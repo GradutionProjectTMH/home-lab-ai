@@ -21,8 +21,7 @@ const Order = ({ id }: OrderProps) => {
 		if (!id) return;
 		try {
 			const result: any = await detailDrawingApi.getById(id);
-
-			setDetailDrawing(result[0]);
+			setDetailDrawing(result);
 		} catch (error: any) {
 			throw error;
 		} finally {

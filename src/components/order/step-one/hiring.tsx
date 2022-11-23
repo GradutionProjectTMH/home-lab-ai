@@ -28,6 +28,8 @@ type HiringProp = {
 };
 
 const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
+	console.log("detailDrawing", detailDrawing);
+
 	const dispatch = useDispatch();
 	const ether = useSelector((state: RootState) => state.ether);
 
@@ -39,8 +41,8 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		const result = await userApi.getAllUser({ typeUser: ROLE.DESIGNER });
 		console.log(result);
 
-		setDesigner(result);
-		setSelectedDesigner(result[0]);
+		setDesigner(result.data);
+		setSelectedDesigner(result.data[0]);
 	};
 
 	React.useEffect(() => {
