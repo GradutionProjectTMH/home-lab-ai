@@ -16,17 +16,17 @@
     @apply h-2;
   }
   
-  /* Track */
+  /* Scrollbar Track */
   ::-webkit-scrollbar-track {
     @apply bg-gray-100;
   }
    
-  /* Handle */
+  /* Scrollbar Handle */
   ::-webkit-scrollbar-thumb {
     @apply bg-gradient-to-r from-cyan-500 to-blue-500;
   }
   
-  /* Handle on hover */
+  /* Scrollbar Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-gradient-to-r from-cyan-600 to-blue-600;
   }

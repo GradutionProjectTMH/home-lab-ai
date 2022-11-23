@@ -4,21 +4,24 @@ export const rooms = [
 		name: "Public Area",
 		labels: ["LivingRoom", "Balcony", "Entrance"],
 		colorTheme: "gray",
-		currentIndex: 0,
+		leftIndex: 0,
+		rightIndex: 0,
 	},
 	{
 		id: 1,
 		name: "Bedroom",
 		labels: ["MasterRoom", "SecondRoom", "ChildRoom", "StudyRoom", "GuestRoom"],
 		colorTheme: "blue",
-		currentIndex: 0,
+		leftIndex: 0,
+		rightIndex: 0,
 	},
 	{
 		id: 2,
 		name: "Function Area",
 		labels: ["Bathroom", "Kitchen", "DiningRoom", "Storage"],
 		colorTheme: "green",
-		currentIndex: 0,
+		leftIndex: 0,
+		rightIndex: 0,
 	},
 ];
 

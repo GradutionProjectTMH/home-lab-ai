@@ -1,4 +1,5 @@
 type IdeaPosition = {
+	index: number;
 	roomLabel: string;
 	x: number;
 	y: number;

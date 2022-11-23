@@ -62,19 +62,11 @@ const adjustGraph = async (
 	trainName: string,
 ) => {
 	const ideaPositionsParam = ideaPositions.map(
-		(ideaPosition, index) => `["${index}","${ideaPosition.roomLabel}",${ideaPosition.x},${ideaPosition.y},"1"]`,
+		(ideaPosition) => `["${ideaPosition.index}","${ideaPosition.roomLabel}",${ideaPosition.x},${ideaPosition.y},"1"]`,
 	);
-	const ideaRelationsParam = ideaRelations.map((relation) => {
-		const [ideaPositionA, ideaPositionB] = relation;
-		const ideaPositionIndexA: number = ideaPositions.findIndex(
-			(ideaPosition) => ideaPosition.roomLabel == ideaPositionA.roomLabel,
-		);
-		const ideaPositionIndexB: number = ideaPositions.findIndex(
-			(ideaPosition) => ideaPosition.roomLabel == ideaPositionB.roomLabel,
-		);
-
-		return `["${ideaPositionIndexA}","${ideaPositionIndexB}"]`;
-	});
+	const ideaRelationsParam = ideaRelations.map(
+		([ideaPositionA, ideaPositionB]) => `["${ideaPositionA.index}","${ideaPositionB.index}"]`,
+	);
 	const roomPositionsParam = roomPositions.map(
 		([roomID, roomLabel, x, y], index) => `[${roomID},"${roomLabel}",${x},${y},${index}]`,
 	);
@@ -149,3 +141,57 @@ const G2P = {
 };
 
 export default G2P;
+
+[
+	[
+		["1", "Kitchen", 184, 111.5, "1"],
+		["2", "LivingRoom", 101, 93, "1"],
+		["3", "MasterRoom", 160.5, 159, "1"],
+		["4", "SecondRoom", 101, 159, "1"],
+		["5", "Balcony", 160.5, 194.5, "1"],
+	],
+	[
+		["1", "2"],
+		["1", "3"],
+		["2", "3"],
+		["2", "4"],
+		["3", "5"],
+		["3", "4"],
+		["4", "5"],
+	],
+	[
+		[3, "Bathroom", 184, 75, 0],
+		[2, "Kitchen", 184, 111.5, 1],
+		[0, "LivingRoom", 101, 93, 2],
+		[1, "MasterRoom", 160.5, 159, 3],
+		[7, "SecondRoom", 101, 159, 4],
+		[9, "Balcony", 160.5, 194.5, 5],
+	],
+];
+
+[
+	[
+		["1", "Kitchen", 184, 111.5, "1"],
+		["2", "LivingRoom", 101, 93, "1"],
+		["3", "MasterRoom", 160.5, 159, "1"],
+		["4", "SecondRoom", 101, 159, "1"],
+		["5", "Balcony", 160.5, 194.5, "1"],
+	],
+	[
+		["0", "1"],
+		["0", "2"],
+		["1", "2"],
+		["1", "3"],
+		["2", "4"],
+		["2", "3"],
+		["3", "4"],
+	],
+	[
+		[3, "Bathroom", 184, 75, 0],
+		[2, "Kitchen", 184, 111.5, 1],
+		[0, "LivingRoom", 101, 93, 2],
+		[1, "MasterRoom", 160.5, 159, 3],
+		[7, "SecondRoom", 101, 159, 4],
+		[9, "Balcony", 160.5, 194.5, 5],
+	],
+];

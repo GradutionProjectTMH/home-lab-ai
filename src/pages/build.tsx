@@ -24,12 +24,9 @@ import { RootState } from "../redux/stores/store.redux";
 import { UN_AUTHORIZED } from "../constants/error.constant";
 import { pushError, pushInfo, pushLoading, pushSuccess } from "../redux/slices/message.slice";
 import { ethers } from "ethers";
-import Ether from "../apis/ether.api";
-import { parseEther } from "ethers/lib/utils";
 import Modal from "../components/modal";
 import { RouteComponentProps, useNavigate } from "@reach/router";
 import Input from "../components/input";
-import Select from "../components/select";
 import { DetailDrawing } from "../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../apis/detail-drawing.api";
 import { useIsInViewport } from "../hooks/useIsInViewPort";
@@ -86,7 +83,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 	React.useEffect(() => {
 		if (g2pService) {
-			rooms.forEach((room) => (room.currentIndex = 0));
+			rooms.forEach((room) => (room.leftIndex = 0));
 			G2P.loadTestBoundary(boundaryName).then((res) => {
 				const { data } = res;
 				const boundary: Boundary = {
@@ -123,30 +120,42 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 
 	const handleLeftTransferButtonClicked = async () => {
-		rooms.forEach((room) => (room.currentIndex = 0));
-
 		const res = await G2P.transGraph(boundaryName, rightFloorPlan.trainName as string);
-		const roomPositions = res.data.rmpos!;
-		const roomRelations = res.data.hsedge!;
+		const { rmpos, hsedge, exterior } = res.data;
 
-		const ideaPositions: IdeaPosition[] = roomPositions.map(
-			([roomId, roomLabel, x, y, id]: [number, string, number, number, number]) => {
-				const room: Room = findRoom(roomLabel);
-				const result: IdeaPosition = {
-					roomLabel: room.labels[room.currentIndex],
-					x,
-					y,
-				};
-				++room.currentIndex;
+		rooms.forEach((room) => (room.rightIndex = 0));
+		const transRoomPositions: IdeaPosition[] = rmpos.map(([_, roomLabel, x, y, id]: any[]) => {
+			const room: Room = findRoom(roomLabel);
 
-				return result;
-			},
-		);
+			const result: IdeaPosition = {
+				index: id,
+				roomLabel: room.labels[room.rightIndex],
+				x,
+				y,
+			};
+			++room.rightIndex;
 
-		setRightFloorPlan({ ...rightFloorPlan, transRoomPositions: roomPositions });
+			return result;
+		});
+
+		rooms.forEach((room) => (room.leftIndex = 0));
+		const ideaPositions: IdeaPosition[] = transRoomPositions.map(({ roomLabel, x, y, index }: IdeaPosition) => {
+			const room: Room = findRoom(roomLabel);
+			const result: IdeaPosition = {
+				index,
+				roomLabel: room.labels[room.leftIndex],
+				x,
+				y,
+			};
+			++room.leftIndex;
+
+			return result;
+		});
+
+		setRightFloorPlan({ ...rightFloorPlan, transRmpos: rmpos });
 		setIdeaPositions(ideaPositions);
 
-		const ideaRelations: [IdeaPosition, IdeaPosition][] = roomRelations.map(
+		const ideaRelations: [IdeaPosition, IdeaPosition][] = hsedge.map(
 			([roomPositionIndexA, roomPositionIndexB]: [number, number]) => [
 				ideaPositions[roomPositionIndexA],
 				ideaPositions[roomPositionIndexB],
@@ -163,34 +172,51 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		const res = await G2P.adjustGraph(
 			ideaPositions,
 			ideaRelations,
-			rightFloorPlan.transRoomPositions,
+			rightFloorPlan.transRmpos,
 			boundaryName,
 			rightFloorPlan.trainName,
 		);
-		const { hsedge, roomret } = res.data;
-		const rmpos = roomret.map(([[xA, yA, xB, yB], [roomLabel], id]: any[]) => [
-			labelIndex[roomLabel],
-			roomLabel,
-			(xA + xB) / 2,
-			(yA + yB) / 2,
-			id,
-		]);
+		const { hsedge, roomret, exterior } = res.data;
+		rooms.forEach((room) => (room.rightIndex = 0));
+		const transRoomPositions: IdeaPosition[] = roomret.map(([[xA, yA, xB, yB], [roomLabel], id]: any[]) => {
+			const room: Room = findRoom(roomLabel);
+
+			const result: IdeaPosition = {
+				index: id,
+				roomLabel: room.labels[room.rightIndex],
+				x: (xA + xB) / 2,
+				y: (yA + yB) / 2,
+			};
+			++room.rightIndex;
+
+			return result;
+		});
 
 		const relations: [IdeaPosition, IdeaPosition][] = hsedge.map(
 			([positionIndexA, positionIndexB]: number[], index: string) => {
-				const [, labelA, xA, yA] = rmpos.find((position: any[]) => position[4] == positionIndexA);
-				const [, labelB, xB, yB] = rmpos.find((position: any[]) => position[4] == positionIndexB);
+				const transRoomPositionA = transRoomPositions.find(
+					(position: IdeaPosition) => position.index == positionIndexA,
+				);
+				const transRoomPositionB = transRoomPositions.find(
+					(position: IdeaPosition) => position.index == positionIndexB,
+				);
 
-				return [
-					{ roomLabel: labelA, x: xA, y: yA },
-					{ roomLabel: labelB, x: xB, y: yB },
-				];
+				return [transRoomPositionA, transRoomPositionB];
 			},
 		);
+
+		const exteriors = exterior
+			.trim()
+			.split(" ")
+			.map((exterior: any) => exterior.split(","));
+
 		setRightFloorPlan({
+			...rightFloorPlan,
+			hsbox: undefined,
 			...res.data,
 			trainName: rightFloorPlan.trainName,
-			transRoomPositions: rmpos,
+			transRoomPositions,
+			exteriors,
 			relations,
 			isGenerated: true,
 		});
@@ -239,7 +265,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			setIdeaRelations(newIdeaRelations);
 
 			const room = findRoom(currentIdeaPosition.roomLabel);
-			--room.currentIndex;
+			--room.leftIndex;
 
 			setIdeaPositions([...ideaPositions.slice(0, index), ...ideaPositions.slice(index + 1)]);
 		}
@@ -247,15 +273,20 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 	const handleRoomAdded = (event: KonvaEventObject<MouseEvent>) => {
 		if (event.evt.button != 0) return;
-		if (currentRoom.currentIndex == currentRoom.labels.length) return;
+		if (currentRoom.leftIndex == currentRoom.labels.length) return;
 
 		const { offsetX, offsetY } = event.evt;
+		const lastIndex = ideaPositions.reduce((result, ideaPosition: IdeaPosition) => {
+			if (ideaPosition.index > result) return ideaPosition.index;
+			return result;
+		}, 0);
 		const newIdeaPosition: IdeaPosition = {
-			roomLabel: currentRoom.labels[currentRoom.currentIndex],
+			index: lastIndex + 1,
+			roomLabel: currentRoom.labels[currentRoom.leftIndex],
 			x: offsetX / 2,
 			y: offsetY / 2,
 		};
-		++currentRoom.currentIndex;
+		++currentRoom.leftIndex;
 
 		setIdeaPositions([...ideaPositions, newIdeaPosition]);
 	};
@@ -297,7 +328,22 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 	const handleSuggestedPlanClicked = async (trainName: string) => {
 		const res = await G2P.loadTrainHouse(trainName);
-		const { hsedge, rmpos } = res.data;
+		const { hsedge, rmpos, exterior } = res.data;
+
+		rooms.forEach((room) => (room.rightIndex = 0));
+		const transRoomPositions: IdeaPosition[] = rmpos.map(([id, roomLabel, x, y]: any[]) => {
+			const room: Room = findRoom(roomLabel);
+
+			const result: IdeaPosition = {
+				roomLabel: room.labels[room.rightIndex],
+				x,
+				y,
+				index: id,
+			};
+			++room.rightIndex;
+
+			return result;
+		});
 
 		const relations: [IdeaPosition, IdeaPosition][] = hsedge.map(
 			([positionIndexA, positionIndexB]: number[], index: string) => {
@@ -310,7 +356,13 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 				];
 			},
 		);
-		setRightFloorPlan({ ...res.data, trainName, relations, isGenerated: false });
+
+		const exteriors = exterior
+			.trim()
+			.split(" ")
+			.map((exterior: any) => exterior.split(","));
+
+		setRightFloorPlan({ ...res.data, trainName, transRoomPositions, exteriors, relations, isGenerated: false });
 	};
 
 	const handleMakeOrder = async () => {
@@ -342,6 +394,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
+	console.log(rightFloorPlan);
 
 	return (
 		<>
@@ -431,7 +484,24 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 							<H4 className="text-gray-500">Floor Plan</H4>
 							<Stack className="h-[33rem] bg-white justify-center items-center">
 								<Stage width={512} height={512}>
-									<Layer scale={{ x: 2, y: 2 }}>
+									<Layer
+										scale={{ x: 2, y: 2 }}
+										clipFunc={(context) => {
+											console.log(rightFloorPlan?.exteriors);
+											if (!rightFloorPlan?.exteriors) return;
+
+											context.beginPath();
+
+											const [xBegin, yBegin] = rightFloorPlan?.exteriors[0];
+											context.moveTo(xBegin, yBegin);
+
+											rightFloorPlan?.exteriors.slice(1).map(([x, y]: number[]) => {
+												context.lineTo(x, y);
+											});
+
+											context.closePath();
+										}}
+									>
 										{rightFloorPlan?.hsbox?.map((box: any[], index: number) => {
 											const [[x1, y1, x2, y2], [label]] = box;
 											const room = rooms.find((room) => room.labels.includes(label));
@@ -462,6 +532,49 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 												/>
 											);
 										})}
+										{rightFloorPlan?.relations?.map(
+											([positionA, positionB]: [IdeaPosition, IdeaPosition], index: string) => {
+												const { roomLabel: labelA, x: xA, y: yA } = positionA;
+												const { roomLabel: labelB, x: xB, y: yB } = positionB;
+
+												return (
+													<Line
+														key={[xA, yA, labelA, xB, yB, labelB].join("-")}
+														points={[xA, yA, xB, yB]}
+														stroke={(colors as any)["gray"][900]}
+														strokeWidth={1.2}
+													/>
+												);
+											},
+										)}
+										{rightFloorPlan?.transRoomPositions?.map((position: any[], index: number) => {
+											const { roomLabel, x, y } = position as Record<string, any>;
+											return (
+												<Circle
+													key={[x, y, roomLabel].join("-")}
+													x={x}
+													y={y}
+													width={10}
+													height={10}
+													fill={(colors as any)[findRoom(roomLabel).colorTheme][500]}
+													stroke={(colors as any)["gray"][900]}
+													strokeWidth={1.2}
+												/>
+											);
+										})}
+									</Layer>
+
+									<Layer scale={{ x: 2, y: 2 }}>
+										{rightFloorPlan?.exteriors && (
+											<Line
+												points={[...rightFloorPlan.exteriors, rightFloorPlan.exteriors[0]].reduce(
+													(result: number[], exterior) => [...result, ...exterior],
+													[],
+												)}
+												stroke={(colors as any)["gray"][900]}
+												strokeWidth={2}
+											/>
+										)}
 										{rightFloorPlan?.windows?.map((position: number[]) => {
 											const [x, y, width, height]: number[] = position;
 
@@ -486,36 +599,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 												stroke={(colors as any)["yellow"][400]}
 											/>
 										)}
-										{rightFloorPlan?.relations.map(
-											([positionA, positionB]: [IdeaPosition, IdeaPosition], index: string) => {
-												const { roomLabel: labelA, x: xA, y: yA } = positionA;
-												const { roomLabel: labelB, x: xB, y: yB } = positionB;
-
-												return (
-													<Line
-														key={[xA, yA, labelA, xB, yB, labelB].join("-")}
-														points={[xA, yA, xB, yB]}
-														stroke={(colors as any)["gray"][900]}
-														strokeWidth={1.2}
-													/>
-												);
-											},
-										)}
-										{rightFloorPlan?.rmpos?.map((position: any[], index: number) => {
-											const [_, label, x, y] = position;
-											return (
-												<Circle
-													key={[x, y, label].join("-")}
-													x={x}
-													y={y}
-													width={10}
-													height={10}
-													fill={(colors as any)[findRoom(label).colorTheme][500]}
-													stroke={(colors as any)["gray"][900]}
-													strokeWidth={1.2}
-												/>
-											);
-										})}
 									</Layer>
 								</Stage>
 							</Stack>
@@ -527,7 +610,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 					<Stack className="justify-center gap-10">
 						{rooms.map((room) => {
 							const isCurrentRoom = currentRoom == room;
-							const isMaxRoom = room.currentIndex == room.labels.length;
+							const isMaxRoom = room.leftIndex == room.labels.length;
 							const colorShade = isMaxRoom ? 200 : 500;
 
 							return (
@@ -787,7 +870,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			<Modal title="Choose your boundary" isShown={isShownModalBoundary} onClose={() => setIsShownModalBoundary(false)}>
 				<Stack className="flex-wrap px-4 py-4">
 					{boundaryNames.map((boundaryName, index) => (
-						<Stack key={boundaryName} className="basis-1/4 items-center p-2">
+						<Stack column key={boundaryName} className="basis-1/4 justify-center items-center p-2">
 							<img
 								src={G2P.getBoundaryImageUrl(boundaryName)}
 								alt={`Boundary ${boundaryName}`}
@@ -795,6 +878,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 								className="w-full cursor-pointer hover:scale-110 hover:shadow-md hover:z-10"
 								onClick={() => handleBoundaryClicked(boundaryName)}
 							/>
+							<Text>{boundaryName}</Text>
 						</Stack>
 					))}
 				</Stack>
