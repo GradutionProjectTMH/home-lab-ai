@@ -3,7 +3,7 @@ import { Circle, Layer, Line, Rect, Stage } from "react-konva";
 import { colors } from "../configs/tailwind-theme.config";
 import { joinTxts } from "../utils/text.util";
 import { findRoom, getRoomLabel as getRoomName, labelIndex, Room, rooms } from "../configs/rooms.config";
-import { KonvaEventObject } from "konva/lib/Node";
+import { KonvaEventObject, Node } from "konva/lib/Node";
 import { matchArea } from "../utils/konva.util";
 import Body from "./body";
 import Stack from "../components/layout/stack";
@@ -30,11 +30,15 @@ import Input from "../components/input";
 import { DetailDrawing } from "../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../apis/detail-drawing.api";
 import { useIsInViewport } from "../hooks/useIsInViewPort";
+import { Stage as StageType } from "konva/lib/Stage";
 
 const BuildPage = ({ location }: RouteComponentProps) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const g2pService = useSelector((state: RootState) => state.g2pService);
+
+	const leftFloorPlanRef = React.useRef<StageType>(null);
+	const rightFloorPlanRef = React.useRef<StageType>(null);
 
 	const boundaryObserverTargetRef = React.useRef<HTMLImageElement>(null);
 	const isIntersecting = useIsInViewport(boundaryObserverTargetRef);
@@ -224,6 +228,17 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		dispatch(pushSuccess("Build finished"));
 	};
 
+	const handleSaved = async () => {
+		const leftFloorPlanUri = await leftFloorPlanRef.current!.toDataURL({
+			mimeType: "image/jpeg",
+		});
+		const rightFloorPlanUri = await leftFloorPlanRef.current!.toDataURL({
+			mimeType: "image/jpeg",
+		});
+		downloadURI(leftFloorPlanUri, "LeftFloorPlan.jpg");
+		downloadURI(rightFloorPlanUri, "rightFloorPlan.jpg");
+	};
+
 	const { entities, sentences, nounPhrases }: any = (location as any).state?.text_razor || {};
 	const filteredEntities =
 		entities &&
@@ -393,6 +408,17 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		}
 	};
 
+	// function from https://stackoverflow.com/a/15832662/512042
+	function downloadURI(uri: string, name: string) {
+		const link: HTMLAnchorElement = document.createElement("a");
+		link.download = name;
+		link.href = uri;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		link.parentElement?.removeChild(link);
+	}
+
 	const door = rightFloorPlan?.door.split(",").map(Number);
 	console.log(rightFloorPlan);
 
@@ -405,12 +431,16 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 							<H4 className="text-gray-500">Your Idea</H4>
 							<Stack className="h-[33rem] bg-white justify-center items-center">
 								<Stage
+									ref={leftFloorPlanRef}
 									width={512}
 									height={512}
 									onDblClick={handleRoomAdded}
 									onContextMenu={handleResetSelectIdea}
 									className="border-gray-300 border"
 								>
+									<Layer>
+										<Rect width={512} height={512} fill={(colors as any).white} />
+									</Layer>
 									<Layer scale={{ x: 2, y: 2 }}>
 										{boundary && (
 											<Line
@@ -483,7 +513,10 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 						<Stack column className="gap-1">
 							<H4 className="text-gray-500">Floor Plan</H4>
 							<Stack className="h-[33rem] bg-white justify-center items-center">
-								<Stage width={512} height={512}>
+								<Stage ref={rightFloorPlanRef} width={512} height={512} className="border-gray-300 border">
+									<Layer>
+										<Rect width={512} height={512} fill={(colors as any).white} />
+									</Layer>
 									<Layer
 										scale={{ x: 2, y: 2 }}
 										clipFunc={(context) => {
@@ -850,7 +883,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 			<section className="container mx-auto py-4">
 				<Stack className="justify-center gap-4 mt-6">
-					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1">
+					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1" onClick={handleSaved}>
 						Save
 					</Button>
 					<Button
