@@ -10,10 +10,8 @@ import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
 import TextRazor from "../apis/text-razor.api";
 import { useDispatch, useSelector } from "react-redux";
-import { pushLoading } from "../redux/slices/message.slice";
+import { popMessage, pushLoading } from "../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
-import IPFS from "../apis/ipfs.api";
-import { RootState } from "../redux/stores/store.redux";
 
 const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -34,6 +32,8 @@ const HomePage = (props: RouteComponentProps) => {
 			"senses",
 			"spelling",
 		]);
+
+		dispatch(popMessage(null));
 
 		navigate("/build", {
 			state: {

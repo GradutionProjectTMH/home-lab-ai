@@ -22,7 +22,7 @@ import G2P from "../apis/g2p.api";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
 import { UN_AUTHORIZED } from "../constants/error.constant";
-import { pushError, pushInfo, pushLoading, pushSuccess } from "../redux/slices/message.slice";
+import { popMessage, pushError, pushInfo, pushLoading, pushSuccess } from "../redux/slices/message.slice";
 import { ethers } from "ethers";
 import Modal from "../components/modal";
 import { RouteComponentProps, useNavigate } from "@reach/router";
@@ -31,6 +31,8 @@ import { DetailDrawing } from "../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../apis/detail-drawing.api";
 import { useIsInViewport } from "../hooks/useIsInViewPort";
 import { Stage as StageType } from "konva/lib/Stage";
+import { dataURIToBlob, downloadURI } from "../utils/tools.util";
+import axiosClient from "../configs/server.config";
 
 const BuildPage = ({ location }: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -72,10 +74,9 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const [ideaRelations, setIdeaRelations] = React.useState<[IdeaPosition, IdeaPosition][]>([]);
 
 	React.useEffect(() => {
-		if (g2pService)
-			G2P.getTestNames(0, 20).then((res) => {
-				setBoundaryNames(res.data);
-			});
+		G2P.getTestNames(0, 20).then((res) => {
+			setBoundaryNames(res.data);
+		});
 	}, [g2pService]);
 
 	React.useEffect(() => {
@@ -87,6 +88,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 	React.useEffect(() => {
 		if (g2pService) {
+			dispatch(pushLoading("Getting ready"));
 			rooms.forEach((room) => (room.leftIndex = 0));
 			G2P.loadTestBoundary(boundaryName).then((res) => {
 				const { data } = res;
@@ -98,6 +100,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 						.map((exterior: any) => exterior.split(",")),
 				};
 				setBoundary(boundary);
+				dispatch(popMessage({}));
 			});
 
 			G2P.numSearch(boundaryName).then((res) => {
@@ -125,7 +128,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 	const handleLeftTransferButtonClicked = async () => {
 		const res = await G2P.transGraph(boundaryName, rightFloorPlan.trainName as string);
-		const { rmpos, hsedge, exterior } = res.data;
+		const { rmpos, hsedge } = res.data;
 
 		rooms.forEach((room) => (room.rightIndex = 0));
 		const transRoomPositions: IdeaPosition[] = rmpos.map(([_, roomLabel, x, y, id]: any[]) => {
@@ -225,6 +228,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			isGenerated: true,
 		});
 
+		dispatch(popMessage({}));
 		dispatch(pushSuccess("Build finished"));
 	};
 
@@ -381,14 +385,32 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 
 	const handleMakeOrder = async () => {
+		dispatch(pushLoading("Making order"));
 		if (!user) throw new Error(UN_AUTHORIZED);
+
+		const leftFloorPlanImg: HTMLImageElement = (await leftFloorPlanRef.current!.toImage({
+			mimeType: "image/jpeg",
+		})) as HTMLImageElement;
+		const rightFloorPlanImg: HTMLImageElement = (await rightFloorPlanRef.current!.toImage({
+			mimeType: "image/jpeg",
+		})) as HTMLImageElement;
+
+		const leftFloorPlan = dataURIToBlob(leftFloorPlanImg.src);
+		const rightFloorPlan = dataURIToBlob(rightFloorPlanImg.src);
+
+		const formData = new FormData();
+		formData.append("files", leftFloorPlan, "LeftFloorPlan.jpg");
+		formData.append("files", rightFloorPlan, "rightFloorPlan.jpg");
+
+		const [boundaryImg, crossSectionImg] = await axiosClient.post<string, string[]>(`uploads`, formData);
 
 		const data: Partial<DetailDrawing> = {
 			houseBoundary: detailDrawing.area,
 			width: detailDrawing.width,
 			height: detailDrawing.height,
-			boundaryImg: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1667836921029-641790842.png",
-			crossSectionImg: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1667836921029-340586306.png",
+			boundaryImg,
+			crossSectionImg,
+			rooms: ideaPositions.map((ideaPosition) => ({ name: ideaPosition.roomLabel, amount: 1 })) as any,
 			additionalInformation: {
 				budget: `${detailDrawing.budget} Million VND`,
 				members: detailDrawing.members,
@@ -400,24 +422,11 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			},
 		};
 
-		try {
-			const result = await detailDrawingApi.create(data);
-			navigate(`/order/${result._id}`);
-		} catch (error) {
-			throw error;
-		}
-	};
+		const result = await detailDrawingApi.create(data);
 
-	// function from https://stackoverflow.com/a/15832662/512042
-	function downloadURI(uri: string, name: string) {
-		const link: HTMLAnchorElement = document.createElement("a");
-		link.download = name;
-		link.href = uri;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		link.parentElement?.removeChild(link);
-	}
+		dispatch(popMessage({}));
+		navigate(`/order/${result._id}`);
+	};
 
 	const door = rightFloorPlan?.door.split(",").map(Number);
 	console.log(rightFloorPlan);
@@ -520,7 +529,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 									<Layer
 										scale={{ x: 2, y: 2 }}
 										clipFunc={(context) => {
-											console.log(rightFloorPlan?.exteriors);
 											if (!rightFloorPlan?.exteriors) return;
 
 											context.beginPath();
@@ -696,7 +704,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 								<H4 className="text-gray-700">House boundary</H4>
 								<Stack column className="gap-4">
 									<Stack className="items-center">
-										<Text className="text-gray-500 w-16">Width:</Text>
+										<Text className="!text-blue-500 w-16">Width:</Text>
 										<Input
 											placeholder="50"
 											className="!text-blue-500 w-32"
@@ -707,7 +715,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 										/>
 									</Stack>
 									<Stack className="items-center">
-										<Text className="text-gray-500 w-16">Length:</Text>
+										<Text className="!text-blue-500 w-16">Length:</Text>
 										<Input
 											placeholder="50"
 											className="!text-blue-500 w-32"
@@ -718,7 +726,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 										/>
 									</Stack>
 									<Stack className="items-center">
-										<Text className="text-gray-500 w-16">Area:</Text>
+										<Text className="!text-blue-500 w-16">Area:</Text>
 										<Input
 											placeholder="50"
 											className="!text-blue-500 w-32"
