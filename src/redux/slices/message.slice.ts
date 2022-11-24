@@ -46,11 +46,12 @@ const MessageSlice = createSlice<MessageState, SliceCaseReducers<MessageState>>(
 			});
 		},
 
-		popMessage: (state, action: PayloadAction<boolean>) => {
-			if (action.payload) return [];
-
+		popMessage: (state, action: PayloadAction<{ isClearAll?: boolean; atIndex?: number }>) => {
+			if (action.payload?.isClearAll) return [];
 			if (state.length == 1) return [];
-			return state.slice(-1);
+
+			const atIndex = action.payload?.atIndex || state.length - 1;
+			return [...state.slice(0, atIndex), ...state.slice(atIndex + 1)];
 		},
 	},
 });

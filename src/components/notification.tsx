@@ -13,7 +13,7 @@ const Notification = () => {
 	const messages = useSelector((state: RootState) => state.message);
 
 	const handleClosed = () => {
-		dispatch(popMessage(false));
+		dispatch(popMessage(null));
 	};
 
 	const message = messages[messages.length - 1];
