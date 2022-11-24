@@ -40,7 +40,7 @@ const Order = ({ id }: OrderProps) => {
 			<section className="container mx-auto">
 				<Carousel title="Step 01: Complete your design (Task 01)" defaultOpened>
 					{detailDrawing?.hire ? (
-						<HiringSuccess detailDrawing={detailDrawing} />
+						<HiringSuccess detailDrawing={detailDrawing} setDetailDrawing={setDetailDrawing} />
 					) : (
 						<Hiring setIsLoader={setIsLoader} detailDrawing={detailDrawing} />
 					)}
