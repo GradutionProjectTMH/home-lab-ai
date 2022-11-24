@@ -52,9 +52,9 @@ const Button = ({
 			type={typeButton}
 		>
 			<Stack className="items-center justify-center gap-2">
-				{LeftItem && <LeftItem className="w-4 h-4" />}
+				{LeftItem && <LeftItem className="w-6 h-6" />}
 				<H5>{children}</H5>
-				{RightItem && <RightItem className="w-4 h-4" />}
+				{RightItem && <RightItem className="w-6 h-6" />}
 			</Stack>
 		</button>
 	);

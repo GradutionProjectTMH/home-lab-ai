@@ -10,8 +10,13 @@ type ItemDesign = {
 export type FloorDesign = {
 	floor: number;
 	designs: ItemDesign[];
+	status: boolean;
 };
 
+export type HouseDesign = {
+	designs: ItemDesign[];
+	status: boolean;
+};
 export interface Hire {
 	_id: string;
 	userId?: string;
@@ -20,6 +25,6 @@ export interface Hire {
 	detailDrawing?: string;
 	detailDrawingId?: string;
 	floorDesigns?: FloorDesign[];
-	houseDesigns?: ItemDesign[];
+	houseDesigns?: HouseDesign[];
 	status: STATUS_HIRE;
 }

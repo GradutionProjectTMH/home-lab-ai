@@ -22,6 +22,7 @@ import UploadFile from "../../components/upload-file";
 import Input from "../../components/input";
 import Text from "../../components/typography/text";
 import ModelDetailDrawing from "../../components/detail-drawing/model.detail-drawing";
+import { ROLE } from "../../enums/user.enum";
 
 const rewards = [
 	{
@@ -285,14 +286,15 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 				{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
 					return (
 						<Carousel
+							key={index}
 							title={`${special[index + 1].charAt(0).toUpperCase() + special[index + 1].slice(1)} floor 3D model `}
 							defaultOpened
 						>
 							<Stack column={true} className="p-8 gap-8">
 								<Stack className="gap-8">
-									{floorDesign.designs.map((design) => {
+									{floorDesign.designs.map((design, i) => {
 										return (
-											<Stack column={true} className="basis-1/3 ">
+											<Stack column={true} className="basis-1/3 " key={i}>
 												<div
 													className="bg-white p-1  hover:scale-110 hover:shadow-md hover:z-10"
 													key={index}
@@ -315,7 +317,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 											</Stack>
 										);
 									})}
-									{floorDesign.designs.length < 3 && (
+									{floorDesign.designs.length < 3 && user?.role === ROLE.DESIGNER && !floorDesign.status && (
 										<div className="p-1 basis-1/3" onClick={() => handleClickUpload(index + 1)}>
 											<UploadFile />
 										</div>

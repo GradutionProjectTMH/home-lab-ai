@@ -67,6 +67,7 @@ const ModelDetailDrawing = ({
 								isChoose: false,
 							},
 						],
+						status: false,
 					},
 				];
 			} else {
