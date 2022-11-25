@@ -368,7 +368,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		//Validation
 		let isValid = detailDrawing.width && detailDrawing.height && detailDrawing.area && detailDrawing.budget;
 		if (!isValid) {
-			dispatch(pushLoading("Please fill all required fields before make order"));
+			dispatch(pushError("Please fill all required fields before make order"));
 			return;
 		}
 
