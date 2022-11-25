@@ -1,10 +1,16 @@
 import { STATUS_HIRE } from "../enums/hiring.enum";
 import { User } from "../types/common";
+import { Products } from "./product.interface";
+
+export type Material = {
+	amount?: number;
+} & Products;
 
 type ItemDesign = {
 	image: string;
 	coHomeUrl: string;
 	isChoose: boolean;
+	materials?: Material[];
 };
 
 export type FloorDesign = {

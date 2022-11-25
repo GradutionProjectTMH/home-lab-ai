@@ -8,8 +8,10 @@ import H4 from "../../components/typography/h4";
 import * as productApi from "../../apis/product.api";
 import { Products } from "../../interfaces/product.interface";
 import H5 from "../../components/typography/h5";
-import Star from "../../svgs/star.svg";
+import { ReactComponent as Star } from "../../svgs/star.svg";
 import H3 from "../../components/typography/h3";
+import { RouteComponentProps } from "@reach/router";
+import { formatPrice } from "../../utils/format-price";
 
 const material = {
 	images: [
@@ -20,14 +22,18 @@ const material = {
 	],
 };
 
-const VerifyMaterial = ({ params }: any) => {
+type VerifyMaterialProps = {
+	id?: string;
+} & RouteComponentProps;
+
+const VerifyMaterial = ({ id }: VerifyMaterialProps) => {
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [material, setMaterial] = React.useState<Products>();
 
 	const fetchDetailDrawing = async () => {
-		if (!params.id) return;
+		if (!id) return;
 		try {
-			const result = await productApi.getById("632ffa147d38002713728fdb");
+			const result = await productApi.getById(id);
 
 			setMaterial(result);
 		} catch (error: any) {
@@ -45,7 +51,7 @@ const VerifyMaterial = ({ params }: any) => {
 	if (isLoader) return <></>;
 	return (
 		<section className="container mx-auto">
-			<Stack className="items-stretch p-6 gap-10">
+			<Stack className="items-stretch px-6 pt-6 pb-32 gap-10">
 				<Stack className="basis-1/2 h-[400px]">{material?.images && <Slider images={material?.images} />}</Stack>
 				<Stack column={true} className="basis-1/2  justify-between">
 					<Stack column={true} className="gap-3">
@@ -63,9 +69,7 @@ const VerifyMaterial = ({ params }: any) => {
 								</Stack>
 							</Stack>
 						</div>
-						<H3 className="!text-5xl text-blue-300">
-							{material?.price.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")} $
-						</H3>
+						<H3 className="!text-5xl text-blue-300">{formatPrice(material?.price || 0)} $</H3>
 						<Stack className="gap-4 ">
 							<H5 className="!text-base !font-normal text-gray-500">Inspection status: </H5>
 							<H5 className="!text-base !font-black text-red-500">Untested</H5>

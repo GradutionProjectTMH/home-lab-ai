@@ -11,6 +11,8 @@ import Modal from "../../modal";
 import { joinTxts } from "../../../utils/text.util";
 import { Link } from "@reach/router";
 import Input from "../../input";
+import { Material } from "../../../interfaces/hire.interface";
+import { formatPrice } from "../../../utils/format-price";
 
 const rewards = [
 	{
@@ -39,41 +41,6 @@ const rewards = [
 	},
 ];
 
-const dataMaterials = [
-	{
-		image: "https://thegioithepvn.com/wp-content/uploads/2021/06/thep-gan-xay-dung.jpg",
-		name: "Scrap steel",
-		amount: "100 ",
-		trademark: "Thang Nguyen",
-		unit: "ton",
-		urlVerify: "http://localhost:3000/verify-material/:id",
-	},
-	{
-		image: "https://thegioithepvn.com/wp-content/uploads/2021/06/thep-gan-xay-dung.jpg",
-		name: "Scrap steel",
-		amount: "100 ",
-		trademark: "Thang Nguyen",
-		unit: "ton",
-		urlVerify: "http://localhost:3000/verify-material/:id",
-	},
-	{
-		image: "https://thegioithepvn.com/wp-content/uploads/2021/06/thep-gan-xay-dung.jpg",
-		name: "Scrap steel",
-		amount: "100 ",
-		trademark: "Thang Nguyen",
-		unit: "ton",
-		urlVerify: "http://localhost:3000/verify-material/:id",
-	},
-	{
-		image: "https://thegioithepvn.com/wp-content/uploads/2021/06/thep-gan-xay-dung.jpg",
-		name: "Scrap steel",
-		amount: "100 ",
-		trademark: "Thang Nguyen",
-		unit: "ton",
-		urlVerify: "http://localhost:3000/verify-material/:id",
-	},
-];
-
 type AddToMarketplaceProp = {
 	setCurrentPage: React.Dispatch<React.SetStateAction<"Order" | "Marketplace">>;
 	detailDrawing: DetailDrawing | undefined;
@@ -82,8 +49,11 @@ type AddToMarketplaceProp = {
 const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplaceProp) => {
 	const [isShownModal, setIsShownModal] = React.useState<boolean>(false);
 	const [iFrameSrc, setIFrameSrc] = React.useState<string | null>();
+	const [isShownModalImage, setIsShownModalImage] = React.useState<boolean>(false);
+	const [imageSrc, setImageSrc] = React.useState<string | null>();
 	const [imageSelected, setImageSelected] = React.useState<number | null>();
-	const [materials, setMaterials] = React.useState(dataMaterials);
+	const [materials, setMaterials] = React.useState<Material[]>([]);
+	const [totalPrice, setTotalPrice] = React.useState<number>(0);
 
 	const handleHiring = () => {
 		window.scrollTo(0, 0);
@@ -92,8 +62,37 @@ const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplac
 
 	const handleChangeInputAmount = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
 		const newMaterials = [...materials];
-		newMaterials[index].amount = e.target.value;
+		newMaterials[index].amount = Number(e.target.value || 0);
+		let price = 0;
+		newMaterials.forEach((material) => {
+			price = price + material.price * (material.amount || 0);
+		});
+		setTotalPrice(price);
 		setMaterials(newMaterials);
+	};
+
+	const handleShownMaterial = (index: number) => {
+		if (
+			!detailDrawing?.hire.houseDesigns ||
+			detailDrawing?.hire.houseDesigns.length === 0 ||
+			!detailDrawing?.hire.houseDesigns[0].designs ||
+			detailDrawing?.hire.houseDesigns[0].designs.length === 0
+		) {
+			return;
+		}
+		const materialSleeted =
+			detailDrawing?.hire.houseDesigns[0].designs[index].materials?.map((material) => {
+				return {
+					...material,
+					amount: 1,
+				};
+			}) || [];
+		let price = 0;
+		materialSleeted.forEach((material) => {
+			price = price + material.price * material.amount;
+		});
+		setTotalPrice(price);
+		setMaterials(materialSleeted);
 	};
 	return (
 		<>
@@ -141,140 +140,113 @@ const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplac
 
 				<Stack className="pb-8 border-b-gray-200 border-b p-6">
 					<Stack className=" gap-4">
-						<Stack
-							className="basis-1/3 items-stretch "
-							onClick={() => {
-								if (imageSelected === 1) {
-									setImageSelected(null);
-								} else {
-									setImageSelected(1);
-									setIsShownModal(true);
-									setIFrameSrc(
-										"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40GHV6QF1&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
-									);
-								}
-							}}
-						>
-							<div
-								className={joinTxts(
-									"border-4 hover:scale-110 hover:shadow-md hover:z-10",
-									imageSelected == 1 ? "border-blue-500" : null,
-								)}
-							>
-								<img
-									src="../images/suggested-designs/33.png"
-									alt="suggested-design"
-									className="border-white border-4 cursor-pointer  h-[400px]"
-								/>
-							</div>
-						</Stack>
-						<Stack
-							className="basis-1/3 items-stretch "
-							onClick={() => {
-								if (imageSelected === 2) {
-									setImageSelected(null);
-								} else {
-									setImageSelected(2);
-									setIsShownModal(true);
-									setIFrameSrc(
-										"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40GHV6QF1&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
-									);
-								}
-							}}
-						>
-							<div
-								className={joinTxts(
-									"border-4 hover:scale-110 hover:shadow-md hover:z-10",
-									imageSelected == 2 ? "border-blue-500" : null,
-								)}
-							>
-								<img
-									src="../images/suggested-designs/33.png"
-									alt="suggested-design"
-									className="border-white border-4 cursor-pointer  h-[400px]"
-								/>
-							</div>
-						</Stack>
-						<Stack
-							className="basis-1/3 items-stretch "
-							onClick={() => {
-								if (imageSelected === 3) {
-									setImageSelected(null);
-								} else {
-									setImageSelected(3);
-									setIsShownModal(true);
-									setIFrameSrc(
-										"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40GHV6QF1&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
-									);
-								}
-							}}
-						>
-							<div
-								className={joinTxts(
-									"border-4 hover:scale-110 hover:shadow-md hover:z-10",
-									imageSelected == 3 ? "border-blue-500" : null,
-								)}
-							>
-								<img
-									src="../images/suggested-designs/33.png"
-									alt="suggested-design"
-									className="border-white border-4 cursor-pointer  h-[400px]"
-								/>
-							</div>
-						</Stack>
-					</Stack>
-				</Stack>
-				<Stack column={true} className="py-8 border-b-gray-200 border-b">
-					<table className="table-auto">
-						<thead className="border-b-gray-200 border-b ">
-							<tr className="text-blue-500 text-lg">
-								<th className="pb-2 w-1/12">Id</th>
-								<th className="pb-2 w-2/12">Image</th>
-								<th className="pb-2 w-4/12">Name</th>
-								<th className="pb-2 w-3/12">Trademark</th>
-								<th className="pb-2 w-1/12">Amount</th>
-								<th className="pb-2 w-1/12">Verify</th>
-							</tr>
-						</thead>
-						<tbody>
-							{materials.map((material, index) => {
+						{detailDrawing?.hire.houseDesigns &&
+							detailDrawing?.hire.houseDesigns.length > 0 &&
+							detailDrawing?.hire.houseDesigns[0].designs.map((design, index) => {
 								return (
-									<tr key={index} className="text-lg">
-										<td className="text-center align-middle">1</td>
-										<td className="text-center align-middle">
-											<Stack className="justify-center p-2">
-												<img
-													src={material.image}
-													alt="suggested-design"
-													className="border-white border-4 cursor-pointer rounded-full w-[100px] h-[100px]"
-												/>
-											</Stack>
-										</td>
-										<td className="text-center align-middle">{material.name}</td>
-										<td className="text-center align-middle">{material.trademark}</td>
-										<td className="text-center align-middle">
-											<Stack className="gap-2">
-												<Input
-													type={"number"}
-													value={material.amount}
-													onChange={(e) => {
-														handleChangeInputAmount(index, e);
-													}}
-												/>
-												{material.unit}
-											</Stack>
-										</td>
-										<td className="text-center align-middle">
-											<a href={material.urlVerify} target="_blank" className="hover:text-blue-500 font-bold">
-												Check
-											</a>
-										</td>
-									</tr>
+									<Stack
+										key={index}
+										className="basis-1/3 items-stretch "
+										onClick={() => {
+											if (imageSelected === index) {
+												setImageSelected(null);
+											} else {
+												setImageSelected(index);
+												setIsShownModal(true);
+												setIFrameSrc(design.coHomeUrl);
+												handleShownMaterial(index);
+											}
+										}}
+									>
+										<div
+											className={joinTxts(
+												"border-4 hover:scale-110 hover:shadow-md hover:z-10",
+												imageSelected == index ? "border-blue-500" : null,
+											)}
+										>
+											<img
+												src={design.image}
+												alt="suggested-design"
+												className="border-white border-4 cursor-pointer  h-[400px]"
+											/>
+										</div>
+									</Stack>
 								);
 							})}
-						</tbody>
-					</table>
+					</Stack>
 				</Stack>
+				{materials && materials.length > 0 && (
+					<Stack column={true} className="py-8 border-b-gray-200 border-b">
+						<table className="table-auto">
+							<thead className="border-b-gray-200 border-b ">
+								<tr className="text-blue-500 text-lg">
+									<th className="pb-2 w-1/12">No.</th>
+									<th className="pb-2 w-2/12">Image</th>
+									<th className="pb-2 w-3/12">Name</th>
+									<th className="pb-2 w-2/12">Price</th>
+									<th className="pb-2 w-2/12">Trademark</th>
+									<th className="pb-2 w-1/12">Amount</th>
+									<th className="pb-2 w-1/12">Verify</th>
+								</tr>
+							</thead>
+							<tbody>
+								{materials.map((material, index) => {
+									return (
+										<tr key={index} className="text-xl">
+											<td className="text-center align-middle">{index}</td>
+											<td className="text-center align-middle">
+												<Stack className="justify-center p-2">
+													<img
+														src={material.images[0]}
+														alt="suggested-design"
+														className="border-white border-4 cursor-pointer rounded-full w-[200px] h-[200px]"
+														onClick={() => {
+															setImageSrc(material.images[0]);
+															setIsShownModalImage(true);
+														}}
+													/>
+												</Stack>
+											</td>
+											<td className="text-center align-middle">{material.name}</td>
+											<td className="text-center align-middle">{formatPrice(material.price)} VND</td>
+											<td className="text-center align-middle">{material.verify?.trademark}</td>
+											<td className="text-center align-middle">
+												<Stack className="gap-2">
+													<Input
+														type={"number"}
+														value={material.amount}
+														onChange={(e) => {
+															handleChangeInputAmount(index, e);
+														}}
+													/>
+												</Stack>
+											</td>
+											<td className="text-center align-middle">
+												<a
+													href={`/verify-material/${material._id}`}
+													target="_blank"
+													className="hover:text-blue-500 font-bold"
+												>
+													Check
+												</a>
+											</td>
+										</tr>
+									);
+								})}
+								<tr className="text-2xl font-bold border-t-2 border-b-gray-200 ">
+									<td className="text-center align-middle"></td>
+									<td className="text-center align-middle"></td>
+									<td className="text-center align-middle pt-4">Total price: </td>
+									<td className="text-center align-middle text-red-500 pt-4">{formatPrice(totalPrice)} VND</td>
+									<td className="text-center align-middle"></td>
+									<td className="text-center align-middle"></td>
+									<td className="text-center align-middle"></td>
+								</tr>
+							</tbody>
+						</table>
+					</Stack>
+				)}
+
 				{/* <Stack column={true} className="py-8 border-b-gray-200 border-b">
 					<H5 className="text-green-500 mb-8">You have completed all requirements</H5>
 					<Stack className="gap-4 items-center">
@@ -299,6 +271,21 @@ const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplac
 					<div className="bg-white p-1 w-full">
 						<iframe src={iFrameSrc} className="w-full h-full"></iframe>
 					</div>
+				)}
+			</Modal>
+
+			<Modal
+				isShown={isShownModalImage}
+				onClose={() => {
+					setIsShownModalImage(false);
+					setImageSrc(null);
+				}}
+				withFull={true}
+			>
+				{imageSrc && (
+					<Stack className="bg-white p-1 w-full justify-center items-center">
+						<img src={imageSrc} alt="" />
+					</Stack>
 				)}
 			</Modal>
 		</>

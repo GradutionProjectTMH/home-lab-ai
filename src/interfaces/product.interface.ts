@@ -23,7 +23,7 @@ export interface Products {
 	description: string;
 	type: TYPE_PRODUCT;
 	status: PRODUCT_STATUS;
-	verify?: VerifyProduct;
+	verify?: any;
 	createdBy: string;
 	createdAt: string;
 	updatedAt: string;
