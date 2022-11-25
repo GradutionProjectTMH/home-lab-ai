@@ -368,7 +368,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		//Validation
 		let isValid = detailDrawing.width && detailDrawing.height && detailDrawing.area && detailDrawing.budget;
 		if (!isValid) {
-			dispatch(pushLoading("Please fill all required fields before make order"));
+			dispatch(pushError("Please fill all required fields before make order"));
 			return;
 		}
 
@@ -703,7 +703,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			</section>
 
 			<section className="container mx-auto mt-4">
-				<Carousel title="Advanced Section">
+				<Carousel title="Advanced Section" defaultOpened>
 					<Stack className="mt-4 px-6 flex-wrap items-start justify-around gap-y-4">
 						<Stack className="items-end gap-12">
 							<Stack column className="gap-4">

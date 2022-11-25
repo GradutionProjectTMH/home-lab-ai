@@ -1,4 +1,4 @@
-export function joinTxts(...texts: (string | null)[]): string {
+export function joinTxts(...texts: (string | null | undefined)[]): string {
 	return texts.filter((text) => text).join(" ");
 }
 

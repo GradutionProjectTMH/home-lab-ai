@@ -4,14 +4,16 @@ import { joinTxts } from "../../utils/text.util";
 type StackProps = {
 	children: React.ReactNode;
 	column?: boolean;
-} & React.HTMLAttributes<HTMLHeadingElement>;
+} & React.HTMLAttributes<HTMLDivElement>;
 
-const Stack = ({ children, column = false, className = "", ...props }: StackProps) => {
-	return (
-		<div className={joinTxts("flex", column ? "flex-col" : "flex-row", className)} {...props}>
-			{children}
-		</div>
-	);
-};
+const Stack = React.forwardRef(
+	({ children, column = false, className = "", ...props }: StackProps, ref: React.Ref<HTMLDivElement>) => {
+		return (
+			<div ref={ref} className={joinTxts("flex", column ? "flex-col" : "flex-row", className)} {...props}>
+				{children}
+			</div>
+		);
+	},
+);
 
 export default Stack;
