@@ -203,7 +203,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 			<Stack column={true} className="pb-8 p-6">
 				<div className="mt-8 ">
 					<Button className="px-8" type="outline" onClick={handleAddToMarketplace}>
-						Add to Marketplace
+						Build from scratch
 					</Button>
 				</div>
 				<H5 className="text-green-500 my-8">You have completed all requirements</H5>
