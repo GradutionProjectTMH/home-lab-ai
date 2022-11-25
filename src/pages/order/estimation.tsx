@@ -27,18 +27,34 @@ type PDFItemProps = {
 } & HTMLAttributes<HTMLDivElement>;
 export const PDFItem = ({ column = false, children, className }: PDFItemProps) => {
 	return (
-		<Stack column={column} className={joinTxts("gap-2", className)}>
+		<Stack column={column} className={joinTxts("border-b border-gray-100", className)}>
 			{children}
 		</Stack>
 	);
 };
 
 export const PDFKey = ({ children, className }: HTMLAttributes<HTMLParagraphElement>) => {
-	return <Strong className={joinTxts("basis-1/6 text-gray-900 bg-gray-100", className)}>{children}</Strong>;
+	return <Strong className={joinTxts("basis-1/6 px-2 text-gray-900 bg-gray-100", className)}>{children}</Strong>;
 };
 
 export const PDFValue = ({ children, className }: HTMLAttributes<HTMLParagraphElement>) => {
-	return <Text className={joinTxts("basis-5/6 text-gray-700", className)}>{children}</Text>;
+	return <Text className={joinTxts("basis-5/6 flex-grow px-2 text-gray-700", className)}>{children}</Text>;
+};
+
+type PDFImageProps = {
+	label?: string;
+	note?: string;
+} & HTMLAttributes<HTMLDivElement>;
+export const PDFImage = ({ label, note, children, className }: PDFImageProps) => {
+	return (
+		<Stack column className="gap-2 items-center flex-grow">
+			{children}
+			<Stack className="gap-2 text-blue-500">
+				{label && <Text className="text-gray-500">{label}</Text>}
+				{note && <Strong>&#091;{note}&#093;</Strong>}
+			</Stack>
+		</Stack>
+	);
 };
 
 export const PDFHeading1 = ({ children, className }: HTMLAttributes<HTMLHeadingElement>) => {

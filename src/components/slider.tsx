@@ -1,11 +1,12 @@
 import React from "react";
+import { ReactImageGalleryProps } from "react-image-gallery";
 import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
 
-interface SliderProps {
+interface SliderProps extends Partial<ReactImageGalleryProps> {
 	images: string[];
 }
 
-const Slider = ({ images }: SliderProps) => {
+const Slider = ({ images, ...props }: SliderProps) => {
 	const imagesssss = [
 		{
 			original: "https://picsum.photos/id/1018/1000/600/",
@@ -27,7 +28,17 @@ const Slider = ({ images }: SliderProps) => {
 			thumbnail: image,
 		};
 	});
-	return <ImageGallery items={data} showPlayButton={false} showFullscreenButton={false} />;
+	return (
+		<ImageGallery
+			showThumbnails={false}
+			items={data}
+			slideInterval={3000}
+			autoPlay
+			showPlayButton={false}
+			showFullscreenButton={false}
+			{...props}
+		/>
+	);
 };
 
 export default Slider;
