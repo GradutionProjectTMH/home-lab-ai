@@ -12,6 +12,7 @@ import TextRazor from "../apis/text-razor.api";
 import { useDispatch, useSelector } from "react-redux";
 import { popMessage, pushLoading } from "../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
+import Slider from "../components/slider";
 
 const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -83,14 +84,8 @@ const HomePage = (props: RouteComponentProps) => {
 					</Stack>
 
 					<Stack className="basis-1/2 gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
-						<img
-							src="../images/living-room-1.jpg"
-							alt="living-room-1"
-							width={296}
-							className="h-[32rem]"
-							placeholder="blurred"
-						/>
-						<img src="../images/living-room-2.jpg" alt="living-room-2" width={296} className="h-[32rem]" />
+						<Slider images={[`${process.env.PUBLIC_URL}/images/home-slider/1.jpg`]} />
+						{/* <img src="../images/living-room-2.jpg" alt="living-room-2" width={296} className="h-[32rem]" /> */}
 					</Stack>
 				</Stack>
 			</section>
