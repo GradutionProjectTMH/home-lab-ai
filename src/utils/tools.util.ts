@@ -20,8 +20,8 @@ export function dataURIToBlob(dataURI: string) {
 	return new Blob([ia], { type: mimeString });
 }
 
-export function randomArray(array: any[]) {
-	for (let i = 0; i < 30; ++i) {
+export function randomArray(array: any[], seed: number = 100) {
+	for (let i = 0; i < seed; ++i) {
 		const index1 = Math.floor(Math.random() * array.length);
 		const index2 = Math.floor(Math.random() * array.length);
 

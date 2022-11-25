@@ -33,6 +33,7 @@ import { useIsInViewport } from "../hooks/useIsInViewPort";
 import { Stage as StageType } from "konva/lib/Stage";
 import { dataURIToBlob, downloadURI } from "../utils/tools.util";
 import axiosClient from "../configs/server.config";
+import SpringLoading from "../components/SpringLoading";
 
 const BuildPage = ({ location }: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -438,7 +439,14 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const door = rightFloorPlan?.door.split(",").map(Number);
 
 	return (
-		<>
+		<SpringLoading
+			situations={[
+				{ percent: 0, duration: 0 },
+				{ percent: 60, duration: 500 },
+				{ percent: 80, duration: 350 },
+				{ percent: 100, duration: 200 },
+			]}
+		>
 			<section className="container mx-auto">
 				<Stack className="items-stretch">
 					<Stack column className="grow gap-8 items-stretch">
@@ -938,7 +946,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 					))}
 				</Stack>
 			</Modal>
-		</>
+		</SpringLoading>
 	);
 };
 

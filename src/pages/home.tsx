@@ -9,13 +9,13 @@ import { ReactComponent as LightBulbSvg } from "../svgs/light-bulb.svg";
 import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
 import TextRazor from "../apis/text-razor.api";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { popMessage, pushLoading } from "../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
 import Slider from "../components/slider";
-import { ReactComponent as ChevronRightSvg } from "../svgs/chevron-right.svg";
-import { ReactComponent as ChevronLeftSvg } from "../svgs/chevron-left.svg";
 import { randomArray } from "../utils/tools.util";
+import H3 from "../components/typography/h3";
+import SpringLoading from "../components/SpringLoading";
 
 const slideImages = [
 	"1.jpg",
@@ -84,7 +84,16 @@ const HomePage = (props: RouteComponentProps) => {
 	};
 
 	return (
-		<>
+		<SpringLoading
+			situations={[
+				{ percent: 0, duration: 0 },
+				{ percent: 30, duration: 500 },
+				{ percent: 60, duration: 1000 },
+				{ percent: 80, duration: 400 },
+				{ percent: 93, duration: 1000 },
+				{ percent: 100, duration: 200 },
+			]}
+		>
 			<section className="container mx-auto">
 				<Stack className="items-stretch">
 					<Stack column className="basis-1/2 gap-8 justify-center">
@@ -165,7 +174,7 @@ const HomePage = (props: RouteComponentProps) => {
 					</Stack>
 				</div>
 			</section>
-		</>
+		</SpringLoading>
 	);
 };
 
