@@ -1,6 +1,6 @@
 import jsPDF, { HTMLFontFace } from "jspdf";
 
-const pdfDoc = new jsPDF({ unit: "px" });
+const pdfDoc = new jsPDF("portrait", "px", "a4");
 
 export const fontFaces: HTMLFontFace[] = [
 	{
