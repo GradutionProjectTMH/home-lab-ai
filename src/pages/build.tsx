@@ -243,26 +243,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		downloadURI(rightFloorPlanUri, "rightFloorPlan.jpg");
 	};
 
-	const { entities, sentences, nounPhrases }: any = (location as any).state?.text_razor || {};
-	const filteredEntities =
-		entities &&
-		entities
-			.filter((entity: any) => entity.entityEnglishId != "")
-			.reduce((result: any[], entity: any) => {
-				const index = result.findIndex((item) => item.entityEnglishId == entity.entityEnglishId);
-				if (index == -1) result.push(entity);
-				return result;
-			}, []);
-
-	let currentSentenceKey = 0;
-	nounPhrases?.forEach((nounPhrase: any) => {
-		if (sentences[currentSentenceKey].words.slice(-1)[0].position < nounPhrase.wordPositions[0]) ++currentSentenceKey;
-
-		sentences[currentSentenceKey].words.forEach((word: any) => {
-			if (nounPhrase.wordPositions.includes(word.position)) word.isNounPhrase = true;
-		});
-	});
-
 	const handleDragEnd = (event: KonvaEventObject<MouseEvent>, index: number) => {
 		const element = event.target;
 		const { x, y } = element.attrs;
@@ -385,6 +365,13 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 
 	const handleMakeOrder = async () => {
+		//Validation
+		let isValid = detailDrawing.width && detailDrawing.height && detailDrawing.area && detailDrawing.budget;
+		if (!isValid) {
+			dispatch(pushLoading("Please fill all required fields before make order"));
+			return;
+		}
+
 		dispatch(pushLoading("Making order"));
 		if (!user) throw new Error(UN_AUTHORIZED);
 
@@ -428,8 +415,27 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		navigate(`/order/${result._id}`);
 	};
 
+	const { entities, sentences, nounPhrases }: any = (location as any).state?.text_razor || {};
+	const filteredEntities =
+		entities &&
+		entities
+			.filter((entity: any) => entity.entityEnglishId != "")
+			.reduce((result: any[], entity: any) => {
+				const index = result.findIndex((item) => item.entityEnglishId == entity.entityEnglishId);
+				if (index == -1) result.push(entity);
+				return result;
+			}, []);
+
+	let currentSentenceKey = 0;
+	nounPhrases?.forEach((nounPhrase: any) => {
+		if (sentences[currentSentenceKey].words.slice(-1)[0].position < nounPhrase.wordPositions[0]) ++currentSentenceKey;
+
+		sentences[currentSentenceKey].words.forEach((word: any) => {
+			if (nounPhrase.wordPositions.includes(word.position)) word.isNounPhrase = true;
+		});
+	});
+
 	const door = rightFloorPlan?.door.split(",").map(Number);
-	console.log(rightFloorPlan);
 
 	return (
 		<>
@@ -703,8 +709,10 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 							<Stack column className="gap-4">
 								<H4 className="text-gray-700">House boundary</H4>
 								<Stack column className="gap-4">
-									<Stack className="items-center">
-										<Text className="!text-blue-500 w-16">Width:</Text>
+									<Stack className="items-center gap-2">
+										<Text className="!text-gray-500 w-16 whitespace-nowrap">
+											Width <span className="!text-red-500">*</span>:
+										</Text>
 										<Input
 											placeholder="50"
 											className="!text-blue-500 w-32"
@@ -714,8 +722,10 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 											after={<Text className="text-blue-500">m</Text>}
 										/>
 									</Stack>
-									<Stack className="items-center">
-										<Text className="!text-blue-500 w-16">Length:</Text>
+									<Stack className="items-center gap-2">
+										<Text className="!text-gray-500 w-16 whitespace-nowrap">
+											Length <span className="!text-red-500">*</span>:
+										</Text>
 										<Input
 											placeholder="50"
 											className="!text-blue-500 w-32"
@@ -725,8 +735,10 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 											after={<Text className="text-blue-500">m</Text>}
 										/>
 									</Stack>
-									<Stack className="items-center">
-										<Text className="!text-blue-500 w-16">Area:</Text>
+									<Stack className="items-center gap-2">
+										<Text className="!text-gray-500 w-16 whitespace-nowrap">
+											Area <span className="!text-red-500">*</span>:
+										</Text>
 										<Input
 											placeholder="50"
 											className="!text-blue-500 w-32"
@@ -748,7 +760,9 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 								<H4 className="text-gray-700">Additional information</H4>
 								<Stack column className="gap-4">
 									<Stack className="items-center">
-										<Text className="text-gray-500 w-28">Budget:</Text>
+										<Text className="text-gray-500 w-28 whitespace-nowrap">
+											Budget <span className="!text-red-500">*</span>:
+										</Text>
 										<Input
 											placeholder="50"
 											className="!text-blue-500 w-full"

@@ -99,7 +99,7 @@ const HomePage = (props: RouteComponentProps) => {
 				<div className="container mx-auto">
 					<Stack className="mt-14 items-stretch justify-between">
 						<Stack column className="bg-white shadow-xl shadow-blackAlpha-100">
-							<textarea cols={64} rows={3} className="resize-none !outline-none p-4 border-0" ref={textAreaRef} />
+							<textarea cols={80} rows={6} className="!outline-none p-4 border-0" ref={textAreaRef} />
 							<Stack className="justify-between items-center mx-4 mb-2">
 								<Small className="text-blue-500">Tell us your dream house will be...</Small>
 								<Stack className="gap-1">
