@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { pushSuccess } from "../../../redux/slices/message.slice";
 import { RootState } from "../../../redux/stores/store.redux";
 import IPFS from "../../../apis/ipfs.api";
+import { dataExampleHouseDesign } from "../../../utils/example-data-house-design";
 
 type HiringProp = {
 	setIsLoader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,10 +29,9 @@ type HiringProp = {
 };
 
 const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
-	console.log("detailDrawing", detailDrawing);
-
 	const dispatch = useDispatch();
 	const ether = useSelector((state: RootState) => state.ether);
+	const user = useSelector((state: RootState) => state.user);
 
 	const [designers, setDesigner] = React.useState<User[]>();
 	const [selectedDesigner, setSelectedDesigner] = React.useState<User>();
@@ -49,49 +49,55 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		fetchAllDesigner();
 	}, []);
 
+	React.useEffect(() => {
+		if (detailDrawing?.hire) {
+			setCurrentPage("Marketplace");
+		}
+	}, []);
+
 	const handleClickDesigner = (designer: User) => {
 		setSelectedDesigner(designer);
 	};
 
-	const handleClickOrder = async () => {
-		if (!selectedDesigner || !detailDrawing) return;
+	const handleClickOrder = async (isSelfBuild: boolean) => {
+		if (!selectedDesigner || !detailDrawing || detailDrawing.hire) {
+			if (isSelfBuild) return setCurrentPage("Marketplace");
+			return;
+		}
 
 		const hiring: Partial<Hire> = {
-			designerId: selectedDesigner._id,
+			designerId: isSelfBuild ? user?._id : selectedDesigner._id,
 			detailDrawingId: detailDrawing._id,
 			status: STATUS_HIRE.ACCEPT,
 			floorDesigns: [],
-			houseDesigns: [],
+			houseDesigns: isSelfBuild ? (dataExampleHouseDesign as any) : [],
 		};
 
 		try {
-			const timestamp = await Ether.getTimestamp();
-			const value = parseEther("10");
-			const expiredIn = Ether.BN.from(timestamp).add(300);
-			const dataIpfs = await IPFS.upload(
-				JSON.stringify({
-					drawing: detailDrawing,
-					designer: selectedDesigner,
-					bounty: value,
-					expiredIn,
-				}),
-			);
-			const transaction = await ether!.contract.HomeLab.connect(ether!.provider.getSigner()).startProject(
-				detailDrawing._id,
-				IPFS.getIPFSUrlFromPath(dataIpfs.path),
-				ethers.constants.AddressZero,
-				"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-				expiredIn,
-				value,
-				{ value: value },
-			);
-			const receipt = await transaction.wait();
-			dispatch(pushSuccess(receipt.events![0].event));
+			// const timestamp = await Ether.getTimestamp();
+			// const value = parseEther("10");
+			// const expiredIn = Ether.BN.from(timestamp).add(300);
+			// const dataIpfs = await IPFS.upload(
+			// 	JSON.stringify({
+			// 		drawing: detailDrawing,
+			// 		designer: selectedDesigner,
+			// 		bounty: value,
+			// 		expiredIn,
+			// 	}),
+			// );
+			// const transaction = await ether!.contract.HomeLab.connect(ether!.provider.getSigner()).startProject(
+			// 	detailDrawing._id,
+			// 	IPFS.getIPFSUrlFromPath(dataIpfs.path),
+			// 	ethers.constants.AddressZero,
+			// 	"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+			// 	expiredIn,
+			// 	value,
+			// 	{ value: value },
+			// );
+			// const receipt = await transaction.wait();
+			// dispatch(pushSuccess(receipt.events![0].event));
 
 			const result = await hireApi.createHire(hiring);
-			console.log("hiring: ", result);
-
-			console.log("Hiring success");
 			setIsLoader(true);
 		} catch (error) {
 			throw error;
@@ -148,7 +154,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 								})}
 							</Stack>
 							<div>
-								<Button className="" type="outline" onClick={handleClickOrder}>
+								<Button className="" type="outline" onClick={() => handleClickOrder(false)}>
 									Order Now
 								</Button>
 							</div>
@@ -202,7 +208,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 
 			<Stack column={true} className="pb-8 p-6">
 				<div className="mt-8 ">
-					<Button className="px-8" type="outline" onClick={handleAddToMarketplace}>
+					<Button className="px-8" type="outline" onClick={() => handleClickOrder(true)}>
 						Build from scratch
 					</Button>
 				</div>

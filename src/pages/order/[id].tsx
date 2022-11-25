@@ -12,6 +12,8 @@ import { ReactComponent as DownloadSvg } from "../../svgs/download.svg";
 import jsPDF from "jspdf";
 import pdfDoc, { fontFaces } from "../../apis/js-pdf.api";
 import { PDFHeading1, PDFItem, PDFList, PDFSection, PDFKey, PDFValue, PDFHeading2, PDFImage } from "./estimation";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/stores/store.redux";
 import Text from "../../components/typography/text";
 import Strong from "../../components/typography/strong";
 
@@ -22,6 +24,7 @@ type OrderProps = {
 const Order = ({ id }: OrderProps) => {
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
+	const user = useSelector((state: RootState) => state.user);
 
 	const pdfContent = React.useRef<HTMLDivElement>(null);
 
@@ -63,7 +66,7 @@ const Order = ({ id }: OrderProps) => {
 		<>
 			<section className="container mx-auto">
 				<Carousel title="Step 01: Complete your design (Task 01)" defaultOpened>
-					{detailDrawing?.hire ? (
+					{detailDrawing?.hire && detailDrawing?.hire.designerId !== user?._id ? (
 						<HiringSuccess detailDrawing={detailDrawing} setDetailDrawing={setDetailDrawing} />
 					) : (
 						<Hiring setIsLoader={setIsLoader} detailDrawing={detailDrawing} />

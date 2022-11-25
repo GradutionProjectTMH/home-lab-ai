@@ -17,6 +17,7 @@ import { pushSuccess } from "../redux/slices/message.slice";
 import { setWalletAddress } from "../redux/slices/ether.slice";
 import { formatAddress } from "../utils/text.util";
 import { routes } from "../pages/navigator";
+import { joinTxts } from "../utils/text.util";
 
 type NavbarProps = {} & React.HtmlHTMLAttributes<HTMLDivElement>;
 
@@ -25,6 +26,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	const user = useSelector((state: RootState) => state.user);
 	const ether = useSelector((state: RootState) => state.ether);
 	const [wallet, setWallet] = React.useState<string>();
+	const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
 
 	const handleLoginGoogle = async (): Promise<void> => {
 		try {
@@ -70,7 +72,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	}, [ether, ether?.walletAddress]);
 
 	return (
-		<nav className="bg-gray-50" {...props}>
+		<nav className="bg-gray-50 !z-50" {...props}>
 			<div className="container mx-auto">
 				<Stack className="pt-12 pb-6 items-center">
 					<Link to="/" className="basis-1/4">
@@ -107,9 +109,38 @@ const Navbar = ({ ...props }: NavbarProps) => {
 						{user ? (
 							<Stack
 								className="items-center cursor-pointer hover:bg-gray-200 hover:rounded px-3 py-2"
-								onClick={handleLogout}
+								onClick={() => setShowDropdown(!showDropdown)}
 							>
 								<Avatar src={user.avatar} />
+								<div className="relative inline-block text-left">
+									<div>
+										<div
+											className={joinTxts(
+												"absolute right-0 z-100 mt-10 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+												!showDropdown ? "hidden" : null,
+											)}
+										>
+											<div className="py-1">
+												<a href="#" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
+													Account settings
+												</a>
+												<a href="#" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
+													Support
+												</a>
+												<a href="#" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
+													License
+												</a>
+												<a
+													href="#"
+													className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm"
+													onClick={handleLogout}
+												>
+													Sign out
+												</a>
+											</div>
+										</div>
+									</div>
+								</div>
 							</Stack>
 						) : (
 							<Button onClick={handleLoginGoogle} RightItem={GoogleSvg} type="outline" className="!px-3 !py-2">
