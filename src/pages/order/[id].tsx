@@ -2,20 +2,18 @@ import * as React from "react";
 import Stack from "../../components/layout/stack";
 import Carousel from "../../components/carousel";
 import Button from "../../components/button";
-import H1 from "../../components/typography/h1";
 import { DetailDrawing } from "../../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../../apis/detail-drawing.api";
 import HiringSuccess from "../../components/order/step-one/hiring-success";
 import Hiring from "../../components/order/step-one/hiring";
 import { RouteComponentProps } from "@reach/router";
-import { ReactComponent as DownloadSvg } from "../../svgs/download.svg";
 import jsPDF from "jspdf";
 import pdfDoc, { fontFaces } from "../../apis/js-pdf.api";
 import { PDFHeading1, PDFItem, PDFList, PDFSection, PDFKey, PDFValue, PDFHeading2, PDFImage } from "./estimation";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
 import Text from "../../components/typography/text";
-import Strong from "../../components/typography/strong";
+import { formatPrice } from "../../utils/text.util";
 
 type OrderProps = {
 	id?: string;
@@ -61,6 +59,19 @@ const Order = ({ id }: OrderProps) => {
 	if (isLoader) return <></>;
 
 	console.log(detailDrawing);
+
+	const materials =
+		(detailDrawing as any)?.hire.houseDesigns[0].designs[0].materials?.map((material: any) => {
+			return {
+				...material,
+				amount: 1,
+			};
+		}) || [];
+
+	const totalPrice = materials.reduce((result: number, material: any) => {
+		result += material.price * (material.amount || 0);
+		return result;
+	}, 0);
 
 	return (
 		<>
@@ -121,7 +132,7 @@ const Order = ({ id }: OrderProps) => {
 										</PDFItem>
 										<PDFItem>
 											<PDFKey>Email</PDFKey>
-											<PDFValue>Nguyendinhhuy14052000@gmail.com</PDFValue>
+											<PDFValue>nguyendinhhuy14052000@gmail.com</PDFValue>
 										</PDFItem>
 									</PDFList>
 								</PDFSection>
@@ -131,30 +142,31 @@ const Order = ({ id }: OrderProps) => {
 									<PDFList>
 										<PDFItem column>
 											<PDFKey>Your Idea</PDFKey>
+											{/* <PDFValue>{detailDrawing?.additionalInformation.idea}</PDFValue> */}
 											<PDFValue>
-												It’s safe to say that I have given my dream house a considerable amount of thought. But first I
-												must say that I’m currently residing in a small apartment in District 3, Saigon, a thriving
-												metropolis in southern Vietnam. However, I dream of moving to the breathtakingly beautiful
-												mountainous area of Dalat, located in the central highland of Vietnam. My special house would
-												have a variety of features. Firstly, it would be a two-storey detached house built from glass
-												and timber with an outdoor terrace so that my family can sunbathe every day. I would also want
-												to have an infinity swimming pool and an immaculately kept garden because I’m very passionate
-												about flora and fauna. There is no greater feeling than being able to enjoy the idyllic scene
-												that Dalat has to offer while relaxing in the water. Last but not least, it would be wonderful
-												if my house had a spacious living room with a fireplace as well as an open-plan modern kitchen
-												and a cozy dining room where I can invite all my friends over for dinner sometimes. The reason
-												why I want to have this splendid house is because I really appreciate the cold weather that
-												Dalat has to offer and would love to immerse myself in the local culture there. The house would
-												be big enough for all of the family to enjoy at once. Moreover, I would love nothing more than
-												to be at one with nature and I think that house would really allow me to do that in a safe and
-												comfortable environment. Dalat is also not too far from Ho Chi Minh City, so it might be
-												convenient for travelling back and forth between the two locations if I need to.
+												My dream house is a modern house not far from the sea. On the ground-floor, there're four rooms.
+												There is a living-room with a white sofa, a black armchair and a coffee table. My living room
+												has a lot of paints and bibelots,.. There is a lamp, a French windows with a view of the garden,
+												a television set and a phone. My dream house has a fully-equiped kitchen, with a fridge, a rator
+												and a door out to the garden. There is a bathroom with a shower and a toilet. Finally, there is
+												a study-room with a desk and a computer. On the first floor, there are three bed-rooms and a
+												bath. In my bedroom, there is a wardrobe, a king-sized bed. There are a lot of pictures of me,
+												and a television set. There is a balcony with a view of the sea. My house is really beautiful
+												and spacious. n the garden, there are a lot of fruit trees. The is a patio in front of the
+												house, and there is a driveway with a gate. The walls of my house are pure white because white
+												walls look fresh. And all of the all windows in my dream house have blinds.
 											</PDFValue>
 										</PDFItem>
-										<PDFItem column>
-											<PDFKey>Our recommendation</PDFKey>
-											<PDFValue>Huhu</PDFValue>
-										</PDFItem>
+										{/* <PDFItem column>
+											<PDFKey>Entities</PDFKey>
+											<Stack className="flex-wrap gap-4">
+												{detailDrawing?.additionalInformation.entities?.map((entity) => (
+													<Text key={entity} className={"flex-grow px-2 text-gray-700"}>
+														{entity}
+													</Text>
+												))}
+											</Stack>
+										</PDFItem> */}
 									</PDFList>
 								</PDFSection>
 
@@ -165,34 +177,31 @@ const Order = ({ id }: OrderProps) => {
 									<PDFList>
 										<PDFItem>
 											<PDFKey>Width</PDFKey>
-											<PDFValue>10 m</PDFValue>
+											<PDFValue>{detailDrawing?.width} m</PDFValue>
 										</PDFItem>
 										<PDFItem>
 											<PDFKey>Height</PDFKey>
-											<PDFValue>20 m</PDFValue>
+											<PDFValue>{detailDrawing?.height} m</PDFValue>
 										</PDFItem>
 										<PDFItem>
 											<PDFKey>Area</PDFKey>
 											<PDFValue>
-												20 m<sup>2</sup>
+												{detailDrawing?.width && detailDrawing?.height && detailDrawing?.width * detailDrawing?.height}{" "}
+												m<sup>2</sup>
 											</PDFValue>
 										</PDFItem>
 										<PDFItem>
 											<PDFKey>Rooms</PDFKey>
-											<PDFList className="flex-grow">
-												<PDFItem>
-													<PDFKey className="basis-1/5">Living Room</PDFKey>
-													<PDFValue className="basis-4/5">01 rooms</PDFValue>
-												</PDFItem>
-												<PDFItem>
-													<PDFKey className="basis-1/5">Public Area</PDFKey>
-													<PDFValue className="basis-4/5">02 rooms</PDFValue>
-												</PDFItem>
-												<PDFItem>
-													<PDFKey className="basis-1/5">Bathroom</PDFKey>
-													<PDFValue className="basis-4/5">01 rooms</PDFValue>
-												</PDFItem>
-											</PDFList>
+											<PDFValue>4</PDFValue>
+
+											{/* <PDFList className="flex-grow">
+												{detailDrawing?.rooms?.map((room) => (
+													<PDFItem key={room.name}>
+														<PDFKey className="basis-1/5">{room.name}</PDFKey>
+														<PDFValue className="basis-4/5">{room.amount} rooms</PDFValue>
+													</PDFItem>
+												))}
+											</PDFList> */}
 										</PDFItem>
 									</PDFList>
 
@@ -208,51 +217,25 @@ const Order = ({ id }: OrderProps) => {
 										<PDFItem>
 											<PDFKey>3D Design</PDFKey>
 											<Stack>
-												<img src="https://joeschmoe.io/api/v1/random" className="h-96 flex-grow" />
+												<img src={`${process.env.PUBLIC_URL}/images/3d.png`} className="h-96 flex-grow" />
 											</Stack>
 										</PDFItem>
 									</PDFList>
 
 									<PDFHeading2>3. Furniture</PDFHeading2>
 									<PDFList>
-										<PDFItem>
-											<PDFKey>Chair</PDFKey>
-											<PDFImage label="Super chair 5000" note="200.000 VND">
-												<Stack className="flex-wrap">
-													<img src="https://joeschmoe.io/api/v1/501" className="h-52 flex-grow" />
-													<img src="https://joeschmoe.io/api/v1/1245" className="h-52 flex-grow" />
-													<img src="https://joeschmoe.io/api/v1/834" className="h-52 flex-grow" />
-												</Stack>
-											</PDFImage>
-										</PDFItem>
-										<PDFItem>
-											<PDFKey>Table</PDFKey>
-											<PDFImage label="Vip table +12" note="200.000 VND">
-												<Stack className="flex-wrap">
-													<img src="https://joeschmoe.io/api/v1/234" className="h-52 flex-grow" />
-													<img src="https://joeschmoe.io/api/v1/412" className="h-52 flex-grow" />
-												</Stack>
-											</PDFImage>
-										</PDFItem>
-										<PDFItem>
-											<PDFKey>Bed</PDFKey>
-											<PDFImage label="Super VuaNem Gold" note="1.000.000 VND">
-												<Stack className="flex-wrap">
-													<img src="https://joeschmoe.io/api/v1/24" className="h-52 flex-grow" />
-													<img src="https://joeschmoe.io/api/v1/135" className="h-52 flex-grow" />
-												</Stack>
-											</PDFImage>
-										</PDFItem>
-										<PDFItem>
-											<PDFKey>Cabinet</PDFKey>
-											<PDFImage label="Cardano Storage" note="800.000 VND">
-												<Stack className="flex-wrap">
-													<img src="https://joeschmoe.io/api/v1/723" className="h-52 flex-grow" />
-													<img src="https://joeschmoe.io/api/v1/634" className="h-52 flex-grow" />
-													<img src="https://joeschmoe.io/api/v1/623" className="h-52 flex-grow" />
-												</Stack>
-											</PDFImage>
-										</PDFItem>
+										{materials.map((material: any) => (
+											<PDFItem key={material?._id}>
+												<PDFKey>{material.name}</PDFKey>
+												<PDFImage label={material?.name} note={`${formatPrice(material?.price)} VND`}>
+													<Stack className="flex-wrap">
+														{material?.images?.map((image: string) => (
+															<img key={image} src={image} className="h-64 flex-grow" />
+														))}
+													</Stack>
+												</PDFImage>
+											</PDFItem>
+										))}
 									</PDFList>
 								</PDFSection>
 
@@ -268,35 +251,21 @@ const Order = ({ id }: OrderProps) => {
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td className="px-2 border border-gray-300">Super chair 5000</td>
-												<td className="px-2 border border-gray-300">1</td>
-												<td className="px-2 border border-gray-300">200.000 VND</td>
-												<td className="px-2 border border-gray-300">200.000 VND</td>
-											</tr>
-											<tr>
-												<td className="px-2 border border-gray-300">Vip table +12</td>
-												<td className="px-2 border border-gray-300">2</td>
-												<td className="px-2 border border-gray-300">200.000 VND</td>
-												<td className="px-2 border border-gray-300">400.000 VND</td>
-											</tr>
-											<tr>
-												<td className="px-2 border border-gray-300">Super VuaNem Gold</td>
-												<td className="px-2 border border-gray-300">1</td>
-												<td className="px-2 border border-gray-300">1.000.000 VND</td>
-												<td className="px-2 border border-gray-300">1.000.000 VND</td>
-											</tr>
-											<tr>
-												<td className="px-2 border border-gray-300">Cardano Storage</td>
-												<td className="px-2 border border-gray-300">1</td>
-												<td className="px-2 border border-gray-300">800.000 VND</td>
-												<td className="px-2 border border-gray-300">800.000 VND</td>
-											</tr>
+											{materials?.map((material: any) => (
+												<tr key={material?._id}>
+													<td className="px-2 border border-gray-300">{material?.name}</td>
+													<td className="px-2 border border-gray-300">{material?.amount}</td>
+													<td className="px-2 border border-gray-300">{formatPrice(material?.price)} VND</td>
+													<td className="px-2 border border-gray-300">
+														{formatPrice(material?.price && material?.amount && material?.price * material?.amount)} VND
+													</td>
+												</tr>
+											))}
 											<tr className="bg-yellow-100">
 												<td className="px-2 border border-gray-300 font-bold" colSpan={3}>
 													Total
 												</td>
-												<td className="px-2 border border-gray-300 font-bold">2.400.000 VND</td>
+												<td className="px-2 border border-gray-300 font-bold">{formatPrice(totalPrice)} VND</td>
 											</tr>
 										</tbody>
 									</table>
@@ -306,8 +275,15 @@ const Order = ({ id }: OrderProps) => {
 					</Stack>
 
 					<Stack className="justify-center gap-4 mt-6">
-						<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1" onClick={handleEstimationSaved}>
-							Save As PDF
+						<Button
+							type="outline"
+							className="!px-4 !py-1"
+							// onClick={handleEstimationSaved}
+							onClick={() => {
+								window.open("https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/Floor+Plan+Views.pdf", "_blank");
+							}}
+						>
+							View Floor Plan
 						</Button>
 					</Stack>
 				</Carousel>

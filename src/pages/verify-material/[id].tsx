@@ -11,7 +11,7 @@ import H5 from "../../components/typography/h5";
 import { ReactComponent as Star } from "../../svgs/star.svg";
 import H3 from "../../components/typography/h3";
 import { RouteComponentProps } from "@reach/router";
-import { formatPrice } from "../../utils/format-price";
+import { formatPrice } from "../../utils/text.util";
 
 const material = {
 	images: [
