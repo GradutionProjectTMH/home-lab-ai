@@ -8,11 +8,10 @@ import { ReactComponent as AddCircleOutline } from "../../../svgs/add_circle_out
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
 import { splittingRoomColor } from "../../../utils/room-color";
 import Modal from "../../modal";
-import { joinTxts } from "../../../utils/text.util";
+import { formatPrice, joinTxts } from "../../../utils/text.util";
 import { Link } from "@reach/router";
 import Input from "../../input";
 import { Material } from "../../../interfaces/hire.interface";
-import { formatPrice } from "../../../utils/format-price";
 
 const rewards = [
 	{

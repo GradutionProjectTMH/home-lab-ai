@@ -6,6 +6,8 @@ interface BountyReward {
 	amount: number;
 }
 interface AdditionalInformation {
+	idea?: string;
+	entities?: string[];
 	budget: string;
 	members: string;
 	theme: string;
