@@ -13,6 +13,32 @@ import { useDispatch, useSelector } from "react-redux";
 import { popMessage, pushLoading } from "../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
 import Slider from "../components/slider";
+import { ReactComponent as ChevronRightSvg } from "../svgs/chevron-right.svg";
+import { ReactComponent as ChevronLeftSvg } from "../svgs/chevron-left.svg";
+import { randomArray } from "../utils/tools.util";
+
+const slideImages = [
+	"1.jpg",
+	"10.jpg",
+	"11.jpg",
+	"12.webp",
+	"13.webp",
+	"14.jpg",
+	"15.jpg",
+	"16.jpg",
+	"17.jpeg",
+	"18.webp",
+	"19.webp",
+	"2.jpg",
+	"20.jpg",
+	"3.jpg",
+	"4.jpg",
+	"5.jpg",
+	"6.jpg",
+	"7.webp",
+	"8.webp",
+	"9.jpg",
+];
 
 const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -83,9 +109,17 @@ const HomePage = (props: RouteComponentProps) => {
 						</Stack>
 					</Stack>
 
-					<Stack className="basis-1/2 gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
-						<Slider images={[`${process.env.PUBLIC_URL}/images/home-slider/1.jpg`]} />
-						{/* <img src="../images/living-room-2.jpg" alt="living-room-2" width={296} className="h-[32rem]" /> */}
+					<Stack className="basis-1/2 items-center gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
+						<Slider
+							images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
+							showNav={false}
+							useTranslate3D
+						/>
+						<Slider
+							images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
+							showNav={false}
+							useTranslate3D
+						/>
 					</Stack>
 				</Stack>
 			</section>

@@ -19,3 +19,16 @@ export function dataURIToBlob(dataURI: string) {
 
 	return new Blob([ia], { type: mimeString });
 }
+
+export function randomArray(array: any[]) {
+	for (let i = 0; i < 30; ++i) {
+		const index1 = Math.floor(Math.random() * array.length);
+		const index2 = Math.floor(Math.random() * array.length);
+
+		const temp = array[index1];
+		array[index1] = array[index2];
+		array[index2] = temp;
+	}
+
+	return array;
+}
