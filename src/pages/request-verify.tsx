@@ -21,12 +21,21 @@ const RequestVerify = () => {
 		});
 	};
 
+	// const handleSendRequestButtonClicked = async () => {
+	//   let flag = true;
+	//   Object.keys(material).forEach(key => {
+	//     flag = flag && (material[key])
+	//   })
+	// }
+
 	return (
 		<section className="container mx-auto">
 			<Stack className="justify-center gap-8">
-				<Stack className="basis-1/2 w-2/5 justify-center items-center">
+				<Stack className="relative basis-1/2 w-2/5 justify-center items-center">
 					<img src={`${process.env.PUBLIC_URL}/images/verify-bg.jpg`} className="object-contain w-full" />
-					<H3>Click to add Material image</H3>
+					<Stack className="absolute top-0 left-0 w-full h-full justify-center items-center bg-whiteAlpha-700 cursor-pointer opacity-0 hover:opacity-100">
+						<H3>Click to add Material image</H3>
+					</Stack>
 				</Stack>
 				<Stack column className="basis-1/2 items-stretch gap-4">
 					<H2>Request Material</H2>
@@ -58,6 +67,10 @@ const RequestVerify = () => {
 								after={<Text className="text-blue-500">VND</Text>}
 							/>
 						</Stack>
+					</Stack>
+
+					<Stack>
+						<Button>Send Request</Button>
 					</Stack>
 				</Stack>
 			</Stack>
