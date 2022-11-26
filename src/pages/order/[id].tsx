@@ -12,7 +12,6 @@ import pdfDoc, { fontFaces } from "../../apis/js-pdf.api";
 import { PDFHeading1, PDFItem, PDFList, PDFSection, PDFKey, PDFValue, PDFHeading2, PDFImage } from "./estimation";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
-import Text from "../../components/typography/text";
 import { formatPrice } from "../../utils/text.util";
 
 type OrderProps = {
@@ -60,13 +59,17 @@ const Order = ({ id }: OrderProps) => {
 
 	console.log(detailDrawing);
 
-	const materials =
-		(detailDrawing as any)?.hire.houseDesigns[0].designs[0].materials?.map((material: any) => {
+	let materials: any[] = [];
+	try {
+		materials = (detailDrawing as any)?.hire.houseDesigns[0].designs[0]?.materials?.map((material: any) => {
 			return {
 				...material,
 				amount: 1,
 			};
-		}) || [];
+		});
+	} catch (error) {
+		materials = [];
+	}
 
 	const totalPrice = materials.reduce((result: number, material: any) => {
 		result += material.price * (material.amount || 0);
