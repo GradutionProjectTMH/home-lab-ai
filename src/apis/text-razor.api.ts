@@ -1,14 +1,7 @@
-import { store } from "../redux/stores/store.redux";
+import axiosClient from "../configs/server.config";
 
 const extract = async (text: string, extractors: string[]) => {
-	const params = new URLSearchParams();
-	params.append("text", text);
-	params.append("extractors", extractors.join(","));
-
-	console.log(store.getState());
-
-	const api = store.getState().textRazorService!;
-	return api.post("/", params);
+	return (await axiosClient.post<any, any>(`text-razor`, { text, extractors })).response;
 };
 
 const TextRazor = {

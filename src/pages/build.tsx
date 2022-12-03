@@ -47,18 +47,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const isIntersecting = useIsInViewport(boundaryObserverTargetRef);
 
 	const user = useSelector((state: RootState) => state.user);
-	const [detailDrawing, setDetailDrawing] = React.useState<Record<string, any>>({
-		width: "",
-		length: "",
-		area: "",
-		budget: "",
-		members: "",
-		theme: "",
-		location: "",
-		locatedAtAlley: false,
-		businessInHouse: false,
-		inTheCorner: false,
-	});
 
 	const [isShownModalBoundary, setIsShownModalBoundary] = React.useState<boolean>(false);
 	const [boundaryNames, setBoundaryNames] = React.useState<string[]>([]);
@@ -110,13 +98,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			});
 		}
 	}, [g2pService, boundaryName]);
-
-	const handleUserInfoChanged = (key: string, value: any) => {
-		setDetailDrawing({
-			...detailDrawing,
-			[key]: value,
-		});
-	};
 
 	const handleBoundaryClicked = (boundaryName: string) => {
 		setBoundaryName(boundaryName);
@@ -416,6 +397,8 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		navigate(`/order/${result._id}`);
 	};
 
+	const detailDrawing = (location as any).state?.detail_drawing;
+
 	const { entities, sentences, nounPhrases }: any = (location as any).state?.text_razor || {};
 	const filteredEntities =
 		entities &&
@@ -712,138 +695,77 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 			<section className="container mx-auto mt-4">
 				<Carousel title="Advanced Section" defaultOpened>
-					<Stack className="mt-4 px-6 flex-wrap items-start justify-around gap-y-4">
-						<Stack className="items-end gap-12">
-							<Stack column className="gap-4">
-								<H4 className="text-gray-700">House boundary</H4>
-								<Stack column className="gap-4">
-									<Stack className="items-center gap-2">
-										<Text className="!text-gray-500 w-16 whitespace-nowrap">
-											Width <span className="!text-red-500">*</span>:
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-32"
-											type="number"
-											value={detailDrawing.width}
-											onChange={(event) => handleUserInfoChanged("width", Number(event?.target.value))}
-											after={<Text className="text-blue-500">m</Text>}
-										/>
-									</Stack>
-									<Stack className="items-center gap-2">
-										<Text className="!text-gray-500 w-16 whitespace-nowrap">
-											Length <span className="!text-red-500">*</span>:
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-32"
-											type="number"
-											value={detailDrawing.height}
-											onChange={(event) => handleUserInfoChanged("height", Number(event?.target.value))}
-											after={<Text className="text-blue-500">m</Text>}
-										/>
-									</Stack>
-									<Stack className="items-center gap-2">
-										<Text className="!text-gray-500 w-16 whitespace-nowrap">
-											Area <span className="!text-red-500">*</span>:
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-32"
-											type="number"
-											value={detailDrawing.area}
-											onChange={(event) => handleUserInfoChanged("area", Number(event?.target.value))}
-											after={
+					{detailDrawing && (
+						<>
+							<Stack className="mt-4 px-6 flex-wrap items-start justify-around gap-y-4">
+								<Stack className="items-end gap-12">
+									<Stack column className="gap-4">
+										<H4 className="text-gray-700">House boundary</H4>
+										<Stack column className="gap-4">
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-16 whitespace-nowrap">Width:</Text>
+												<Text className="text-blue-500">{detailDrawing.width}m</Text>
+											</Stack>
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-16 whitespace-nowrap">Length:</Text>
+												<Text className="text-blue-500">{detailDrawing.height}m</Text>
+											</Stack>
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-16 whitespace-nowrap">Area:</Text>
 												<Text className="text-blue-500">
-													m<sup>2</sup>
+													{detailDrawing.area}m<sup>2</sup>
 												</Text>
-											}
-										/>
+											</Stack>
+										</Stack>
+									</Stack>
+								</Stack>
+								<Stack className="items-end gap-12">
+									<Stack column className="gap-4">
+										<H4 className="text-gray-700">Additional information</H4>
+										<Stack column className="gap-4">
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-28 whitespace-nowrap">Budget:</Text>
+												<Text className="text-blue-500">{detailDrawing.budget} Million VND</Text>
+											</Stack>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-28">Members:</Text>
+												<Text className="text-blue-500">{detailDrawing.members}</Text>
+											</Stack>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-28">Theme:</Text>
+												<Text className="text-blue-500">{detailDrawing.theme}</Text>
+											</Stack>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-28">Location:</Text>
+												<Text className="text-blue-500">{detailDrawing.location}</Text>
+											</Stack>
+										</Stack>
+									</Stack>
+								</Stack>
+								<Stack className="items-end gap-12">
+									<Stack column className="gap-4">
+										<H4 className="text-gray-700">Quick questions</H4>
+										<Stack column className="gap-4">
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-40">Located at alley:</Text>
+												<input type="checkbox" checked={detailDrawing.locatedAtAlley} disabled />
+											</Stack>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-40">Business in house:</Text>
+												<input type="checkbox" checked={detailDrawing.businessInHouse} disabled />
+											</Stack>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-40">In the corner:</Text>
+												<input type="checkbox" checked={detailDrawing.inTheCorner} disabled />
+											</Stack>
+										</Stack>
 									</Stack>
 								</Stack>
 							</Stack>
-						</Stack>
-						<Stack className="items-end gap-12">
-							<Stack column className="gap-4">
-								<H4 className="text-gray-700">Additional information</H4>
-								<Stack column className="gap-4">
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-28 whitespace-nowrap">
-											Budget <span className="!text-red-500">*</span>:
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-full"
-											type="number"
-											value={detailDrawing.budget}
-											onChange={(event) => handleUserInfoChanged("budget", event?.target.value)}
-											after={<Text className="text-blue-500">Million VND</Text>}
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-28">Members:</Text>
-										<Input
-											value={detailDrawing.members}
-											onChange={(event) => handleUserInfoChanged("members", event?.target.value)}
-											placeholder="Mother, Father, Children"
-											className="!text-blue-500 w-full"
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-28">Theme:</Text>
-										<Input
-											value={detailDrawing.theme}
-											onChange={(event) => handleUserInfoChanged("theme", event?.target.value)}
-											placeholder="White, Yellow"
-											className="!text-blue-500 w-full"
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-28">Location:</Text>
-										<Input
-											value={detailDrawing.location}
-											onChange={(event) => handleUserInfoChanged("location", event?.target.value)}
-											placeholder="Danang"
-											className="!text-blue-500 w-full"
-										/>
-									</Stack>
-								</Stack>
-							</Stack>
-						</Stack>
-						<Stack className="items-end gap-12">
-							<Stack column className="gap-4">
-								<H4 className="text-gray-700">Quick questions</H4>
-								<Stack column className="gap-4">
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-40">Located at alley:</Text>
-										<input
-											type="checkbox"
-											checked={detailDrawing.locatedAtAlley}
-											onChange={(event) => handleUserInfoChanged("locatedAtAlley", !detailDrawing.locatedAtAlley)}
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-40">Business in house:</Text>
-										<input
-											type="checkbox"
-											checked={detailDrawing.businessInHouse}
-											onChange={(event) => handleUserInfoChanged("businessInHouse", !detailDrawing.businessInHouse)}
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-40">In the corner:</Text>
-										<input
-											type="checkbox"
-											checked={detailDrawing.inTheCorner}
-											onChange={(event) => handleUserInfoChanged("inTheCorner", !detailDrawing.inTheCorner)}
-										/>
-									</Stack>
-								</Stack>
-							</Stack>
-						</Stack>
-					</Stack>
 
-					<div className="h-[1px] my-4 bg-gray-200"></div>
+							<div className="h-[1px] my-4 bg-gray-200"></div>
+						</>
+					)}
 
 					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
 						<Stack column className="gap-4">
