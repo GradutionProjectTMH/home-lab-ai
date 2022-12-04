@@ -10,7 +10,6 @@ import { initiateFirebase } from "../redux/slices/firebase-service.slice";
 import { initiateG2p } from "../redux/slices/g2p-service.slice";
 import { initiateIpfs } from "../redux/slices/ipfs.slice";
 import { pushInfo } from "../redux/slices/message.slice";
-import { initiateTextRazor } from "../redux/slices/textrazor-service.slice";
 import { updateUser } from "../redux/slices/user.slice";
 import { RootState } from "../redux/stores/store.redux";
 import { User } from "../types/common";
@@ -64,14 +63,6 @@ const Initializer = () => {
 
 		const g2pConfig = environment.g2p;
 		dispatch(initiateG2p({ baseUrl: g2pConfig.API_ENDPOINT }));
-
-		const textRazorConfig = environment.textRazor;
-		dispatch(
-			initiateTextRazor({
-				endPoint: textRazorConfig.API_ENDPOINT,
-				apiKey: textRazorConfig.API_KEY,
-			}),
-		);
 
 		const ipfsConfig = environment.infura;
 		dispatch(

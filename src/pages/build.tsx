@@ -23,10 +23,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/stores/store.redux";
 import { UN_AUTHORIZED } from "../constants/error.constant";
 import { popMessage, pushError, pushInfo, pushLoading, pushSuccess } from "../redux/slices/message.slice";
-import { ethers } from "ethers";
 import Modal from "../components/modal";
 import { RouteComponentProps, useNavigate } from "@reach/router";
-import Input from "../components/input";
 import { DetailDrawing } from "../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../apis/detail-drawing.api";
 import { useIsInViewport } from "../hooks/useIsInViewPort";
@@ -47,18 +45,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const isIntersecting = useIsInViewport(boundaryObserverTargetRef);
 
 	const user = useSelector((state: RootState) => state.user);
-	const [detailDrawing, setDetailDrawing] = React.useState<Record<string, any>>({
-		width: "",
-		length: "",
-		area: "",
-		budget: "",
-		members: "",
-		theme: "",
-		location: "",
-		locatedAtAlley: false,
-		businessInHouse: false,
-		inTheCorner: false,
-	});
 
 	const [isShownModalBoundary, setIsShownModalBoundary] = React.useState<boolean>(false);
 	const [boundaryNames, setBoundaryNames] = React.useState<string[]>([]);
@@ -110,13 +96,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			});
 		}
 	}, [g2pService, boundaryName]);
-
-	const handleUserInfoChanged = (key: string, value: any) => {
-		setDetailDrawing({
-			...detailDrawing,
-			[key]: value,
-		});
-	};
 
 	const handleBoundaryClicked = (boundaryName: string) => {
 		setBoundaryName(boundaryName);
@@ -416,28 +395,19 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		navigate(`/order/${result._id}`);
 	};
 
-	const { entities, sentences, nounPhrases }: any = (location as any).state?.text_razor || {};
-	console.log((location as any).state?.text_razor);
-
-	const filteredEntities =
-		entities &&
-		entities
-			.filter((entity: any) => entity.entityEnglishId != "")
-			.reduce((result: any[], entity: any) => {
-				const index = result.findIndex((item) => item.entityEnglishId == entity.entityEnglishId);
-				if (index == -1) result.push(entity);
-				return result;
-			}, []);
-
-	let currentSentenceKey = 0;
-	nounPhrases?.forEach((nounPhrase: any) => {
-		if (sentences[currentSentenceKey].words.slice(-1)[0].position < nounPhrase.wordPositions[0]) ++currentSentenceKey;
-
-		sentences[currentSentenceKey].words.forEach((word: any) => {
-			if (nounPhrase.wordPositions.includes(word.position)) word.isNounPhrase = true;
-		});
-	});
-
+	const detailDrawing = (location as any).state?.detail_drawing || {
+		width: 0,
+		height: 0,
+		area: 0,
+		budget: 0,
+		members: "",
+		theme: "",
+		location: "",
+		categories: "",
+		locatedAtAlley: false,
+		businessInHouse: false,
+		inTheCorner: false,
+	};
 	const door = rightFloorPlan?.door.split(",").map(Number);
 
 	return (
@@ -714,198 +684,81 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 			<section className="container mx-auto mt-4">
 				<Carousel title="Advanced Section" defaultOpened>
-					<Stack className="mt-4 px-6 flex-wrap items-start justify-around gap-y-4">
-						<Stack className="items-end gap-12">
-							<Stack column className="gap-4">
-								<H4 className="text-gray-700">House boundary</H4>
+					{detailDrawing && (
+						<Stack className="mt-4 px-8 flex-wrap items-start justify-around gap-y-4">
+							<Stack className="items-end gap-12">
 								<Stack column className="gap-4">
-									<Stack className="items-center gap-2">
-										<Text className="!text-gray-500 w-16 whitespace-nowrap">
-											Width <span className="!text-red-500">*</span>:
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-32"
-											type="number"
-											value={detailDrawing.width}
-											onChange={(event) => handleUserInfoChanged("width", Number(event?.target.value))}
-											after={<Text className="text-blue-500">m</Text>}
-										/>
-									</Stack>
-									<Stack className="items-center gap-2">
-										<Text className="!text-gray-500 w-16 whitespace-nowrap">
-											Length <span className="!text-red-500">*</span>:
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-32"
-											type="number"
-											value={detailDrawing.height}
-											onChange={(event) => handleUserInfoChanged("height", Number(event?.target.value))}
-											after={<Text className="text-blue-500">m</Text>}
-										/>
-									</Stack>
-									<Stack className="items-center gap-2">
-										<Text className="!text-gray-500 w-16 whitespace-nowrap">
-											Area <span className="!text-red-500">*</span>:
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-32"
-											type="number"
-											value={detailDrawing.area}
-											onChange={(event) => handleUserInfoChanged("area", Number(event?.target.value))}
-											after={
-												<Text className="text-blue-500">
-													m<sup>2</sup>
-												</Text>
-											}
-										/>
-									</Stack>
-								</Stack>
-							</Stack>
-						</Stack>
-						<Stack className="items-end gap-12">
-							<Stack column className="gap-4">
-								<H4 className="text-gray-700">Additional information</H4>
-								<Stack column className="gap-4">
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-28 whitespace-nowrap">
-											Budget <span className="!text-red-500">*</span>:
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-full"
-											type="number"
-											value={detailDrawing.budget}
-											onChange={(event) => handleUserInfoChanged("budget", event?.target.value)}
-											after={<Text className="text-blue-500">Million VND</Text>}
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-28">Members:</Text>
-										<Input
-											value={detailDrawing.members}
-											onChange={(event) => handleUserInfoChanged("members", event?.target.value)}
-											placeholder="Mother, Father, Children"
-											className="!text-blue-500 w-full"
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-28">Theme:</Text>
-										<Input
-											value={detailDrawing.theme}
-											onChange={(event) => handleUserInfoChanged("theme", event?.target.value)}
-											placeholder="White, Yellow"
-											className="!text-blue-500 w-full"
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-28">Location:</Text>
-										<Input
-											value={detailDrawing.location}
-											onChange={(event) => handleUserInfoChanged("location", event?.target.value)}
-											placeholder="Danang"
-											className="!text-blue-500 w-full"
-										/>
-									</Stack>
-								</Stack>
-							</Stack>
-						</Stack>
-						<Stack className="items-end gap-12">
-							<Stack column className="gap-4">
-								<H4 className="text-gray-700">Quick questions</H4>
-								<Stack column className="gap-4">
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-40">Located at alley:</Text>
-										<input
-											type="checkbox"
-											checked={detailDrawing.locatedAtAlley}
-											onChange={(event) => handleUserInfoChanged("locatedAtAlley", !detailDrawing.locatedAtAlley)}
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-40">Business in house:</Text>
-										<input
-											type="checkbox"
-											checked={detailDrawing.businessInHouse}
-											onChange={(event) => handleUserInfoChanged("businessInHouse", !detailDrawing.businessInHouse)}
-										/>
-									</Stack>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-40">In the corner:</Text>
-										<input
-											type="checkbox"
-											checked={detailDrawing.inTheCorner}
-											onChange={(event) => handleUserInfoChanged("inTheCorner", !detailDrawing.inTheCorner)}
-										/>
-									</Stack>
-								</Stack>
-							</Stack>
-						</Stack>
-					</Stack>
-
-					<div className="h-[1px] my-4 bg-gray-200"></div>
-
-					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
-						<Stack column className="gap-4">
-							{sentences &&
-								sentences.map((sentence: any) => (
-									<Stack key={sentence.position} className="gap-2">
-										<H4 className="text-gray-700">
-											{sentence.position + 1 < 10 ? `0${sentence.position + 1}` : sentence.position + 1}.
-										</H4>
-										<Stack className="gap-2 flex-wrap">
-											{sentence.words.map((word: any) => (
-												<H4 key={word.position} className={word.isNounPhrase ? "text-blue-500" : "text-gray-500"}>
-													{word.token}
-												</H4>
-											))}
+									<H4 className="text-gray-700">House boundary</H4>
+									<Stack column className="gap-4">
+										<Stack className="items-center gap-2">
+											<Text className="!text-gray-500 w-16 whitespace-nowrap">
+												Width<span className="text-red-500">*</span> :
+											</Text>
+											<Text className="text-blue-500">{detailDrawing.width}m</Text>
+										</Stack>
+										<Stack className="items-center gap-2">
+											<Text className="!text-gray-500 w-16 whitespace-nowrap">
+												Length<span className="text-red-500">*</span> :
+											</Text>
+											<Text className="text-blue-500">{detailDrawing.height}m</Text>
+										</Stack>
+										<Stack className="items-center gap-2">
+											<Text className="!text-gray-500 w-16 whitespace-nowrap">
+												Area<span className="text-red-500">*</span> :
+											</Text>
+											<Text className="text-blue-500">
+												{detailDrawing.area}m<sup>2</sup>
+											</Text>
 										</Stack>
 									</Stack>
-								))}
-						</Stack>
-					</Stack>
-
-					<div className="h-[1px] my-4 bg-gray-200"></div>
-
-					{entities && (
-						<Stack className="mt-4 px-6 gap-4">
-							<Stack className="basis-1/2 gap-12">
-								<Stack column className="items-end gap-4">
-									<H4 className="text-gray-700">Entities list:</H4>
-									{filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-700">
-											{entity.entityEnglishId}
-										</Text>
-									))}
-								</Stack>
-								<Stack column className="items-start gap-4">
-									<H4 className="text-gray-500">Confidence score</H4>
-									{filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-500">
-											{entity.confidenceScore}
-										</Text>
-									))}
 								</Stack>
 							</Stack>
-
-							<Stack className="basis-1/2 gap-12">
-								<Stack column className="items-end gap-4">
-									<H4 className="text-gray-700">Entities list:</H4>
-									{filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-700">
-											{entity.entityEnglishId}
-										</Text>
-									))}
+							<Stack className="items-end gap-12">
+								<Stack column className="gap-4">
+									<H4 className="text-gray-700">Additional information</H4>
+									<Stack column className="gap-4">
+										<Stack className="items-center">
+											<Text className="text-gray-500 w-28 whitespace-nowrap">
+												Budget<span className="text-red-500">*</span> :
+											</Text>
+											<Text className="text-blue-500">{detailDrawing.budget} Million VND</Text>
+										</Stack>
+										<Stack className="items-center">
+											<Text className="text-gray-500 w-28">Members:</Text>
+											<Text className="text-blue-500">{detailDrawing.members}</Text>
+										</Stack>
+										<Stack className="items-center">
+											<Text className="text-gray-500 w-28">Theme:</Text>
+											<Text className="text-blue-500">{detailDrawing.theme}</Text>
+										</Stack>
+										<Stack className="items-center">
+											<Text className="text-gray-500 w-28">Location:</Text>
+											<Text className="text-blue-500">{detailDrawing.location}</Text>
+										</Stack>
+										<Stack className="items-center">
+											<Text className="text-gray-500 w-28">Categories:</Text>
+											<Text className="text-blue-500">{detailDrawing.categories}</Text>
+										</Stack>
+									</Stack>
 								</Stack>
-								<Stack column className="items-start gap-4">
-									<H4 className="text-gray-500">Confidence score</H4>
-									{filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-500">
-											{entity.confidenceScore}
-										</Text>
-									))}
+							</Stack>
+							<Stack className="items-end gap-12">
+								<Stack column className="gap-4">
+									<H4 className="text-gray-700">Quick questions</H4>
+									<Stack column className="gap-4">
+										<Stack className="items-center">
+											<Text className="text-gray-500 w-40">Located at alley:</Text>
+											<input type="checkbox" checked={detailDrawing.locatedAtAlley} disabled />
+										</Stack>
+										<Stack className="items-center">
+											<Text className="text-gray-500 w-40">Business in house:</Text>
+											<input type="checkbox" checked={detailDrawing.businessInHouse} disabled />
+										</Stack>
+										<Stack className="items-center">
+											<Text className="text-gray-500 w-40">In the corner:</Text>
+											<input type="checkbox" checked={detailDrawing.inTheCorner} disabled />
+										</Stack>
+									</Stack>
 								</Stack>
 							</Stack>
 						</Stack>
