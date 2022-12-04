@@ -387,7 +387,7 @@ const HomePage = (props: RouteComponentProps) => {
 				</Stack>
 			</section>
 
-			<section className="container mx-auto my-8">
+			<section className="container mx-auto py-8">
 				<Carousel title="Advanced Section" defaultOpened>
 					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
 						<Stack column className="gap-4">
