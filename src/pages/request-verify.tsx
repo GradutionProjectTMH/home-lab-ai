@@ -31,6 +31,7 @@ const RequestVerify = () => {
 	const [onlyMyMaterial, setOnlyMyMaterial] = React.useState<boolean>(false);
 
 	const fileRef = React.useRef<HTMLInputElement>(null);
+	const [files, setFiles] = React.useState<File[]>([]);
 
 	const handleFileAreaClicked = () => {
 		fileRef.current?.click();
@@ -43,21 +44,20 @@ const RequestVerify = () => {
 		});
 	};
 
-	const handleFileChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-		console.log(event);
+	const handleFileChanged = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (!event.target.files) return;
+
+		const files = Array.from(event.target.files);
+		setFiles(files);
 	};
 
-	// React.useEffect(() => {
-	// 	if (ipfsService) {
-	// 		IPFS.upload(
-	// 			JSON.stringify({
-	// 				text: "hello",
-	// 			}),
-	// 		).then(console.log);
-	// 	}
-	// }, [ipfsService]);
-
 	const handleSendRequestButtonClicked = async () => {
+		// Validation
+		if (files.length > 0) {
+			dispatch(pushError("Please put your material sources"));
+			return;
+		}
+
 		let flag = true;
 		Object.keys(material).forEach((key) => {
 			flag = flag && material[key];
@@ -68,17 +68,24 @@ const RequestVerify = () => {
 			return;
 		}
 
-		const { path: ipfsPath } = await IPFS.upload(
-			JSON.stringify({
-				name: material.name,
-				description: material.description,
-				price: material.price,
-			}),
-		);
+		// Upload data to IPFS
+		const { directory: ipfsDirectory, files: ipfsFiles } = await IPFS.uploadMany([
+			{
+				path: "Test",
+				content: files[0],
+			},
+		]);
 
+		// Send Transaction to smart contract
 		const transaction: ContractTransaction = await ether!.contract.Material.connect(
 			ether!.provider.getSigner(),
-		).requestItem(material.name, ipfsPath, material.paymentToken, material.bounty, { value: material.bounty });
+		).requestItem(
+			material.name,
+			IPFS.getIPFSUrlFromPath(ipfsDirectory.cid.toString()),
+			material.paymentToken,
+			material.bounty,
+			{ value: material.bounty },
+		);
 		const receipt: ContractReceipt = await transaction.wait();
 
 		dispatch(pushSuccess("Request Success"));
@@ -110,10 +117,10 @@ const RequestVerify = () => {
 							onClick={handleFileAreaClicked}
 						>
 							<H3>Click to add Material image</H3>
-							<input ref={fileRef} className="hidden" type="file" onChange={handleFileChanged} />
+							<input ref={fileRef} className="hidden" type="file" multiple onChange={handleFileChanged} />
 						</Stack>
 					</Stack>
-					<Stack column className="basis-1/2 items-stretch gap-4">
+					<Stack column className="basis-1/2 items-stretch gap-4 pr-8">
 						<H2>Request Material</H2>
 
 						<Stack column className="gap-2 items-stretch">
@@ -123,7 +130,7 @@ const RequestVerify = () => {
 								</Text>
 								<Input
 									placeholder="50"
-									className="!text-blue-500 w-72"
+									className="!text-blue-500 flex-grow"
 									type="text"
 									value={material.name}
 									onChange={(event) => handleMaterialChanged("name", event?.target.value)}
@@ -135,8 +142,8 @@ const RequestVerify = () => {
 									Description <span className="!text-red-500">*</span>:
 								</Text>
 								<Input
-									placeholder="50"
-									className="!text-blue-500 w-72"
+									placeholder="Short description for this material"
+									className="!text-blue-500 flex-grow"
 									type="text"
 									value={material.description}
 									onChange={(event) => handleMaterialChanged("description", event?.target.value)}
@@ -149,7 +156,7 @@ const RequestVerify = () => {
 								</Text>
 								<Input
 									placeholder="50"
-									className="!text-blue-500 w-72"
+									className="!text-blue-500 flex-grow"
 									type="number"
 									value={material.price}
 									onChange={(event) => handleMaterialChanged("price", Number(event?.target.value))}
@@ -159,7 +166,7 @@ const RequestVerify = () => {
 						</Stack>
 
 						<Stack>
-							<Button disabled={!ether} onClick={handleSendRequestButtonClicked}>
+							<Button disabled={!ether} onClick={handleSendRequestButtonClicked} className="flex-grow">
 								Send Request
 							</Button>
 						</Stack>
