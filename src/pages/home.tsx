@@ -69,16 +69,6 @@ const HomePage = (props: RouteComponentProps) => {
 		});
 	};
 
-	// React.useEffect(() => {
-	// 	if (ipfsService) {
-	// 		IPFS.upload(
-	// 			JSON.stringify({
-	// 				text: "hello",
-	// 			}),
-	// 		).then(console.log);
-	// 	}
-	// }, [ipfsService]);
-
 	const handleTryItButtonClicked = () => {
 		textAreaRef.current?.focus();
 	};

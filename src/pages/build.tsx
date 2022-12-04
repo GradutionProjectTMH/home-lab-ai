@@ -417,6 +417,8 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 
 	const { entities, sentences, nounPhrases }: any = (location as any).state?.text_razor || {};
+	console.log((location as any).state?.text_razor);
+
 	const filteredEntities =
 		entities &&
 		entities

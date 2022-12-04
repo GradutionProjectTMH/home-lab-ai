@@ -38,16 +38,16 @@ const Initializer = () => {
 	// ---------------Setup Services---------------
 
 	const setupServices = async () => {
-		// const etherProvider = new ethers.providers.Web3Provider((window as any).ethereum);
-		// dispatch(initiateEther(etherProvider));
-		// const signer = etherProvider.getSigner();
-		// try {
-		// 	const walletAddress = await signer.getAddress();
-		// 	dispatch(setWalletAddress(walletAddress));
-		// } catch (error) {
-		// 	console.error(error);
-		// 	dispatch(pushInfo("Tip: Connect Metamask wallet to access more features"));
-		// }
+		const etherProvider = new ethers.providers.Web3Provider((window as any).ethereum);
+		dispatch(initiateEther(etherProvider));
+		const signer = etherProvider.getSigner();
+		try {
+			const walletAddress = await signer.getAddress();
+			dispatch(setWalletAddress(walletAddress));
+		} catch (error) {
+			console.error(error);
+			dispatch(pushInfo("Tip: Connect Metamask wallet to access more features"));
+		}
 
 		const firebaseConfig = environment.firebase;
 		dispatch(

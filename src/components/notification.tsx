@@ -38,7 +38,7 @@ const Notification = () => {
 		message && (
 			<Stack
 				className={joinTxts(
-					"items-center gap-2 fixed right-0 bottom-0 mr-4 mb-4 z-[1000] px-4 py-2 shadow-lg bg-white",
+					"items-center gap-2 fixed right-0 bottom-0 max-h-80 overflow-scroll mr-4 mb-4 z-[1000] px-4 py-2 shadow-lg bg-white",
 					styles[message.type],
 					message ? "" : "hidden",
 				)}
