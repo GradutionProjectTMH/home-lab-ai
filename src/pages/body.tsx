@@ -29,8 +29,30 @@ const Body = ({ children }: RouteComponentProps<React.HTMLAttributes<HTMLElement
 							))}
 				</div>
 			</div>
-			<Navbar />
-			<div className="relative w-full h-full z-10">{children}</div>
+			<div className="sticky top-0 z-10 bg-gray-100 ">
+				<div className="absolute top-0 left-0 w-full h-full">
+					<div className="relative w-full h-full">
+						<div className="container mx-auto relative h-full">
+							{lines &&
+								Object.keys(lines)
+									.filter((key) => key.includes("VLine"))
+									.map((key) => (
+										<div key={key} className={joinTxts("absolute w-[1px] h-full top-0", lines[key as LineName])} />
+									))}
+						</div>
+						{lines &&
+							Object.keys(lines)
+								.filter((key) => key.includes("HLine"))
+								.map((key) => (
+									<div key={key} className={joinTxts("absolute w-full h-[1px] left-0", lines[key as LineName])} />
+								))}
+					</div>
+				</div>
+				<div className="relative">
+					<Navbar />
+				</div>
+			</div>
+			<div className="relative w-full h-full">{children}</div>
 		</main>
 	);
 };
