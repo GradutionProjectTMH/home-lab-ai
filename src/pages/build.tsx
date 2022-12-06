@@ -61,9 +61,10 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const [ideaRelations, setIdeaRelations] = React.useState<[IdeaPosition, IdeaPosition][]>([]);
 
 	React.useEffect(() => {
-		G2P.getTestNames(0, 20).then((res) => {
-			setBoundaryNames(res.data);
-		});
+		if (g2pService)
+			G2P.getTestNames(0, 20).then((res) => {
+				setBoundaryNames(res.data);
+			});
 	}, [g2pService]);
 
 	React.useEffect(() => {
@@ -93,6 +94,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			G2P.numSearch(boundaryName).then((res) => {
 				const { data } = res;
 				setSuggestedPlans(data.map((trainName: any) => ({ trainName, url: G2P.getTrainImageUrl(trainName) })));
+				return handleSuggestedPlanClicked(data[0]);
 			});
 		}
 	}, [g2pService, boundaryName]);
