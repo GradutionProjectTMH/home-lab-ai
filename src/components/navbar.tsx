@@ -83,7 +83,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	window.addEventListener("scroll", onScrollWindow);
 	// fixNav ? "scale-90" : "scale-100"
 	return (
-		<nav className={joinTxts("sticky top-0 w-full z-20 bg-gray-100 ", fixNav ? "shadow-md" : "")} {...props}>
+		<nav className={joinTxts("w-full", fixNav ? "shadow-md" : "")} {...props}>
 			<div className="container mx-auto">
 				<Stack className={joinTxts(" py-6 items-center ", fixNav ? "h-20" : "h-32")}>
 					<Link to="/" className={joinTxts("", fixNav ? "w-1/6" : "w-1/4")}>
