@@ -25,6 +25,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
 	const ether = useSelector((state: RootState) => state.ether);
+	const [fixNav, setFixNav] = React.useState<boolean>(false);
 	const [wallet, setWallet] = React.useState<string>();
 	const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
 
@@ -71,47 +72,71 @@ const Navbar = ({ ...props }: NavbarProps) => {
 		})();
 	}, [ether, ether?.walletAddress]);
 
+	const onScrollWindow = () => {
+		if (window.scrollY === 0) {
+			setFixNav(false);
+		} else {
+			setFixNav(true);
+		}
+	};
+
+	window.addEventListener("scroll", onScrollWindow);
+	// fixNav ? "scale-90" : "scale-100"
 	return (
-		<nav className="bg-gray-50 !z-50" {...props}>
+		<nav className={joinTxts("sticky top-0 w-full z-20 bg-gray-100 ", fixNav ? "shadow-md" : "")} {...props}>
 			<div className="container mx-auto">
-				<Stack className="pt-12 pb-6 items-center">
-					<Link to="/" className="basis-1/4">
-						<Stack className="w-72">
+				<Stack className={joinTxts(" py-6 items-center ", fixNav ? "h-20" : "h-32")}>
+					<Link to="/" className={joinTxts("", fixNav ? "w-1/6" : "w-1/4")}>
+						<Stack className={joinTxts("", fixNav ? "w-56" : "w-72")}>
 							<img src="../images/logo-full-horizontal.png" alt="Logo" />
 						</Stack>
 					</Link>
-					<Stack className="basis-1/2 justify-center gap-14">
+					<Stack className={joinTxts("w-1/2 mx-auto")}>
 						{routes
 							.filter((route) => route.isNav)
 							.map((route) => (
 								<Link
 									to={route.path}
 									key={route.name}
-									className="text-gray-500 hover:text-gray-600"
+									className={joinTxts("text-gray-500 hover:text-gray-600 ease-linear transition-[margin] duration-300")}
 									getProps={({ isPartiallyCurrent }) => ({
-										className: isPartiallyCurrent ? "text-gray-600" : "",
+										className: isPartiallyCurrent
+											? joinTxts("text-gray-600", fixNav ? "mr-4" : "mr-16")
+											: joinTxts("", fixNav ? "mr-4" : "mr-16"),
 									})}
 								>
-									<H5>{route.name}</H5>
+									<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-lg")}>
+										{route.name}
+									</H5>
 								</Link>
 							))}
 					</Stack>
 
-					<Stack className="basis-1/4 justify-end gap-2">
+					<Stack className={joinTxts("justify-end gap-2", fixNav ? "w-2/6" : "w-1/4")}>
 						<Button
 							onClick={handleConnect}
 							RightItem={MetamaskSvg}
 							type="outline"
-							className="!text-orange-600 !border-orange-600 !px-3 !py-2"
+							className={joinTxts(
+								"!text-orange-600 !border-orange-600  transition-all duration-300 ease-linear",
+								fixNav ? "!px-2 !py-1" : "!px-3 !py-2",
+							)}
 						>
-							{wallet || "Connect"}
+							<H5 className={joinTxts("", fixNav ? "!text-base" : "!text-lg")}>{wallet || "Connect"}</H5>
 						</Button>
 						{user ? (
 							<Stack
-								className="items-center cursor-pointer hover:bg-gray-200 hover:rounded px-3 py-2"
+								className={joinTxts(
+									"items-center cursor-pointer hover:bg-gray-200 hover:rounded ",
+									fixNav ? "px-2 py-1" : "px-3 py-2",
+								)}
 								onClick={() => setShowDropdown(!showDropdown)}
 							>
-								<Avatar src={user.avatar} />
+								<Stack className={joinTxts("justify-center items-center", fixNav ? "w-[32px]" : "w-[45px]")}>
+									<Stack className="rounded-full border-white border-2 overflow-hidden ">
+										<img className="object-cover" src={user.avatar} />
+									</Stack>
+								</Stack>
 								<div className="relative inline-block text-left">
 									<div>
 										<div
@@ -143,8 +168,13 @@ const Navbar = ({ ...props }: NavbarProps) => {
 								</div>
 							</Stack>
 						) : (
-							<Button onClick={handleLoginGoogle} RightItem={GoogleSvg} type="outline" className="!px-3 !py-2">
-								Sign In
+							<Button
+								onClick={handleLoginGoogle}
+								RightItem={GoogleSvg}
+								type="outline"
+								className={joinTxts(" transition-all duration-300 ease-linear", fixNav ? "!px-2 !py-1" : "!px-3 !py-2")}
+							>
+								<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-lg")}>Sign In</H5>
 							</Button>
 						)}
 					</Stack>
