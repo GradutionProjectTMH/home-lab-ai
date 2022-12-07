@@ -17,6 +17,7 @@ import { randomArray } from "../utils/tools.util";
 import SpringLoading from "../components/SpringLoading";
 import Carousel from "../components/carousel";
 import Input from "../components/input";
+import H3 from "../components/typography/h3";
 
 const slideImages = [
 	"1.jpg",
@@ -86,27 +87,28 @@ const HomePage = (props: RouteComponentProps) => {
 		setTextRazor(textRazor);
 		console.log(textRazor);
 
-		const topics = textRazor.coarseTopics.map((coarseTopic: any) => coarseTopic.label);
-		handleUserInfoChanged("theme", topics.join(", "));
+		const topics = (textRazor.coarseTopics || []).map((coarseTopic: any) => coarseTopic.label);
+		detailDrawing.topics = topics.join(", ");
 
 		const categories = textRazor.entities.reduce((result: string[], entity: any) => {
 			if (entity.freebaseTypes?.includes("/business/product_category")) result.push(entity.entityId);
 			return result;
 		}, []);
-		handleUserInfoChanged("categories", categories.join(", "));
+		detailDrawing.categories = categories.join(", ");
 
 		const members = textRazor.entities.reduce((result: string[], entity: any) => {
 			if (entity.freebaseTypes?.includes("/book/book_subject")) result.push(entity.entityId);
 			return result;
 		}, []);
-		handleUserInfoChanged("members", members.join(", "));
+		detailDrawing.members = members.join(", ");
 
 		const location = textRazor.entities.reduce((result: string[], entity: any) => {
 			if (entity.type?.includes("PopulatedPlace")) result.push(entity.entityId);
 			return result;
 		}, []);
-		handleUserInfoChanged("location", location.join(", "));
+		detailDrawing.location = location.join(", ");
 
+		setDetailDrawing(detailDrawing);
 		dispatch(popMessage(null));
 	};
 
@@ -123,6 +125,16 @@ const HomePage = (props: RouteComponentProps) => {
 
 	const handleTryItButtonClicked = () => {
 		textAreaRef.current?.focus();
+	};
+
+	const handleAnalyze2D = () => {
+		setDetailDrawing({
+			...detailDrawing,
+			width: 12,
+			height: 16,
+			area: 152,
+			budget: 1.2,
+		});
 	};
 
 	const { entities, sentences, nounPhrases }: any = textRazor;
@@ -179,7 +191,9 @@ const HomePage = (props: RouteComponentProps) => {
 								<Button type="fill" onClick={handleTryItButtonClicked}>
 									TRY IT NOW
 								</Button>
-								<Button type="outline">READ MORE</Button>
+								<Button type="outline" onClick={handleAnalyze2D}>
+									ANALYZE 2D PLAN
+								</Button>
 							</Stack>
 						</Stack>
 					</Stack>
@@ -202,22 +216,92 @@ const HomePage = (props: RouteComponentProps) => {
 			<section className="relative">
 				<div className="container mx-auto">
 					<Stack className="mt-14 items-stretch">
-						<Stack column className="basis-1/2 bg-white shadow-xl shadow-blackAlpha-100 mr-4">
-							<textarea rows={6} className="!outline-none p-4 border-0" ref={textAreaRef} />
-							<Stack className="justify-between items-center mx-4 mb-2">
-								<Small className="text-blue-500">Tell us your dream house will be...</Small>
-								<Stack className="gap-1">
-									<ButtonIcon Icon={MicSvg} className="w-10 h-10 !fill-gray-500" />
-									<ButtonIcon
-										Icon={LightBulbSvg}
-										className="w-10 h-10 !fill-blue-500"
-										onClick={handleExtractorClicked}
-									/>
+						<Stack column className="basis-1/2 mr-4">
+							<Stack column className="bg-white shadow-xl shadow-blackAlpha-100">
+								<textarea rows={6} className="!outline-none p-4 border-0" ref={textAreaRef} />
+								<Stack className="justify-between items-center mx-4 mb-2">
+									<Small className="text-blue-500">Tell us your dream house will be...</Small>
+									<Stack className="gap-1">
+										<ButtonIcon Icon={MicSvg} className="w-10 h-10 !fill-gray-500" />
+										<ButtonIcon
+											Icon={LightBulbSvg}
+											className="w-10 h-10 !fill-blue-500"
+											onClick={handleExtractorClicked}
+										/>
+									</Stack>
+								</Stack>
+							</Stack>
+
+							<Stack className="justify-between gap-4 m-8">
+								<Stack column className="gap-4">
+									<H4 className="text-gray-700">House boundary</H4>
+									<Stack column className="gap-4">
+										<Stack className="items-center gap-2">
+											<Text className="!text-gray-500 w-16 whitespace-nowrap">
+												Width<span className="text-red-500">*</span> :
+											</Text>
+											<Input
+												placeholder="50"
+												className="!text-blue-500 w-32"
+												type="number"
+												value={detailDrawing.width}
+												onChange={(event) => handleUserInfoChanged("width", Number(event?.target.value))}
+												after={<Text className="text-blue-500">m</Text>}
+											/>
+										</Stack>
+										<Stack className="items-center gap-2">
+											<Text className="!text-gray-500 w-16 whitespace-nowrap">
+												Height<span className="text-red-500">*</span> :
+											</Text>
+											<Input
+												placeholder="50"
+												className="!text-blue-500 w-32"
+												type="number"
+												value={detailDrawing.height}
+												onChange={(event) => handleUserInfoChanged("height", Number(event?.target.value))}
+												after={<Text className="text-blue-500">m</Text>}
+											/>
+										</Stack>
+										<Stack className="items-center gap-2">
+											<Text className="!text-gray-500 w-16 whitespace-nowrap">
+												Area<span className="text-red-500">*</span> :
+											</Text>
+											<Input
+												placeholder="50"
+												className="!text-blue-500 w-32"
+												type="number"
+												value={detailDrawing.area}
+												onChange={(event) => handleUserInfoChanged("area", Number(event?.target.value))}
+												after={
+													<Text className="text-blue-500">
+														m<sup>2</sup>
+													</Text>
+												}
+											/>
+										</Stack>
+									</Stack>
+								</Stack>
+
+								<Stack column className="gap-4">
+									<H4 className="text-gray-700">Additional information</H4>
+									<Stack className="items-center">
+										<Text className="text-gray-500 w-32 whitespace-nowrap">
+											Budget<span className="text-red-500">*</span> :
+										</Text>
+										<Input
+											placeholder="50"
+											className="!text-blue-500 w-full"
+											type="number"
+											value={detailDrawing.budget}
+											onChange={(event) => handleUserInfoChanged("budget", event?.target.value)}
+											after={<Text className="text-blue-500">Million VND</Text>}
+										/>
+									</Stack>
 								</Stack>
 							</Stack>
 						</Stack>
 
-						<Stack column className="basis-1/2">
+						<Stack column className="basis-1/2 items-stretch">
 							<Stack className="bg-white gap-9 w-full">
 								<Stack column className="items-center bg-blue-700 p-3">
 									<H4 className="text-gray-100">800+</H4>
@@ -240,155 +324,85 @@ const HomePage = (props: RouteComponentProps) => {
 							<Button type="outline" className="mt-4" onClick={handleStartBuildingClicked}>
 								Start Build
 							</Button>
+
+							<Stack className="flex-grow mt-4 justify-center items-center border-2 border-spacing-2 border-dashed border-gray-500">
+								<H3 className="text-gray-500">Drop your 2D design here</H3>
+							</Stack>
 						</Stack>
 					</Stack>
 				</div>
 			</section>
 
-			<section className="container mx-auto px-8">
-				<Stack className="mt-8 flex-wrap items-start justify-between gap-y-4">
-					<Stack className="items-end gap-12">
-						<Stack column className="gap-4">
-							<H4 className="text-gray-700">House boundary</H4>
-							<Stack column className="gap-4">
-								<Stack className="items-center gap-2">
-									<Text className="!text-gray-500 w-16 whitespace-nowrap">
-										Width<span className="text-red-500">*</span> :
-									</Text>
-									<Input
-										placeholder="50"
-										className="!text-blue-500 w-32"
-										type="number"
-										value={detailDrawing.width}
-										onChange={(event) => handleUserInfoChanged("width", Number(event?.target.value))}
-										after={<Text className="text-blue-500">m</Text>}
-									/>
-								</Stack>
-								<Stack className="items-center gap-2">
-									<Text className="!text-gray-500 w-16 whitespace-nowrap">
-										Height<span className="text-red-500">*</span> :
-									</Text>
-									<Input
-										placeholder="50"
-										className="!text-blue-500 w-32"
-										type="number"
-										value={detailDrawing.height}
-										onChange={(event) => handleUserInfoChanged("height", Number(event?.target.value))}
-										after={<Text className="text-blue-500">m</Text>}
-									/>
-								</Stack>
-								<Stack className="items-center gap-2">
-									<Text className="!text-gray-500 w-16 whitespace-nowrap">
-										Area<span className="text-red-500">*</span> :
-									</Text>
-									<Input
-										placeholder="50"
-										className="!text-blue-500 w-32"
-										type="number"
-										value={detailDrawing.area}
-										onChange={(event) => handleUserInfoChanged("area", Number(event?.target.value))}
-										after={
-											<Text className="text-blue-500">
-												m<sup>2</sup>
-											</Text>
-										}
-									/>
-								</Stack>
-							</Stack>
-						</Stack>
-					</Stack>
-					<Stack className="items-end gap-12">
-						<Stack column className="gap-4">
-							<H4 className="text-gray-700">Additional information</H4>
-							<Stack column className="gap-4">
-								<Stack className="items-center">
-									<Text className="text-gray-500 w-32 whitespace-nowrap">
-										Budget<span className="text-red-500">*</span> :
-									</Text>
-									<Input
-										placeholder="50"
-										className="!text-blue-500 w-full"
-										type="number"
-										value={detailDrawing.budget}
-										onChange={(event) => handleUserInfoChanged("budget", event?.target.value)}
-										after={<Text className="text-blue-500">Million VND</Text>}
-									/>
-								</Stack>
-								<Stack className="items-center">
-									<Text className="text-gray-500 w-32">Members:</Text>
-									<Input
-										value={detailDrawing.members}
-										onChange={(event) => handleUserInfoChanged("members", event?.target.value)}
-										placeholder="Mother, Father, Children"
-										className="!text-blue-500 w-full"
-									/>
-								</Stack>
-								<Stack className="items-center">
-									<Text className="text-gray-500 w-32">Theme:</Text>
-									<Input
-										value={detailDrawing.theme}
-										onChange={(event) => handleUserInfoChanged("theme", event?.target.value)}
-										placeholder="White, Yellow"
-										className="!text-blue-500 w-full"
-									/>
-								</Stack>
-								<Stack className="items-center">
-									<Text className="text-gray-500 w-32">Location:</Text>
-									<Input
-										value={detailDrawing.location}
-										onChange={(event) => handleUserInfoChanged("location", event?.target.value)}
-										placeholder="Da Nang"
-										className="!text-blue-500 w-full"
-									/>
-								</Stack>
-								<Stack className="items-center">
-									<Text className="text-gray-500 w-32">Categories:</Text>
-									<Input
-										value={detailDrawing.categories}
-										onChange={(event) => handleUserInfoChanged("categories", event?.target.value)}
-										placeholder="Table, Chair, Bed"
-										className="!text-blue-500 w-full"
-									/>
-								</Stack>
-							</Stack>
-						</Stack>
-					</Stack>
-					<Stack className="items-end gap-12">
-						<Stack column className="gap-4">
-							<H4 className="text-gray-700">Quick questions</H4>
-							<Stack column className="gap-4">
-								<Stack className="items-center">
-									<Text className="text-gray-500 w-40">Located at alley:</Text>
-									<input
-										type="checkbox"
-										checked={detailDrawing.locatedAtAlley}
-										onChange={(event) => handleUserInfoChanged("locatedAtAlley", !detailDrawing.locatedAtAlley)}
-									/>
-								</Stack>
-								<Stack className="items-center">
-									<Text className="text-gray-500 w-40">Business in house:</Text>
-									<input
-										type="checkbox"
-										checked={detailDrawing.businessInHouse}
-										onChange={(event) => handleUserInfoChanged("businessInHouse", !detailDrawing.businessInHouse)}
-									/>
-								</Stack>
-								<Stack className="items-center">
-									<Text className="text-gray-500 w-40">In the corner:</Text>
-									<input
-										type="checkbox"
-										checked={detailDrawing.inTheCorner}
-										onChange={(event) => handleUserInfoChanged("inTheCorner", !detailDrawing.inTheCorner)}
-									/>
-								</Stack>
-							</Stack>
-						</Stack>
-					</Stack>
-				</Stack>
-			</section>
-
 			<section className="container mx-auto py-8">
 				<Carousel title="Advanced Section" defaultOpened>
+					<Stack column className="m-8 gap-4">
+						<Stack className="items-center">
+							<Text className="text-gray-500 w-32">Members:</Text>
+							<Input
+								value={detailDrawing.members}
+								onChange={(event) => handleUserInfoChanged("members", event?.target.value)}
+								placeholder="Mother, Father, Children"
+								className="!text-blue-500 w-full"
+							/>
+						</Stack>
+						<Stack className="items-center">
+							<Text className="text-gray-500 w-32">Theme:</Text>
+							<Input
+								value={detailDrawing.theme}
+								onChange={(event) => handleUserInfoChanged("theme", event?.target.value)}
+								placeholder="White, Yellow"
+								className="!text-blue-500 w-full"
+							/>
+						</Stack>
+						<Stack className="items-center">
+							<Text className="text-gray-500 w-32">Location:</Text>
+							<Input
+								value={detailDrawing.location}
+								onChange={(event) => handleUserInfoChanged("location", event?.target.value)}
+								placeholder="Da Nang"
+								className="!text-blue-500 w-full"
+							/>
+						</Stack>
+						<Stack className="items-center">
+							<Text className="text-gray-500 w-32">Categories:</Text>
+							<Input
+								value={detailDrawing.categories}
+								onChange={(event) => handleUserInfoChanged("categories", event?.target.value)}
+								placeholder="Table, Chair, Bed"
+								className="!text-blue-500 w-full"
+							/>
+						</Stack>
+
+						<Stack className="gap-32">
+							<Stack className="items-center gap-4">
+								<Text className="text-gray-500">Located at alley:</Text>
+								<input
+									type="checkbox"
+									checked={detailDrawing.locatedAtAlley}
+									onChange={(event) => handleUserInfoChanged("locatedAtAlley", !detailDrawing.locatedAtAlley)}
+								/>
+							</Stack>
+							<Stack className="items-center gap-4">
+								<Text className="text-gray-500">Business in house:</Text>
+								<input
+									type="checkbox"
+									checked={detailDrawing.businessInHouse}
+									onChange={(event) => handleUserInfoChanged("businessInHouse", !detailDrawing.businessInHouse)}
+								/>
+							</Stack>
+							<Stack className="items-center gap-4">
+								<Text className="text-gray-500">In the corner:</Text>
+								<input
+									type="checkbox"
+									checked={detailDrawing.inTheCorner}
+									onChange={(event) => handleUserInfoChanged("inTheCorner", !detailDrawing.inTheCorner)}
+								/>
+							</Stack>
+						</Stack>
+					</Stack>
+
+					<div className="h-[1px] my-4 bg-gray-200"></div>
+
 					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
 						<Stack column className="gap-4">
 							{sentences &&
