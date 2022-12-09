@@ -18,7 +18,7 @@ type OrderProps = {
 	id?: string;
 } & RouteComponentProps;
 
-const Order = ({ id }: OrderProps) => {
+const OrderDetail = ({ id }: OrderProps) => {
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
 	const user = useSelector((state: RootState) => state.user);
@@ -295,4 +295,4 @@ const Order = ({ id }: OrderProps) => {
 	);
 };
 
-export default Order;
+export default OrderDetail;
