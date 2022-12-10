@@ -46,6 +46,7 @@ const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
+	const analyze2DButtonRef = React.useRef<HTMLInputElement>(null);
 
 	const [textRazor, setTextRazor] = React.useState<Record<string, any>>({});
 	const [detailDrawing, setDetailDrawing] = React.useState<Record<string, any>>({
@@ -62,6 +63,8 @@ const HomePage = (props: RouteComponentProps) => {
 		businessInHouse: false,
 		inTheCorner: false,
 	});
+
+	const [file2D, setFile2D] = React.useState<File>();
 
 	const handleUserInfoChanged = (key: string, value: any) => {
 		setDetailDrawing({
@@ -128,7 +131,31 @@ const HomePage = (props: RouteComponentProps) => {
 		textAreaRef.current?.focus();
 	};
 
-	const handleAnalyze2D = () => {
+	const handleAnalyze2DButtonClicked = () => {
+		const input = analyze2DButtonRef.current;
+		input?.click();
+	};
+
+	const handle2DAreaDropped = (event: React.DragEvent<HTMLDivElement>) => {
+		event.preventDefault();
+
+		const file = event.dataTransfer.files[0];
+		setFile2D(file);
+	};
+
+	const handleAnalyze2DFileChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (!event.target.files) return;
+
+		const file = event.target.files[0];
+		setFile2D(file);
+	};
+
+	React.useEffect(() => {
+		const imgs = document.querySelectorAll<HTMLImageElement>("#analyze2D img");
+		imgs.forEach((img) => URL.revokeObjectURL(img.src));
+
+		if (!file2D) return;
+
 		setDetailDrawing({
 			...detailDrawing,
 			width: 12,
@@ -136,7 +163,7 @@ const HomePage = (props: RouteComponentProps) => {
 			area: 152,
 			budget: 1.2,
 		});
-	};
+	}, [file2D]);
 
 	const { entities, sentences, nounPhrases }: any = textRazor;
 	const filteredEntities =
@@ -192,9 +219,10 @@ const HomePage = (props: RouteComponentProps) => {
 								<Button type="fill" onClick={handleTryItButtonClicked}>
 									TRY IT NOW
 								</Button>
-								<Button type="outline" onClick={handleAnalyze2D}>
+								<Button type="outline" onClick={handleAnalyze2DButtonClicked}>
 									ANALYZE 2D PLAN
 								</Button>
+								<input ref={analyze2DButtonRef} className="hidden" type="file" onChange={handleAnalyze2DFileChanged} />
 							</Stack>
 						</Stack>
 					</Stack>
@@ -339,8 +367,44 @@ const HomePage = (props: RouteComponentProps) => {
 								Start Build
 							</Button>
 
-							<Stack className="flex-grow mt-4 justify-center items-center border-2 border-spacing-2 border-dashed border-gray-500">
-								<H3 className="text-gray-500">Drop your 2D design here</H3>
+							<Stack
+								id="analyze2D"
+								className="flex-grow mt-4 justify-center items-center border-2 border-spacing-2 border-dashed border-gray-500"
+								onDrop={handle2DAreaDropped}
+								onDragOver={(event) => event.preventDefault()}
+							>
+								{file2D ? (
+									<Stack className="items-center gap-2 p-8">
+										<div className="basis-1/2">
+											<img src={URL.createObjectURL(file2D)} className="w-full" />
+										</div>
+										<Stack column className="basis-1/2 gap-4">
+											<H3 className="text-gray-700 px-2">Analyzed 2D plan:</H3>
+											<Stack className="flex-wrap flex-grow items-center">
+												<div className="basis-1/3 p-2">
+													<img src={URL.createObjectURL(file2D)} className="w-full" />
+												</div>
+												<div className="basis-1/3 p-2">
+													<img src={URL.createObjectURL(file2D)} className="w-full" />
+												</div>
+												<div className="basis-1/3 p-2">
+													<img src={URL.createObjectURL(file2D)} className="w-full" />
+												</div>
+												<div className="basis-1/3 p-2">
+													<img src={URL.createObjectURL(file2D)} className="w-full" />
+												</div>
+												<div className="basis-1/3 p-2">
+													<img src={URL.createObjectURL(file2D)} className="w-full" />
+												</div>
+												<div className="basis-1/3 p-2">
+													<img src={URL.createObjectURL(file2D)} className="w-full" />
+												</div>
+											</Stack>
+										</Stack>
+									</Stack>
+								) : (
+									<H3 className="text-gray-500">Drop your 2D design here</H3>
+								)}
 							</Stack>
 						</Stack>
 					</Stack>
