@@ -51,6 +51,7 @@ const HomePage = (props: RouteComponentProps) => {
 	const [detailDrawing, setDetailDrawing] = React.useState<Record<string, any>>({
 		width: 0,
 		height: 0,
+		length: 0,
 		area: 0,
 		budget: 0,
 		members: "",
@@ -259,6 +260,19 @@ const HomePage = (props: RouteComponentProps) => {
 												type="number"
 												value={detailDrawing.height}
 												onChange={(event) => handleUserInfoChanged("height", Number(event?.target.value))}
+												after={<Text className="text-blue-500">m</Text>}
+											/>
+										</Stack>
+										<Stack className="items-center gap-2">
+											<Text className="!text-gray-500 w-16 whitespace-nowrap">
+												Length<span className="text-red-500">*</span> :
+											</Text>
+											<Input
+												placeholder="50"
+												className="!text-blue-500 w-32"
+												type="number"
+												value={detailDrawing.length}
+												onChange={(event) => handleUserInfoChanged("length", Number(event?.target.value))}
 												after={<Text className="text-blue-500">m</Text>}
 											/>
 										</Stack>

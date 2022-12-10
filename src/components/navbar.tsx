@@ -92,7 +92,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 						</Stack>
 					</Link>
 					<div className="w-1/2">
-						<div className={joinTxts(" m-auto", fixNav ? "w-auto" : "w-fit")}>
+						<div className={joinTxts("m-auto", fixNav ? "w-auto ml-16" : "w-fit")}>
 							{routes
 								.filter((route) => route.isNav)
 								.map((route) => (
@@ -108,7 +108,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 											};
 										}}
 									>
-										<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-2xl")}>
+										<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-xl")}>
 											{route.name}
 										</H5>
 									</Link>

@@ -93,24 +93,7 @@ const OrderPage = (props: RouteComponentProps) => {
 								alt="suggested-design"
 								className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
 							/>
-							<Stack className="gap-x-6 mt-4 ">
-								{coins.map((coin, index) => {
-									return (
-										<Stack className="gap-1 justify-center items-center">
-											<img
-												src={"https://cryptologos.cc/logos/avalanche-avax-logo.png"}
-												alt="suggested-design"
-												className="rounded-full border-white border-2 "
-												width={24}
-												height={24}
-											/>
-											<H5 className="text-base" style={{ color: coin.color }}>
-												{coin.symbol}
-											</H5>
-										</Stack>
-									);
-								})}
-							</Stack>
+							<Stack className="gap-x-6 mt-4 ">Stage</Stack>
 						</div>
 					);
 				})}

@@ -25,6 +25,13 @@ export const lineByRoutes: Record<ListPage, Record<LineName, string> | null> = {
 		VLine2: "bg-gray-300 right-0",
 		VLine3: "",
 	},
+	Orders: {
+		HLine1: "bg-gray-300 top-36",
+		HLine2: "bg-gray-300 top-[25rem]",
+		VLine1: "bg-gray-300 left-0",
+		VLine2: "bg-gray-300 left-1/2 !h-[29.2rem]",
+		VLine3: "bg-gray-300 right-0",
+	},
 	Marketplace: {
 		HLine1: "bg-gray-300 top-36",
 		HLine2: "bg-gray-300 top-[29.2rem]",
