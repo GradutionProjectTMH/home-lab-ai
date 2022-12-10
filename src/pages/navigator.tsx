@@ -6,8 +6,9 @@ import HomePage from "./home";
 import MarketplacePage from "./marketplace";
 import RequestVerify from "./request-verify";
 import VerifyMaterial from "./verify-material/[id]";
-import Order from "./order/[id]";
+import OrderDetail from "./order/[id]";
 import DetailDrawingPage from "./detail-drawing/[id]";
+import OrderPage from "./order";
 
 export const routes = [
 	{
@@ -23,10 +24,16 @@ export const routes = [
 		page: BuildPage,
 	},
 	{
+		name: "Orders",
+		path: "/orders",
+		isNav: false,
+		page: OrderPage,
+	},
+	{
 		name: "Order",
 		path: "/order/:id",
 		isNav: false,
-		page: Order,
+		page: OrderDetail,
 	},
 	{
 		name: "Marketplace",
@@ -43,13 +50,13 @@ export const routes = [
 	{
 		name: "RequestVerify",
 		path: "/request-verify",
-		isNav: true,
+		isNav: false,
 		page: RequestVerify,
 	},
 	{
 		name: "VerifyMaterial",
 		path: "/verify-material/:id",
-		isNav: true,
+		isNav: false,
 		page: VerifyMaterial,
 	},
 ];

@@ -91,26 +91,30 @@ const Navbar = ({ ...props }: NavbarProps) => {
 							<img src="../images/logo-full-horizontal.png" alt="Logo" />
 						</Stack>
 					</Link>
-					<Stack className={joinTxts("w-1/2 mx-auto")}>
-						{routes
-							.filter((route) => route.isNav)
-							.map((route) => (
-								<Link
-									to={route.path}
-									key={route.name}
-									className={joinTxts("text-gray-500 hover:text-gray-600 ease-linear transition-[margin] duration-300")}
-									getProps={({ isPartiallyCurrent }) => ({
-										className: isPartiallyCurrent
-											? joinTxts("text-gray-600", fixNav ? "mr-4" : "mr-16")
-											: joinTxts("", fixNav ? "mr-4" : "mr-16"),
-									})}
-								>
-									<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-lg")}>
-										{route.name}
-									</H5>
-								</Link>
-							))}
-					</Stack>
+					<div className="w-1/2">
+						<div className={joinTxts(" m-auto", fixNav ? "w-auto" : "w-fit")}>
+							{routes
+								.filter((route) => route.isNav)
+								.map((route) => (
+									<Link
+										to={route.path}
+										key={route.name}
+										className={joinTxts("hover:text-blue-700 ease-linear transition-[margin] duration-300")}
+										getProps={({ isCurrent }) => {
+											return {
+												className: isCurrent
+													? joinTxts("float-left text-blue-700", fixNav ? "mr-4" : "mr-16  ")
+													: joinTxts("float-left text-blue-500", fixNav ? "mr-4" : "mr-16  "),
+											};
+										}}
+									>
+										<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-2xl")}>
+											{route.name}
+										</H5>
+									</Link>
+								))}
+						</div>
+					</div>
 
 					<Stack className={joinTxts("justify-end gap-2", fixNav ? "w-2/6" : "w-1/4")}>
 						<Button
@@ -149,12 +153,12 @@ const Navbar = ({ ...props }: NavbarProps) => {
 												<a href="#" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
 													Account settings
 												</a>
-												<a href="#" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
-													Support
-												</a>
-												<a href="#" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
-													License
-												</a>
+												<Link to="/orders" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
+													Orders
+												</Link>
+												<Link to="/request-verify" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
+													Request verify
+												</Link>
 												<a
 													href="#"
 													className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm"
