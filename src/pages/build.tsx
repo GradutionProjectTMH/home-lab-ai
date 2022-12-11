@@ -700,9 +700,15 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 										</Stack>
 										<Stack className="items-center gap-2">
 											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Length<span className="text-red-500">*</span> :
+												Height<span className="text-red-500">*</span> :
 											</Text>
 											<Text className="text-blue-500">{detailDrawing.height}m</Text>
+										</Stack>
+										<Stack className="items-center gap-2">
+											<Text className="!text-gray-500 w-16 whitespace-nowrap">
+												Length<span className="text-red-500">*</span> :
+											</Text>
+											<Text className="text-blue-500">{detailDrawing.length}m</Text>
 										</Stack>
 										<Stack className="items-center gap-2">
 											<Text className="!text-gray-500 w-16 whitespace-nowrap">
