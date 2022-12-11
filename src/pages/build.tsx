@@ -37,6 +37,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const g2pService = useSelector((state: RootState) => state.g2pService);
+	const environment = useSelector((state: RootState) => state.environment);
 
 	const leftFloorPlanRef = React.useRef<StageType>(null);
 	const rightFloorPlanRef = React.useRef<StageType>(null);
@@ -412,6 +413,8 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 	const door = rightFloorPlan?.door.split(",").map(Number);
 
+	const { analyzed2DName } = location?.state as any;
+
 	return (
 		<SpringLoading
 			situations={[
@@ -721,6 +724,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 									</Stack>
 								</Stack>
 							</Stack>
+
 							<Stack className="items-end gap-12">
 								<Stack column className="gap-4">
 									<H4 className="text-gray-700">Additional information</H4>
@@ -750,6 +754,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 									</Stack>
 								</Stack>
 							</Stack>
+
 							<Stack className="items-end gap-12">
 								<Stack column className="gap-4">
 									<H4 className="text-gray-700">Quick questions</H4>
@@ -767,6 +772,57 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 											<input type="checkbox" checked={detailDrawing.inTheCorner} disabled />
 										</Stack>
 									</Stack>
+								</Stack>
+							</Stack>
+						</Stack>
+					)}
+
+					{analyzed2DName && (
+						<Stack column className="flex-grow items-stretch gap-2 p-2">
+							<Stack className="basis-1/2 items-stretch gap-2">
+								<div className="basis-1/2">
+									src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_input.jpg`}
+								</div>
+								<div className="basis-1/2">
+									<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_result.jpg`} />
+								</div>
+							</Stack>
+							<Stack className="basis-1/2 items-stretch gap-2">
+								<Stack column className="basis-1/4 items-center gap-2">
+									<div>
+										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r.jpg`} />
+									</div>
+									<div>
+										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw.jpg`} />
+										<H4 className="text-center">Raw</H4>
+									</div>
+								</Stack>
+								<Stack column className="basis-1/4 items-center gap-2">
+									<div>
+										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r_color.jpg`} />
+									</div>
+									<div>
+										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw_color.jpg`} />
+										<H4 className="text-center">Raw + Color</H4>
+									</div>
+								</Stack>
+								<Stack column className="basis-1/4 items-center gap-2">
+									<div>
+										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r.jpg`} />
+									</div>
+									<div>
+										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw.jpg`} />
+										<H4 className="text-center">Refined</H4>
+									</div>
+								</Stack>
+								<Stack column className="basis-1/4 items-center gap-2">
+									<div>
+										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r_color.jpg`} />
+									</div>
+									<div>
+										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw_color.jpg`} />
+										<H4 className="text-center">Refined + Color</H4>
+									</div>
 								</Stack>
 							</Stack>
 						</Stack>
