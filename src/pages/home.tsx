@@ -9,7 +9,7 @@ import { ReactComponent as LightBulbSvg } from "../svgs/light-bulb.svg";
 import ButtonIcon from "../components/button-icon";
 import Small from "../components/typography/small";
 import TextRazor from "../apis/text-razor.api";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { popMessage, pushError, pushLoading } from "../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
 import Slider from "../components/slider";
@@ -18,6 +18,8 @@ import SpringLoading from "../components/SpringLoading";
 import Carousel from "../components/carousel";
 import Input from "../components/input";
 import H3 from "../components/typography/h3";
+import TFFloorPlan from "../apis/tf-floor-plan.api";
+import { RootState } from "../redux/stores/store.redux";
 
 const slideImages = [
 	"1.jpg",
@@ -48,6 +50,9 @@ const HomePage = (props: RouteComponentProps) => {
 	const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
 	const analyze2DButtonRef = React.useRef<HTMLInputElement>(null);
 
+	const tfFloorPlan = useSelector((state: RootState) => state.tfFloorPlanService);
+	const environment = useSelector((state: RootState) => state.environment);
+
 	const [textRazor, setTextRazor] = React.useState<Record<string, any>>({});
 	const [detailDrawing, setDetailDrawing] = React.useState<Record<string, any>>({
 		width: 0,
@@ -65,6 +70,7 @@ const HomePage = (props: RouteComponentProps) => {
 	});
 
 	const [file2D, setFile2D] = React.useState<File>();
+	const [analyzed2DName, setAnalyzed2DName] = React.useState<string>();
 
 	const handleUserInfoChanged = (key: string, value: any) => {
 		setDetailDrawing({
@@ -124,7 +130,7 @@ const HomePage = (props: RouteComponentProps) => {
 			return;
 		}
 
-		navigate("/build", { state: { detail_drawing: detailDrawing } });
+		navigate("/build", { state: { detail_drawing: detailDrawing, analyzed_2d_name: analyzed2DName } });
 	};
 
 	const handleTryItButtonClicked = () => {
@@ -132,6 +138,8 @@ const HomePage = (props: RouteComponentProps) => {
 	};
 
 	const handleAnalyze2DButtonClicked = () => {
+		if (!tfFloorPlan) return;
+
 		const input = analyze2DButtonRef.current;
 		input?.click();
 	};
@@ -151,17 +159,31 @@ const HomePage = (props: RouteComponentProps) => {
 	};
 
 	React.useEffect(() => {
-		const imgs = document.querySelectorAll<HTMLImageElement>("#analyze2D img");
-		imgs.forEach((img) => URL.revokeObjectURL(img.src));
+		if (!tfFloorPlan) {
+			dispatch(pushLoading("Getting ready"));
+			return;
+		}
 
-		if (!file2D) return;
+		dispatch(popMessage({ isClearAll: true }));
+	}, [tfFloorPlan]);
 
-		setDetailDrawing({
-			...detailDrawing,
-			width: 12,
-			height: 16,
-			area: 152,
-			budget: 1.2,
+	React.useEffect(() => {
+		if (!file2D || !tfFloorPlan) return;
+
+		const img = document.querySelector<HTMLImageElement>("#analyze2D img#input")!;
+		img.src && URL.revokeObjectURL(img.src);
+		img.src = URL.createObjectURL(file2D);
+
+		TFFloorPlan.process(file2D).then(({ data }) => {
+			setAnalyzed2DName(data);
+
+			setDetailDrawing({
+				...detailDrawing,
+				width: 12,
+				height: 16,
+				area: 152,
+				budget: 1.2,
+			});
 		});
 	}, [file2D]);
 
@@ -375,31 +397,87 @@ const HomePage = (props: RouteComponentProps) => {
 								onDragOver={(event) => event.preventDefault()}
 							>
 								{file2D ? (
-									<Stack className="items-center gap-2 p-8">
-										<div className="basis-1/2">
-											<img src={URL.createObjectURL(file2D)} className="w-full" />
-										</div>
-										<Stack column className="basis-1/2 gap-4">
-											<H3 className="text-gray-700 px-2">Analyzed 2D plan:</H3>
-											<Stack className="flex-wrap flex-grow items-center">
-												<div className="basis-1/3 p-2">
-													<img src={URL.createObjectURL(file2D)} className="w-full" />
+									<Stack column className="flex-grow items-stretch gap-2 p-2">
+										<Stack className="basis-1/2 items-stretch gap-2">
+											<div className="basis-1/2">
+												<img id="input" src={URL.createObjectURL(file2D)} />
+											</div>
+											{analyzed2DName ? (
+												<div className="basis-1/2">
+													<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}result_${analyzed2DName}.jpg`} />
 												</div>
-												<div className="basis-1/3 p-2">
-													<img src={URL.createObjectURL(file2D)} className="w-full" />
-												</div>
-												<div className="basis-1/3 p-2">
-													<img src={URL.createObjectURL(file2D)} className="w-full" />
-												</div>
-												<div className="basis-1/3 p-2">
-													<img src={URL.createObjectURL(file2D)} className="w-full" />
-												</div>
-												<div className="basis-1/3 p-2">
-													<img src={URL.createObjectURL(file2D)} className="w-full" />
-												</div>
-												<div className="basis-1/3 p-2">
-													<img src={URL.createObjectURL(file2D)} className="w-full" />
-												</div>
+											) : (
+												<div className="basis-1/2 bg-gray-300 animate-pulse w-full min-h-[240px]" />
+											)}
+										</Stack>
+										<Stack className="basis-1/2 items-stretch gap-2">
+											<Stack column className="basis-1/4 items-center gap-2">
+												{analyzed2DName ? (
+													<div>
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}r_${analyzed2DName}.jpg`} />
+													</div>
+												) : (
+													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
+												)}
+												{analyzed2DName ? (
+													<div>
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}cw_${analyzed2DName}.jpg`} />
+														<H4 className="text-center">Raw</H4>
+													</div>
+												) : (
+													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
+												)}
+											</Stack>
+											<Stack column className="basis-1/4 items-center gap-2">
+												{analyzed2DName ? (
+													<div>
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}r_color_${analyzed2DName}.jpg`} />
+													</div>
+												) : (
+													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
+												)}
+												{analyzed2DName ? (
+													<div>
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}cw_color_${analyzed2DName}.jpg`} />
+														<H4 className="text-center">Raw + Color</H4>
+													</div>
+												) : (
+													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
+												)}
+											</Stack>
+											<Stack column className="basis-1/4 items-center gap-2">
+												{analyzed2DName ? (
+													<div>
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}new_r_${analyzed2DName}.jpg`} />
+													</div>
+												) : (
+													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
+												)}
+												{analyzed2DName ? (
+													<div>
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}new_cw_${analyzed2DName}.jpg`} />
+														<H4 className="text-center">Refined</H4>
+													</div>
+												) : (
+													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
+												)}
+											</Stack>
+											<Stack column className="basis-1/4 items-center gap-2">
+												{analyzed2DName ? (
+													<div>
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}new_r_color_${analyzed2DName}.jpg`} />
+													</div>
+												) : (
+													<div className="bg-gray-300 animate-pulse w-full h-16" />
+												)}
+												{analyzed2DName ? (
+													<div>
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}new_cw_color_${analyzed2DName}.jpg`} />
+														<H4 className="text-center">Refined + Color</H4>
+													</div>
+												) : (
+													<div className="bg-gray-300 animate-pulse w-full h-16" />
+												)}
 											</Stack>
 										</Stack>
 									</Stack>

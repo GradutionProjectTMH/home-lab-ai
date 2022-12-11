@@ -47,6 +47,11 @@ const environment = createSlice({
 				API_KEY: payload.TEXT_RAZOR_API_KEY || state.textRazor.API_KEY,
 			};
 
+			state.tfFloorPlan = {
+				API_ENDPOINT: payload.TF_FLOOR_PLAN_API_ENDPOINT || state.tfFloorPlan.API_ENDPOINT,
+				IMAGE_ENDPOINT: payload.TF_FLOOR_PLAN_IMAGE_ENDPOINT || state.tfFloorPlan.IMAGE_ENDPOINT,
+			};
+
 			state.g2p = {
 				API_ENDPOINT: payload.G2P_API_ENDPOINT || state.g2p.API_ENDPOINT,
 				IMAGE_ENDPOINT: payload.G2P_IMAGE_ENDPOINT || state.g2p.IMAGE_ENDPOINT,
