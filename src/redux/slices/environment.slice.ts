@@ -10,6 +10,10 @@ const initialState = {
 		API_ENDPOINT: process.env.G2P_API_ENDPOINT,
 		IMAGE_ENDPOINT: process.env.G2P_IMAGE_ENDPOINT,
 	},
+	tfFloorPlan: {
+		API_ENDPOINT: process.env.TF_FLOOR_PLAN_API_ENDPOINT,
+		IMAGE_ENDPOINT: process.env.TF_FLOOR_PLAN_IMAGE_ENDPOINT,
+	},
 	firebase: {
 		API_KEY: process.env.FIREBASE_API_KEY,
 		AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
@@ -41,6 +45,11 @@ const environment = createSlice({
 			state.textRazor = {
 				API_ENDPOINT: payload.TEXT_RAZOR_API_ENDPOINT || state.textRazor.API_ENDPOINT,
 				API_KEY: payload.TEXT_RAZOR_API_KEY || state.textRazor.API_KEY,
+			};
+
+			state.tfFloorPlan = {
+				API_ENDPOINT: payload.TF_FLOOR_PLAN_API_ENDPOINT || state.tfFloorPlan.API_ENDPOINT,
+				IMAGE_ENDPOINT: payload.TF_FLOOR_PLAN_IMAGE_ENDPOINT || state.tfFloorPlan.IMAGE_ENDPOINT,
 			};
 
 			state.g2p = {

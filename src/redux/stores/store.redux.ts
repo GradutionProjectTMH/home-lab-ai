@@ -7,6 +7,7 @@ import g2pServiceSlice from "../slices/g2p-service.slice";
 import messageSlice from "../slices/message.slice";
 import etherSlice from "../slices/ether.slice";
 import ipfsServiceSlice from "../slices/ipfs.slice";
+import tfFloorPlanServiceSlice from "../slices/tf-floor-plan-service.slice";
 
 const rootReducer = {
 	user: userSlice,
@@ -15,6 +16,7 @@ const rootReducer = {
 	environment: environmentSlice,
 	firebaseService: firebaseServiceSlice,
 	g2pService: g2pServiceSlice,
+	tfFloorPlanService: tfFloorPlanServiceSlice,
 	ipfsService: ipfsServiceSlice,
 };
 

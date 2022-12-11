@@ -3,6 +3,8 @@ import axiosClient from "../../configs/server.config";
 export type EnvironmentKey =
 	| "TEXT_RAZOR_API_ENDPOINT"
 	| "TEXT_RAZOR_API_KEY"
+	| "TF_FLOOR_PLAN_API_ENDPOINT"
+	| "TF_FLOOR_PLAN_IMAGE_ENDPOINT"
 	| "G2P_API_ENDPOINT"
 	| "G2P_IMAGE_ENDPOINT"
 	| "FIREBASE_API_KEY"

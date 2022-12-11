@@ -10,6 +10,7 @@ import { initiateFirebase } from "../redux/slices/firebase-service.slice";
 import { initiateG2p } from "../redux/slices/g2p-service.slice";
 import { initiateIpfs } from "../redux/slices/ipfs.slice";
 import { pushInfo } from "../redux/slices/message.slice";
+import { initiateTFFloorPlan } from "../redux/slices/tf-floor-plan-service.slice";
 import { updateUser } from "../redux/slices/user.slice";
 import { RootState } from "../redux/stores/store.redux";
 import { User } from "../types/common";
@@ -60,6 +61,9 @@ const Initializer = () => {
 				measurementId: firebaseConfig.MEASUREMENT_ID,
 			}),
 		);
+
+		const tfFloorPlanConfig = environment.tfFloorPlan;
+		dispatch(initiateTFFloorPlan({ baseUrl: tfFloorPlanConfig.API_ENDPOINT }));
 
 		const g2pConfig = environment.g2p;
 		dispatch(initiateG2p({ baseUrl: g2pConfig.API_ENDPOINT }));
