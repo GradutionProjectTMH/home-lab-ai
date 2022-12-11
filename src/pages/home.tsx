@@ -191,6 +191,9 @@ const HomePage = (props: RouteComponentProps) => {
 		img.src && URL.revokeObjectURL(img.src);
 		img.src = URL.createObjectURL(file2D);
 
+		setAnalyzed2DName(undefined);
+		dispatch(pushLoading("Analyzing your 2D plan"));
+
 		TFFloorPlan.process(file2D).then(({ data }) => {
 			setAnalyzed2DName(data);
 
@@ -201,6 +204,8 @@ const HomePage = (props: RouteComponentProps) => {
 				area: 152,
 				budget: 1.2,
 			});
+
+			dispatch(popMessage({ isClearAll: true }));
 		});
 	}, [file2D]);
 
@@ -409,7 +414,7 @@ const HomePage = (props: RouteComponentProps) => {
 											</div>
 											{analyzed2DName ? (
 												<div className="basis-1/2">
-													<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}result_${analyzed2DName}.jpg`} />
+													<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_result.jpg`} />
 												</div>
 											) : (
 												<div className="basis-1/2 bg-gray-300 animate-pulse w-full min-h-[240px]" />
@@ -419,14 +424,14 @@ const HomePage = (props: RouteComponentProps) => {
 											<Stack column className="basis-1/4 items-center gap-2">
 												{analyzed2DName ? (
 													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}r_${analyzed2DName}.jpg`} />
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r.jpg`} />
 													</div>
 												) : (
 													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
 												)}
 												{analyzed2DName ? (
 													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}cw_${analyzed2DName}.jpg`} />
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw.jpg`} />
 														<H4 className="text-center">Raw</H4>
 													</div>
 												) : (
@@ -436,14 +441,14 @@ const HomePage = (props: RouteComponentProps) => {
 											<Stack column className="basis-1/4 items-center gap-2">
 												{analyzed2DName ? (
 													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}r_color_${analyzed2DName}.jpg`} />
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r_color.jpg`} />
 													</div>
 												) : (
 													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
 												)}
 												{analyzed2DName ? (
 													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}cw_color_${analyzed2DName}.jpg`} />
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw_color.jpg`} />
 														<H4 className="text-center">Raw + Color</H4>
 													</div>
 												) : (
@@ -453,14 +458,14 @@ const HomePage = (props: RouteComponentProps) => {
 											<Stack column className="basis-1/4 items-center gap-2">
 												{analyzed2DName ? (
 													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}new_r_${analyzed2DName}.jpg`} />
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r.jpg`} />
 													</div>
 												) : (
 													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
 												)}
 												{analyzed2DName ? (
 													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}new_cw_${analyzed2DName}.jpg`} />
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw.jpg`} />
 														<H4 className="text-center">Refined</H4>
 													</div>
 												) : (
@@ -470,14 +475,14 @@ const HomePage = (props: RouteComponentProps) => {
 											<Stack column className="basis-1/4 items-center gap-2">
 												{analyzed2DName ? (
 													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}new_r_color_${analyzed2DName}.jpg`} />
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r_color.jpg`} />
 													</div>
 												) : (
 													<div className="bg-gray-300 animate-pulse w-full h-16" />
 												)}
 												{analyzed2DName ? (
 													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}new_cw_color_${analyzed2DName}.jpg`} />
+														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw_color.jpg`} />
 														<H4 className="text-center">Refined + Color</H4>
 													</div>
 												) : (
