@@ -10,6 +10,10 @@ const initialState = {
 		API_ENDPOINT: process.env.G2P_API_ENDPOINT,
 		IMAGE_ENDPOINT: process.env.G2P_IMAGE_ENDPOINT,
 	},
+	tfFloorPlan: {
+		API_ENDPOINT: process.env.TF_FLOOR_PLAN_API_ENDPOINT,
+		IMAGE_ENDPOINT: process.env.TF_FLOOR_PLAN_IMAGE_ENDPOINT,
+	},
 	firebase: {
 		API_KEY: process.env.FIREBASE_API_KEY,
 		AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,

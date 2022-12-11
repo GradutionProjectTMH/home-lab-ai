@@ -355,7 +355,8 @@ const HomePage = (props: RouteComponentProps) => {
 
 							<Stack
 								id="analyze2D"
-								className="flex-grow mt-4 justify-center items-center border-2 border-spacing-2 border-dashed border-gray-500"
+								className="flex-grow mt-4 justify-center items-center border-2 border-spacing-2 border-dashed border-gray-500 text-gray-500 cursor-pointer hover:border-blue-500 hover:!text-blue-700"
+								onClick={handleAnalyze2DButtonClicked}
 								onDrop={handle2DAreaDropped}
 								onDragOver={(event) => event.preventDefault()}
 							>
@@ -389,7 +390,7 @@ const HomePage = (props: RouteComponentProps) => {
 										</Stack>
 									</Stack>
 								) : (
-									<H3 className="text-gray-500">Drop your 2D design here</H3>
+									<H3>Drop your 2D design here</H3>
 								)}
 							</Stack>
 						</Stack>
