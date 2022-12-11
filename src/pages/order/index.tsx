@@ -8,6 +8,8 @@ import H2 from "../../components/typography/h2";
 import Button from "../../components/button";
 import H4 from "../../components/typography/h4";
 import H5 from "../../components/typography/h5";
+import * as hireApi from "../../apis/hire.api";
+import { Hire } from "../../interfaces/hire.interface";
 
 const coins = [
 	{
@@ -31,6 +33,21 @@ const coins = [
 ];
 
 const OrderPage = (props: RouteComponentProps) => {
+	const [hires, setHires] = React.useState<Hire[]>([]);
+
+	const fetchDataHire = async () => {
+		try {
+			const res = await hireApi.getAll();
+			setHires(res.data);
+		} catch (error) {
+			throw error;
+		}
+	};
+
+	React.useEffect(() => {
+		fetchDataHire();
+	}, []);
+
 	return (
 		<section className="container mx-auto">
 			<Stack>
@@ -85,18 +102,31 @@ const OrderPage = (props: RouteComponentProps) => {
 			</Stack>
 
 			<Stack className="flex-wrap">
-				{Array.from(Array(8).keys()).map((e, i) => {
-					return (
-						<div key={i} className="basis-1/3 p-8 border-r-[1px] border-b-[1px] border-gray-300">
-							<img
-								src="../images/suggested-designs/33.png"
-								alt="suggested-design"
-								className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
-							/>
-							<Stack className="gap-x-6 mt-4 ">Stage</Stack>
-						</div>
-					);
-				})}
+				{hires.length > 0 ? (
+					hires.map((hire, i) => {
+						return (
+							<div key={i} className="basis-1/3 p-8 border-r-[1px] border-b-[1px] border-gray-300">
+								<Stack>
+									<img
+										src={hire.detailDrawing?.boundaryImg}
+										alt="suggested-design"
+										className="cursor-pointer w-1/2 hover:scale-110 hover:shadow-md hover:z-10"
+									/>
+									<img
+										src={hire.detailDrawing?.crossSectionImg}
+										alt="suggested-design"
+										className="cursor-pointer w-1/2 hover:scale-110 hover:shadow-md hover:z-10"
+									/>
+								</Stack>
+								<Stack className="gap-x-6 mt-4 ">
+									{hire.designer?.firstName} {hire.designer?.lastName}
+								</Stack>
+							</div>
+						);
+					})
+				) : (
+					<H5>You currently have no orders</H5>
+				)}
 			</Stack>
 		</section>
 	);

@@ -96,7 +96,7 @@ const MarketplacePage = (props: RouteComponentProps) => {
 							<Stack className="gap-x-6 mt-4 ">
 								{coins.map((coin, index) => {
 									return (
-										<Stack className="gap-1 justify-center items-center">
+										<Stack key={index} className="gap-1 justify-center items-center">
 											<img
 												src={"https://cryptologos.cc/logos/avalanche-avax-logo.png"}
 												alt="suggested-design"

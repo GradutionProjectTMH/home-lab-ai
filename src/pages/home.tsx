@@ -44,6 +44,23 @@ const slideImages = [
 	"9.jpg",
 ];
 
+const SliderHome = React.memo(() => {
+	return (
+		<Stack className="basis-1/2 items-center gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
+			<Slider
+				images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
+				showNav={false}
+				useTranslate3D
+			/>
+			<Slider
+				images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
+				showNav={false}
+				useTranslate3D
+			/>
+		</Stack>
+	);
+});
+
 const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -253,19 +270,7 @@ const HomePage = (props: RouteComponentProps) => {
 							</Stack>
 						</Stack>
 					</Stack>
-
-					<Stack className="basis-1/2 items-center gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
-						<Slider
-							images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
-							showNav={false}
-							useTranslate3D
-						/>
-						<Slider
-							images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
-							showNav={false}
-							useTranslate3D
-						/>
-					</Stack>
+					<SliderHome />
 				</Stack>
 			</section>
 

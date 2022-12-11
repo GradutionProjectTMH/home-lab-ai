@@ -73,7 +73,7 @@ const Navbar = ({ ...props }: NavbarProps) => {
 	}, [ether, ether?.walletAddress]);
 
 	const onScrollWindow = () => {
-		if (window.scrollY === 0) {
+		if (window.scrollY <= 50) {
 			setFixNav(false);
 		} else {
 			setFixNav(true);

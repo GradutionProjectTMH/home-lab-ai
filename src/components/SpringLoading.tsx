@@ -60,12 +60,12 @@ const SpringLoading = ({
 			{...props}
 		>
 			<div className="relative">
-				<img src={`${process.env.PUBLIC_URL}/images/passgenix.png`} />
+				<img src={`${process.env.PUBLIC_URL}/images/logo-full-vertical.png`} />
 				<div
 					className="absolute top-0 left-0 w-full saturate-0 brightness-[1000%] overflow-hidden"
 					style={{ height: `${100 - springPercent}%` }}
 				>
-					<img src={`${process.env.PUBLIC_URL}/images/passgenix.png`} />
+					<img src={`${process.env.PUBLIC_URL}/images/logo-full-vertical.png`} />
 				</div>
 			</div>
 			<H3 className="text-gray-500">

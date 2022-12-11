@@ -1,5 +1,6 @@
 import { STATUS_HIRE } from "../enums/hiring.enum";
 import { User } from "../types/common";
+import { DetailDrawing } from "./detail-drawing.interface";
 import { Products } from "./product.interface";
 
 export type Material = {
@@ -28,7 +29,7 @@ export interface Hire {
 	userId?: string;
 	designerId?: string;
 	designer?: User;
-	detailDrawing?: string;
+	detailDrawing?: DetailDrawing;
 	detailDrawingId?: string;
 	floorDesigns?: FloorDesign[];
 	houseDesigns?: HouseDesign[];
