@@ -20,6 +20,7 @@ import Input from "../components/input";
 import H3 from "../components/typography/h3";
 import TFFloorPlan from "../apis/tf-floor-plan.api";
 import { RootState } from "../redux/stores/store.redux";
+import { removeDuplicated } from "../utils/text.util";
 
 const slideImages = [
 	"1.jpg",
@@ -115,25 +116,25 @@ const HomePage = (props: RouteComponentProps) => {
 		console.log(textRazor);
 
 		const topics = (textRazor.coarseTopics || []).map((coarseTopic: any) => coarseTopic.label);
-		detailDrawing.topics = topics.join(", ");
+		detailDrawing.theme = topics.join(", ");
 
 		const categories = textRazor.entities.reduce((result: string[], entity: any) => {
 			if (entity.freebaseTypes?.includes("/business/product_category")) result.push(entity.entityId);
 			return result;
 		}, []);
-		detailDrawing.categories = categories.join(", ");
+		detailDrawing.categories = removeDuplicated(categories).join(", ");
 
 		const members = textRazor.entities.reduce((result: string[], entity: any) => {
 			if (entity.freebaseTypes?.includes("/book/book_subject")) result.push(entity.entityId);
 			return result;
 		}, []);
-		detailDrawing.members = members.join(", ");
+		detailDrawing.members = removeDuplicated(members).join(", ");
 
 		const location = textRazor.entities.reduce((result: string[], entity: any) => {
 			if (entity.type?.includes("PopulatedPlace")) result.push(entity.entityId);
 			return result;
 		}, []);
-		detailDrawing.location = location.join(", ");
+		detailDrawing.location = removeDuplicated(location).join(", ");
 
 		setDetailDrawing(detailDrawing);
 		dispatch(popMessage(null));
@@ -200,7 +201,8 @@ const HomePage = (props: RouteComponentProps) => {
 			setDetailDrawing({
 				...detailDrawing,
 				width: 12,
-				height: 16,
+				height: 5,
+				length: 17,
 				area: 152,
 				budget: 1.2,
 			});
