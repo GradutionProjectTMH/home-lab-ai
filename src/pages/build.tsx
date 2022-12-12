@@ -413,7 +413,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 	const door = rightFloorPlan?.door.split(",").map(Number);
 
-	const { analyzed2DName } = location?.state as any;
+	const { analyzed_2d_name: analyzed2DName } = location?.state || ({} as any);
 
 	return (
 		<SpringLoading
@@ -689,144 +689,187 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 			<section className="container mx-auto mt-4">
 				<Carousel title="Advanced Section" defaultOpened>
-					{detailDrawing && (
-						<Stack className="mt-4 px-8 flex-wrap items-start justify-around gap-y-4">
-							<Stack className="items-end gap-12">
-								<Stack column className="gap-4">
-									<H4 className="text-gray-700">House boundary</H4>
-									<Stack column className="gap-4">
-										<Stack className="items-center gap-2">
-											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Width<span className="text-red-500">*</span> :
-											</Text>
-											<Text className="text-blue-500">{detailDrawing.width}m</Text>
+					<Stack className="items-center">
+						{detailDrawing && (
+							<Stack column className="basis-1/2 mt-4 px-8 flex-wrap items-stretch gap-8">
+								<Stack className="items-end gap-12">
+									<Stack column className="flex-grow gap-4">
+										<H4 className="text-gray-700">House boundary</H4>
+										<Stack column className="gap-2">
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-24 whitespace-nowrap">
+													Width<span className="text-red-500">*</span> :
+												</Text>
+												<Text className="text-blue-500">{detailDrawing.width}m</Text>
+											</Stack>
+											<hr />
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-24 whitespace-nowrap">
+													Height<span className="text-red-500">*</span> :
+												</Text>
+												<Text className="text-blue-500">{detailDrawing.height}m</Text>
+											</Stack>
+											<hr />
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-24 whitespace-nowrap">
+													Length<span className="text-red-500">*</span> :
+												</Text>
+												<Text className="text-blue-500">{detailDrawing.length}m</Text>
+											</Stack>
+											<hr />
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-24 whitespace-nowrap">
+													Area<span className="text-red-500">*</span> :
+												</Text>
+												<Text className="text-blue-500">
+													{detailDrawing.area}m<sup>2</sup>
+												</Text>
+											</Stack>
 										</Stack>
-										<Stack className="items-center gap-2">
-											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Height<span className="text-red-500">*</span> :
-											</Text>
-											<Text className="text-blue-500">{detailDrawing.height}m</Text>
+									</Stack>
+								</Stack>
+
+								<Stack className="items-end gap-12">
+									<Stack column className="flex-grow gap-4">
+										<H4 className="text-gray-700">Additional information</H4>
+										<Stack column className="gap-2">
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-28 whitespace-nowrap">
+													Budget<span className="text-red-500">*</span> :
+												</Text>
+												<Text className="text-blue-500">{detailDrawing.budget} Million VND</Text>
+											</Stack>
+											<hr />
+											<Stack className="">
+												<Text className="text-gray-500 w-28">Members:</Text>
+												<Text className="text-blue-500 w-[32rem]">{detailDrawing.members}</Text>
+											</Stack>
+											<hr />
+											<Stack className="">
+												<Text className="text-gray-500 w-28">Theme:</Text>
+												<Text className="text-blue-500 w-[32rem]">{detailDrawing.theme}</Text>
+											</Stack>
+											<hr />
+											<Stack className="">
+												<Text className="text-gray-500 w-28">Location:</Text>
+												<Text className="text-blue-500 w-[32rem]">{detailDrawing.location}</Text>
+											</Stack>
+											<hr />
+											<Stack className="">
+												<Text className="text-gray-500 w-28">Categories:</Text>
+												<Text className="text-blue-500 w-[32rem]">{detailDrawing.categories}</Text>
+											</Stack>
 										</Stack>
-										<Stack className="items-center gap-2">
-											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Length<span className="text-red-500">*</span> :
-											</Text>
-											<Text className="text-blue-500">{detailDrawing.length}m</Text>
-										</Stack>
-										<Stack className="items-center gap-2">
-											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Area<span className="text-red-500">*</span> :
-											</Text>
-											<Text className="text-blue-500">
-												{detailDrawing.area}m<sup>2</sup>
-											</Text>
+									</Stack>
+								</Stack>
+
+								<Stack className="items-end gap-12">
+									<Stack column className="flex-grow gap-4">
+										<H4 className="text-gray-700">Quick questions</H4>
+										<Stack column className="gap-4">
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-40">Located at alley:</Text>
+												<input type="checkbox" checked={detailDrawing.locatedAtAlley} disabled />
+											</Stack>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-40">Business in house:</Text>
+												<input type="checkbox" checked={detailDrawing.businessInHouse} disabled />
+											</Stack>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-40">In the corner:</Text>
+												<input type="checkbox" checked={detailDrawing.inTheCorner} disabled />
+											</Stack>
 										</Stack>
 									</Stack>
 								</Stack>
 							</Stack>
+						)}
 
-							<Stack className="items-end gap-12">
-								<Stack column className="gap-4">
-									<H4 className="text-gray-700">Additional information</H4>
-									<Stack column className="gap-4">
-										<Stack className="items-center">
-											<Text className="text-gray-500 w-28 whitespace-nowrap">
-												Budget<span className="text-red-500">*</span> :
-											</Text>
-											<Text className="text-blue-500">{detailDrawing.budget} Million VND</Text>
-										</Stack>
-										<Stack className="items-center">
-											<Text className="text-gray-500 w-28">Members:</Text>
-											<Text className="text-blue-500">{detailDrawing.members}</Text>
-										</Stack>
-										<Stack className="items-center">
-											<Text className="text-gray-500 w-28">Theme:</Text>
-											<Text className="text-blue-500">{detailDrawing.theme}</Text>
-										</Stack>
-										<Stack className="items-center">
-											<Text className="text-gray-500 w-28">Location:</Text>
-											<Text className="text-blue-500">{detailDrawing.location}</Text>
-										</Stack>
-										<Stack className="items-center">
-											<Text className="text-gray-500 w-28">Categories:</Text>
-											<Text className="text-blue-500">{detailDrawing.categories}</Text>
-										</Stack>
+						{analyzed2DName && (
+							<Stack column className="basis-1/2 flex-grow items-stretch gap-2 p-2 mt-4">
+								<Stack className="items-stretch justify-center gap-2">
+									<Stack className="justify-center">
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_input.jpg`}
+												className="max-h-[24rem]"
+											/>
+										</div>
+									</Stack>
+									<Stack className="justify-center">
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_result.jpg`}
+												className="max-h-[24rem]"
+											/>
+										</div>
+									</Stack>
+								</Stack>
+								<Stack className="items-stretch justify-center gap-2">
+									<Stack column className="items-center gap-2">
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r.jpg`}
+												className="max-h-[12rem]"
+											/>
+										</div>
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw.jpg`}
+												className="max-h-[12rem]"
+											/>
+											<H4 className="text-center">Raw</H4>
+										</div>
+									</Stack>
+									<Stack column className="items-center gap-2">
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r_color.jpg`}
+												className="max-h-[12rem]"
+											/>
+										</div>
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw_color.jpg`}
+												className="max-h-[12rem]"
+											/>
+											<H4 className="text-center">Raw + Color</H4>
+										</div>
+									</Stack>
+									<Stack column className="items-center gap-2">
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r.jpg`}
+												className="max-h-[12rem]"
+											/>
+										</div>
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw.jpg`}
+												className="max-h-[12rem]"
+											/>
+											<H4 className="text-center">Refined</H4>
+										</div>
+									</Stack>
+									<Stack column className="items-center gap-2">
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r_color.jpg`}
+												className="max-h-[12rem]"
+											/>
+										</div>
+										<div>
+											<img
+												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw_color.jpg`}
+												className="max-h-[12rem]"
+											/>
+											<H4 className="text-center">Refined + Color</H4>
+										</div>
 									</Stack>
 								</Stack>
 							</Stack>
-
-							<Stack className="items-end gap-12">
-								<Stack column className="gap-4">
-									<H4 className="text-gray-700">Quick questions</H4>
-									<Stack column className="gap-4">
-										<Stack className="items-center">
-											<Text className="text-gray-500 w-40">Located at alley:</Text>
-											<input type="checkbox" checked={detailDrawing.locatedAtAlley} disabled />
-										</Stack>
-										<Stack className="items-center">
-											<Text className="text-gray-500 w-40">Business in house:</Text>
-											<input type="checkbox" checked={detailDrawing.businessInHouse} disabled />
-										</Stack>
-										<Stack className="items-center">
-											<Text className="text-gray-500 w-40">In the corner:</Text>
-											<input type="checkbox" checked={detailDrawing.inTheCorner} disabled />
-										</Stack>
-									</Stack>
-								</Stack>
-							</Stack>
-						</Stack>
-					)}
-
-					{analyzed2DName && (
-						<Stack column className="flex-grow items-stretch gap-2 p-2">
-							<Stack className="basis-1/2 items-stretch gap-2">
-								<div className="basis-1/2">
-									src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_input.jpg`}
-								</div>
-								<div className="basis-1/2">
-									<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_result.jpg`} />
-								</div>
-							</Stack>
-							<Stack className="basis-1/2 items-stretch gap-2">
-								<Stack column className="basis-1/4 items-center gap-2">
-									<div>
-										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r.jpg`} />
-									</div>
-									<div>
-										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw.jpg`} />
-										<H4 className="text-center">Raw</H4>
-									</div>
-								</Stack>
-								<Stack column className="basis-1/4 items-center gap-2">
-									<div>
-										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r_color.jpg`} />
-									</div>
-									<div>
-										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw_color.jpg`} />
-										<H4 className="text-center">Raw + Color</H4>
-									</div>
-								</Stack>
-								<Stack column className="basis-1/4 items-center gap-2">
-									<div>
-										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r.jpg`} />
-									</div>
-									<div>
-										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw.jpg`} />
-										<H4 className="text-center">Refined</H4>
-									</div>
-								</Stack>
-								<Stack column className="basis-1/4 items-center gap-2">
-									<div>
-										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r_color.jpg`} />
-									</div>
-									<div>
-										<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw_color.jpg`} />
-										<H4 className="text-center">Refined + Color</H4>
-									</div>
-								</Stack>
-							</Stack>
-						</Stack>
-					)}
+						)}
+					</Stack>
 				</Carousel>
 			</section>
 
