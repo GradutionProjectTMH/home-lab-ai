@@ -138,37 +138,38 @@ const AddToMarketplacePage = ({ detailDrawing, setCurrentPage }: AddToMarketplac
 				</Stack>
 
 				<Stack className="pb-8 border-b-gray-200 border-b p-6">
-					<Stack className=" gap-4">
+					<Stack className="flex-grow gap-4">
 						{detailDrawing?.hire.houseDesigns &&
 							detailDrawing?.hire.houseDesigns.length > 0 &&
 							detailDrawing?.hire.houseDesigns[0].designs.map((design, index) => {
 								return (
-									<Stack
-										key={index}
-										className="basis-1/3 items-stretch "
-										onClick={() => {
-											if (imageSelected === index) {
-												setImageSelected(null);
-											} else {
-												setImageSelected(index);
-												setIsShownModal(true);
-												setIFrameSrc(design.coHomeUrl);
-												handleShownMaterial(index);
-											}
-										}}
-									>
-										<div
+									<Stack column className="basis-1/3">
+										<H4>Design 3D Plan {index + 1}</H4>
+										<Stack
+											key={index}
 											className={joinTxts(
-												"border-4 hover:scale-110 hover:shadow-md hover:z-10",
+												"flex-grow justify-center items-center py-32 bg-white border-4 hover:scale-110 hover:shadow-md hover:z-10 mt-3",
 												imageSelected == index ? "border-blue-500" : null,
 											)}
+											onClick={() => {
+												if (imageSelected === index) {
+													setImageSelected(null);
+												} else {
+													setImageSelected(index);
+													setIsShownModal(true);
+													setIFrameSrc(design.coHomeUrl);
+													handleShownMaterial(index);
+												}
+											}}
 										>
-											<img
-												src={design.image}
-												alt="suggested-design"
-												className="border-white border-4 cursor-pointer  h-[400px]"
-											/>
-										</div>
+											<div>
+												<img
+													src="https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1671040110511-709200495.png"
+													alt="suggested-design"
+													className="border-white border-4 cursor-pointer  h-56"
+												/>
+											</div>
+										</Stack>
 									</Stack>
 								);
 							})}
