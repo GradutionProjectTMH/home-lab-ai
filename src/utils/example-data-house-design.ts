@@ -4,7 +4,7 @@ export const dataExampleHouseDesign = [
 			{
 				coHomeUrl:
 					"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40GHV6QF1&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
-				image: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1669365346539-534036200.jpg",
+				image: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1671038683222-100325793.png",
 				isChoose: false,
 				materials: [
 					"63808eea3dd74c867b22e0e4",
@@ -35,7 +35,7 @@ export const dataExampleHouseDesign = [
 			{
 				coHomeUrl:
 					"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40GHV6QF1&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
-				image: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1669365346539-983596118.jpg",
+				image: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1671038683222-100325793.png",
 				isChoose: false,
 				materials: [
 					"63808eea3dd74c867b22e0e4",
@@ -54,7 +54,7 @@ export const dataExampleHouseDesign = [
 			{
 				coHomeUrl:
 					"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40GHV6QF1&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
-				image: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1669365346539-927724077.jpg",
+				image: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1671038683222-100325793.png",
 				isChoose: false,
 				materials: [
 					"63808ee93dd74c867b22e0c9",

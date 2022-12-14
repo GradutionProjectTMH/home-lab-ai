@@ -200,11 +200,11 @@ const HomePage = (props: RouteComponentProps) => {
 
 			setDetailDrawing({
 				...detailDrawing,
-				width: 12,
-				height: 5,
+				width: 8,
 				length: 17,
-				area: 152,
-				budget: 1.2,
+				height: 5,
+				area: 120,
+				budget: 0.4,
 			});
 
 			dispatch(popMessage({ isClearAll: true }));
