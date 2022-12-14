@@ -55,7 +55,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 	const [suggestedPlans, setSuggestedPlans] = React.useState<SuggestedPlan[]>([]);
 
-	const [boundaryName, setBoundaryName] = React.useState<string>("444.png");
+	const [boundaryName, setBoundaryName] = React.useState<string>("41018.png");
 	const [boundary, setBoundary] = React.useState<Boundary>();
 	const [ideaPositions, setIdeaPositions] = React.useState<IdeaPosition[]>([]);
 	const [selectedIdeaPosition, setSelectedIdeaPosition] = React.useState<IdeaPosition>();
