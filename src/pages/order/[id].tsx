@@ -13,6 +13,7 @@ import { PDFHeading1, PDFItem, PDFList, PDFSection, PDFKey, PDFValue, PDFHeading
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
 import { formatPrice } from "../../utils/text.util";
+import { STATUS_HIRE } from "../../enums/hiring.enum";
 
 type OrderProps = {
 	id?: string;
@@ -78,8 +79,18 @@ const OrderDetail = ({ id }: OrderProps) => {
 
 	return (
 		<>
-			<section className="container mx-auto">
-				<Carousel title="Step 01: Complete your design (Task 01)" defaultOpened>
+			<section className="container mx-auto ">
+				<Carousel
+					title={
+						detailDrawing?.hire && detailDrawing?.hire.status === STATUS_HIRE.COMPLETE
+							? "Step 01: Complete your design (Task 01) completed"
+							: "Step 01: Complete your design (Task 01)"
+					}
+					titleClassName={
+						detailDrawing?.hire && detailDrawing?.hire.status === STATUS_HIRE.COMPLETE ? "text-green-500" : ""
+					}
+					defaultOpened
+				>
 					{detailDrawing?.hire && detailDrawing?.hire.designerId !== user?._id ? (
 						<HiringSuccess detailDrawing={detailDrawing} setDetailDrawing={setDetailDrawing} />
 					) : (
