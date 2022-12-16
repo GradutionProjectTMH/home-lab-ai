@@ -16,11 +16,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
 import { STATUS_HIRE } from "../../enums/hiring.enum";
 import { RouteComponentProps } from "@reach/router";
-import Modal from "../../components/modal";
 import { special } from "../../utils/ordinal-digit";
 import UploadFile from "../../components/upload-file";
-import Input from "../../components/input";
-import Text from "../../components/typography/text";
 import ModelDetailDrawing from "../../components/detail-drawing/model.detail-drawing";
 import { ROLE } from "../../enums/user.enum";
 
@@ -164,12 +161,12 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 								</Stack>
 								<Button className="!px-4 !py-1 justify-center items-center" type="outline" onClick={handleClickAccept}>
 									{detailDrawing?.hire.status === STATUS_HIRE.ACCEPT
-										? "Working in stage 1"
+										? "Working"
 										: detailDrawing?.hire.status === STATUS_HIRE.PENDING && detailDrawing?.hire.designerId === user?._id
 										? "Accept"
 										: detailDrawing?.hire.status === STATUS_HIRE.PENDING
 										? "Waiting for the designer to accept"
-										: "Working in stage 1"}
+										: "Working"}
 								</Button>
 							</Stack>
 						</Stack>

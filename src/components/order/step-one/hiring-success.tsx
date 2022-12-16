@@ -14,17 +14,27 @@ import { Link, navigate } from "@reach/router";
 import { special } from "../../../utils/ordinal-digit";
 import Modal from "../../modal";
 import * as hireApi from "../../../apis/hire.api";
+import DialogBox from "../../dialog-box";
 
 type HiringSuccessProp = {
 	detailDrawing: DetailDrawing | undefined;
 	setDetailDrawing: React.Dispatch<React.SetStateAction<DetailDrawing | undefined>>;
 };
 
+type SelectedDrawing = {
+	floor: number;
+	index: number;
+	isChoose: boolean;
+};
+
 function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 	const [isShownModal, setIsShownModal] = React.useState<boolean>(false);
 	const [iFrameSrc, setIFrameSrc] = React.useState<string | null>();
+	const [isShownDialogBox, setIsShownDialogBox] = React.useState<boolean>(false);
 
-	const handleChooseDrawing = async (floor: number, index: number, isChoose: boolean) => {
+	const [selectedDrawing, setSelectedDrawing] = React.useState<SelectedDrawing | null>(null);
+
+	const handleChooseDrawing = async ({ floor, index, isChoose }: SelectedDrawing) => {
 		try {
 			if (!detailDrawing?.hire) return;
 			const newDetailDrawing = { ...detailDrawing };
@@ -33,6 +43,11 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 
 			newHire.floorDesigns[floor].designs[index].isChoose = isChoose;
 			newHire.floorDesigns[floor].status = true;
+
+			if (!newHire.floorDesigns.some((floorDesign) => !floorDesign.status)) {
+				// Sau khi hoàn thành tất cả các bảng vẽ cho từng tần
+				newHire.status = STATUS_HIRE.COMPLETE;
+			}
 
 			await hireApi.updateHire(newHire._id, newHire);
 
@@ -138,7 +153,11 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 															type="outline"
 															className="px-4 py-1"
 															LeftItem={AddTaskOutlinedSvg}
-															onClick={() => handleChooseDrawing(index, i, true)}
+															onClick={() => {
+																setSelectedDrawing({ floor: index, index: i, isChoose: true });
+																// handleChooseDrawing(index, i, true);
+																setIsShownDialogBox(true);
+															}}
 														>
 															I choose this
 														</Button>
@@ -160,9 +179,6 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 								<div key={index}>
 									<Stack className="pt-8 justify-between items-center mx-6">
 										<H4>Choose 3D model for your {special[index + 1]} floor:</H4>
-										<Button type="ghost" className="px-4 py-1 text-red-500 fill-red-500" LeftItem={TrashOutlinedSvg}>
-											Reject all drafts
-										</Button>
 									</Stack>
 									<Stack className="mx-6 mt-2 gap-4">
 										<Stack column className="basis-2/3 items-stretch gap-6">
@@ -209,6 +225,20 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 					</div>
 				)}
 			</Modal>
+			{isShownDialogBox && (
+				<DialogBox
+					message="Are you sure you want to choose this design?"
+					accept={() => {
+						if (selectedDrawing) {
+							handleChooseDrawing(selectedDrawing);
+						}
+						setIsShownDialogBox(false);
+					}}
+					cancel={() => {
+						setIsShownDialogBox(false);
+					}}
+				/>
+			)}
 		</>
 	);
 }
