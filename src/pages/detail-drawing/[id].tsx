@@ -116,7 +116,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 				from: tx.from,
 				to: tx.to,
 				method: "Accepted Design",
-				txHash: txReceipt.transactionHash,
+				hash: tx.hash,
 			});
 
 			const currentTransactions = hire.transactions;
@@ -170,7 +170,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 				from: tx.from,
 				to: tx.to,
 				method: "Submitted Design",
-				txHash: tx.hash,
+				hash: tx.hash,
 			});
 
 			hire.floorDesigns![floor - 1].status = STATUS_DRAWING_FLOOR.SUBMITTED;

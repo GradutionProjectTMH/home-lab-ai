@@ -141,7 +141,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 				from: tx.from,
 				to: tx.to,
 				method: "Started Project",
-				txHash: txReceipt.transactionHash,
+				hash: tx.hash,
 			});
 			hiring.transactions = [transaction as Transaction];
 			hiring.projectId = txReceipt.events![0].args!["projectId"].toString();
