@@ -82,12 +82,12 @@ const OrderDetail = ({ id }: OrderProps) => {
 			<section className="container mx-auto ">
 				<Carousel
 					title={
-						detailDrawing?.hire && detailDrawing?.hire.status === STATUS_HIRE.COMPLETE
+						detailDrawing?.hire && detailDrawing?.hire.status === STATUS_HIRE.FINISH
 							? "Step 01: Complete your design (Task 01) completed"
 							: "Step 01: Complete your design (Task 01)"
 					}
 					titleClassName={
-						detailDrawing?.hire && detailDrawing?.hire.status === STATUS_HIRE.COMPLETE ? "text-green-500" : ""
+						detailDrawing?.hire && detailDrawing?.hire.status === STATUS_HIRE.FINISH ? "text-green-500" : ""
 					}
 					defaultOpened
 				>

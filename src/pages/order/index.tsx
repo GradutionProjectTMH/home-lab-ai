@@ -14,6 +14,7 @@ import { STATUS_HIRE } from "../../enums/hiring.enum";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
 import { ROLE } from "../../enums/user.enum";
+import Dropdown from "../../components/dropdown";
 
 const coins = [
 	{
@@ -36,15 +37,27 @@ const coins = [
 	},
 ];
 
+const optionDropdowns = [
+	{
+		value: "my-drawing",
+		label: "My Drawing",
+	},
+	{
+		value: "my-order",
+		label: "My Order",
+	},
+];
+
 const OrderPage = (props: RouteComponentProps) => {
 	const user = useSelector((state: RootState) => state.user);
 
+	const [typeOrder, setTypeOrder] = React.useState<string>("my-drawing");
 	const [hires, setHires] = React.useState<Hire[]>([]);
 	const [selectedTag, setSelectedTag] = React.useState<number>(0);
 
 	const fetchDataHire = async () => {
 		try {
-			const res = await hireApi.getAll();
+			const res = await hireApi.getAll({ typeOrder });
 			setHires(res.data);
 		} catch (error) {
 			throw error;
@@ -53,13 +66,22 @@ const OrderPage = (props: RouteComponentProps) => {
 
 	React.useEffect(() => {
 		fetchDataHire();
-	}, []);
+	}, [typeOrder]);
 
 	return (
 		<section className="container mx-auto">
-			<Stack className="pb-8">
+			<Stack className="pb-8 justify-between">
 				<div className="basis-1/2">
 					<H2 className="!text-5xl text-blue-700 !leading-tight">List order</H2>
+				</div>
+				<div className="p-4">
+					<Dropdown
+						value={typeOrder}
+						options={optionDropdowns}
+						onChange={(value) => {
+							setTypeOrder(value);
+						}}
+					/>
 				</div>
 			</Stack>
 
@@ -82,16 +104,13 @@ const OrderPage = (props: RouteComponentProps) => {
 					hires
 						.filter((hire) => {
 							if (selectedTag === 0) {
-								return hire.status === STATUS_HIRE.COMPLETE;
+								return hire.status === STATUS_HIRE.FINISH;
 							}
 							if (selectedTag === 1) {
 								return hire.status === STATUS_HIRE.PENDING;
 							}
 							if (selectedTag === 2) {
-								return hire.status === STATUS_HIRE.ACCEPT;
-							}
-							if (selectedTag === 3) {
-								return hire.status === STATUS_HIRE.CANCELED;
+								return hire.status === STATUS_HIRE.RUNNING;
 							}
 						})
 						.map((hire, i) => {
@@ -110,8 +129,10 @@ const OrderPage = (props: RouteComponentProps) => {
 										/>
 									</Stack>
 									<Stack className="gap-x-6 mt-4 ">
-										<Link to={`/${user?.role === ROLE.DESIGNER ? "detail-drawing" : "order"}/${hire.detailDrawingId}`}>
-											{hire.designer?.firstName} {hire.designer?.lastName}
+										<Link to={`/${user?._id === hire.designerId ? "detail-drawing" : "order"}/${hire.detailDrawingId}`}>
+											{typeOrder === "my-order"
+												? `${hire.user?.firstName} ${hire.user?.lastName}`
+												: `${hire.designer?.firstName} ${hire.designer?.lastName}`}
 										</Link>
 									</Stack>
 								</div>

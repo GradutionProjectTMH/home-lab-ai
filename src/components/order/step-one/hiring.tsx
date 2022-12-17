@@ -7,10 +7,10 @@ import Button from "../../button";
 import H5 from "../../typography/h5";
 import * as userApi from "../../../apis/user.api";
 import * as hireApi from "../../../apis/hire.api";
-import { Hire } from "../../../interfaces/hire.interface";
+import { FloorDesign, Hire, HouseDesign } from "../../../interfaces/hire.interface";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
 import AddToMarketplacePage from "./add-to-marketplace";
-import { STATUS_HIRE } from "../../../enums/hiring.enum";
+import { STATUS_DRAWING_FLOOR, STATUS_HIRE } from "../../../enums/hiring.enum";
 import { Link } from "@reach/router";
 import { ROLE } from "../../../enums/user.enum";
 import { User } from "../../../types/common";
@@ -65,11 +65,24 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 			return;
 		}
 
+		const floorDesigns: FloorDesign[] = [];
+		if (detailDrawing.numberOfFloors > 0) {
+			Array(detailDrawing.numberOfFloors)
+				.fill(0)
+				.forEach((e, index) => {
+					floorDesigns.push({
+						designs: [],
+						floor: index + 1,
+						status: STATUS_DRAWING_FLOOR.PENDING,
+					});
+				});
+		}
+
 		const hiring: Partial<Hire> = {
 			designerId: isSelfBuild ? user?._id : selectedDesigner._id,
 			detailDrawingId: detailDrawing._id,
-			status: STATUS_HIRE.ACCEPT,
-			floorDesigns: [],
+			status: STATUS_HIRE.RUNNING,
+			floorDesigns: floorDesigns,
 			houseDesigns: isSelfBuild ? (dataExampleHouseDesign as any) : [],
 		};
 
@@ -109,7 +122,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		setCurrentPage("Marketplace");
 	};
 
-	if (currentPage === "Marketplace") {
+	if (currentPage === "Marketplace" && detailDrawing?.hire.designerId === user?._id) {
 		return <AddToMarketplacePage detailDrawing={detailDrawing} setCurrentPage={setCurrentPage} />;
 	}
 

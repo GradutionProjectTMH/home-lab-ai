@@ -2,8 +2,14 @@ import axiosClient from "../configs/server.config";
 import { Hire } from "../interfaces/hire.interface";
 import { ResponseAllData } from "../types/common";
 
-export const getAll = async (): Promise<ResponseAllData<Hire>> => {
-	return axiosClient.get<string, ResponseAllData<Hire>>(`hire`);
+interface QueryHire {
+	typeOrder: string;
+}
+
+export const getAll = async (query: QueryHire): Promise<ResponseAllData<Hire>> => {
+	return axiosClient.get<string, ResponseAllData<Hire>>(`hire`, {
+		params: query,
+	});
 };
 
 export const createHire = async (data: Partial<Hire>): Promise<Partial<Hire>> => {
