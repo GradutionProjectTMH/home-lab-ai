@@ -21,6 +21,7 @@ import UploadFile from "../../components/upload-file";
 import ModelDetailDrawing from "../../components/detail-drawing/model.detail-drawing";
 import { ROLE } from "../../enums/user.enum";
 import Modal from "../../components/modal";
+import { Hire } from "../../interfaces/hire.interface";
 
 const rewards = [
 	{
@@ -103,8 +104,16 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 		setIsShownModal(true);
 	};
 
-	const handleSummitDrawingFloor = (floor: number) => {
-		console.log(floor);
+	const handleSummitDrawingFloor = async (floor: number) => {
+		if (detailDrawing?.hire) {
+			const hire: Hire = {
+				...detailDrawing?.hire,
+			};
+
+			hire.floorDesigns![floor - 1].status = STATUS_DRAWING_FLOOR.SUBMITTED;
+
+			await hireApi.updateHire(hire._id, hire);
+		}
 	};
 
 	if (isLoader) return <></>;
@@ -277,65 +286,77 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 					</Stack>
 				</Carousel>
 			</section>
-			<section className="container mx-auto">
-				{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
-					return (
-						<Carousel
-							key={index}
-							title={`${special[index + 1].charAt(0).toUpperCase() + special[index + 1].slice(1)} floor 3D model `}
-							defaultOpened
-						>
-							<Stack column={true} className="p-8 gap-8">
-								<Stack className="gap-8">
-									{floorDesign.designs.map((design, i) => {
-										return (
-											<Stack column={true} className="basis-1/3 " key={i}>
-												<div
-													className="bg-white p-1  hover:scale-110 hover:shadow-md hover:z-10"
-													key={index}
-													onClick={() => {
-														setIsShownModalCoHome(true);
-														handleClick(design.coHomeUrl);
-													}}
-												>
-													<img src={design.image} alt="suggested-design" className="cursor-pointer w-full h-[400px]" />
+			{detailDrawing?.hire.status === STATUS_HIRE.RUNNING && (
+				<section className="container mx-auto">
+					{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
+						return (
+							<Carousel
+								key={index}
+								title={`${special[index + 1].charAt(0).toUpperCase() + special[index + 1].slice(1)} floor 3D model `}
+								defaultOpened
+							>
+								<Stack column={true} className="p-8 gap-8">
+									<Stack className="gap-8">
+										{floorDesign.designs.map((design, i) => {
+											return (
+												<Stack column={true} className="basis-1/3 " key={i}>
+													<div
+														className="bg-white p-1  hover:scale-110 hover:shadow-md hover:z-10"
+														key={index}
+														onClick={() => {
+															setIsShownModalCoHome(true);
+															handleClick(design.coHomeUrl);
+														}}
+													>
+														<img
+															src={design.image}
+															alt="suggested-design"
+															className="cursor-pointer w-full h-[400px]"
+														/>
+													</div>
+												</Stack>
+											);
+										})}
+										{floorDesign.designs.length < 3 &&
+											user?.role === ROLE.DESIGNER &&
+											user?._id === detailDrawing.hire.designerId &&
+											floorDesign.status !== STATUS_DRAWING_FLOOR.CANCELED &&
+											floorDesign.status !== STATUS_DRAWING_FLOOR.FINISHED && (
+												<div className="p-1 basis-1/3 h-[400px]" onClick={() => handleClickUpload(index + 1)}>
+													<UploadFile />
 												</div>
-											</Stack>
-										);
-									})}
-									{floorDesign.designs.length < 3 &&
-										user?.role === ROLE.DESIGNER &&
-										user?._id === detailDrawing.hire.designerId &&
-										floorDesign.status !== STATUS_DRAWING_FLOOR.CANCELED &&
-										floorDesign.status !== STATUS_DRAWING_FLOOR.FINISHED && (
-											<div className="p-1 basis-1/3 h-[400px]" onClick={() => handleClickUpload(index + 1)}>
-												<UploadFile />
-											</div>
-										)}
+											)}
+									</Stack>
 								</Stack>
-							</Stack>
-							<Stack className="justify-center">
-								<Button className="!px-11" onClick={() => handleSummitDrawingFloor(index + 1)}>
-									Submit
-								</Button>
-							</Stack>
-						</Carousel>
-					);
-				})}
+								{floorDesign.designs.length > 2 && (
+									<Stack className="justify-center">
+										{floorDesign.status === STATUS_DRAWING_FLOOR.SUBMITTED ? (
+											<H5 className="text-green-500"> Pending client review</H5>
+										) : (
+											<Button className="!px-11" onClick={() => handleSummitDrawingFloor(index + 1)}>
+												Submit
+											</Button>
+										)}
+									</Stack>
+								)}
+							</Carousel>
+						);
+					})}
 
-				<div className="h-[1px] my-4 bg-gray-300"></div>
-				<Stack column={true} className="pb-20 px-6">
-					<H5 className="text-green-500 my-8">13 days remaining to finish your work</H5>
-					<Stack className="gap-4 items-center">
-						<Button className="!px-4 !py-1" type="fill">
-							Publish Now
-						</Button>
-						<Button className="!px-4 !py-1" type="outline">
-							Save
-						</Button>
+					<div className="h-[1px] my-4 bg-gray-300"></div>
+					<Stack column={true} className="pb-20 px-6">
+						<H5 className="text-green-500 my-8">13 days remaining to finish your work</H5>
+						<Stack className="gap-4 items-center">
+							<Button className="!px-4 !py-1" type="fill">
+								Publish Now
+							</Button>
+							<Button className="!px-4 !py-1" type="outline">
+								Save
+							</Button>
+						</Stack>
 					</Stack>
-				</Stack>
-			</section>
+				</section>
+			)}
 
 			{detailDrawing?.hire._id && (
 				<ModelDetailDrawing
