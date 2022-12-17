@@ -159,6 +159,10 @@ const Navbar = ({ ...props }: NavbarProps) => {
 												<Link to="/request-verify" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
 													Request verify
 												</Link>
+												<Link to="/history" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
+													Transaction history
+												</Link>
+
 												<a
 													href="#"
 													className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm"

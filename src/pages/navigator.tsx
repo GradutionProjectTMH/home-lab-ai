@@ -9,6 +9,7 @@ import VerifyMaterial from "./verify-material/[id]";
 import OrderDetail from "./order/[id]";
 import DetailDrawingPage from "./detail-drawing/[id]";
 import OrderPage from "./order";
+import HistoryTransaction from "./history-transaction";
 
 export const routes = [
 	{
@@ -58,6 +59,12 @@ export const routes = [
 		path: "/verify-material/:id",
 		isNav: false,
 		page: VerifyMaterial,
+	},
+	{
+		name: "HistoryTransaction",
+		path: "/history",
+		isNav: false,
+		page: HistoryTransaction,
 	},
 ];
 
