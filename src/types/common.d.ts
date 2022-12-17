@@ -11,6 +11,7 @@ type User = {
 	avatar: string;
 	role: ROLE;
 	status: USER_STATUS;
+	wallet: string;
 	address: {
 		code: string;
 		state: string;

@@ -18,6 +18,7 @@ import { setWalletAddress } from "../redux/slices/ether.slice";
 import { formatAddress } from "../utils/text.util";
 import { routes } from "../pages/navigator";
 import { joinTxts } from "../utils/text.util";
+import { updateUserProfile } from "../apis/user.api";
 
 type NavbarProps = {} & React.HtmlHTMLAttributes<HTMLDivElement>;
 

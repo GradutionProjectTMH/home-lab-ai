@@ -14,3 +14,7 @@ export const getAllUser = async (query: UserQuery): Promise<ResponseAllData<User
 		params: query,
 	});
 };
+
+export const updateUserProfile = async (data: Partial<User>): Promise<Partial<User>> => {
+	return axiosClient.put<string, any>(`user/profile`, data);
+};

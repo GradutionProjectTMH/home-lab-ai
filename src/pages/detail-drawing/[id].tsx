@@ -135,7 +135,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 			const sender = await signer.getAddress();
 			let txReceipt;
 			try {
-				const amount = ethers.utils.parseEther("10");
+				const amount = 1;
 				const tx = await ether!.contract.HomeLab.connect(signer).startProject(
 					detailDrawing!!.hire._id,
 					IPFS.getIPFSUrlFromPath(ipfsResult.directory.cid.toString()),
