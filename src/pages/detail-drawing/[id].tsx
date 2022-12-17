@@ -12,7 +12,7 @@ import { DetailDrawing } from "../../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../../apis/detail-drawing.api";
 import * as hireApi from "../../apis/hire.api";
 import { splittingRoomColor } from "../../utils/room-color";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
 import { STATUS_HIRE } from "../../enums/hiring.enum";
 import { RouteComponentProps } from "@reach/router";
@@ -20,6 +20,12 @@ import { special } from "../../utils/ordinal-digit";
 import UploadFile from "../../components/upload-file";
 import ModelDetailDrawing from "../../components/detail-drawing/model.detail-drawing";
 import { ROLE } from "../../enums/user.enum";
+import IPFS from "../../apis/ipfs.api";
+import { ethers } from "ethers";
+import Ether from "../../apis/ether.api";
+import { popMessage, pushError, pushLoading, pushSuccess } from "../../redux/slices/message.slice";
+import { createTransaction } from "../../apis/transaction.api";
+import { Transaction } from "../../interfaces/transaction.interface";
 
 const rewards = [
 	{
@@ -53,14 +59,16 @@ type DetailDrawingProps = {
 } & RouteComponentProps;
 
 const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
+	const dispatch = useDispatch();
+	const user = useSelector((state: RootState) => state.user);
+	const ether = useSelector((state: RootState) => state.ether);
+
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
 	const [isShownModal, setIsShownModal] = React.useState<boolean>(false);
 	const [numberFloor, setNumberFloor] = React.useState<number>(0);
 
 	const [iFrameSrc, setIFrameSrc] = React.useState<string | null>();
-
-	const user = useSelector((state: RootState) => state.user);
 
 	const handleClick = (src: string) => {
 		setIFrameSrc(src);
@@ -73,6 +81,8 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 			setDetailDrawing(result);
 		} catch (error: any) {
+			console.error(error);
+
 			throw error;
 		} finally {
 			setIsLoader(false);
@@ -85,12 +95,81 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 	const handleClickAccept = async () => {
 		try {
-			if (detailDrawing?.hire._id) {
-				await hireApi.updateHire(detailDrawing.hire._id, { status: STATUS_HIRE.ACCEPT });
-				const newDetailDrawing = { ...detailDrawing };
-				newDetailDrawing.hire.status = STATUS_HIRE.ACCEPT;
-				setDetailDrawing(newDetailDrawing);
+			const walletAddress = await ether!.provider
+				.getSigner()
+				.getAddress()
+				.catch((error) => {
+					console.error(error);
+					return ethers.constants.AddressZero;
+				});
+			if (walletAddress == ethers.constants.AddressZero) throw "Please connect to Metamask before";
+
+			dispatch(pushLoading("Creating contract"));
+
+			const ipfsDetailDrawingData = {
+				...detailDrawing,
+				boundaryImagePath: "/BoundaryImage",
+				crossSectionPath: "/CrossSectionImage",
+			};
+
+			const ipfsResult = await IPFS.uploadMany([
+				{
+					path: "",
+					content: JSON.stringify(ipfsDetailDrawingData),
+				},
+				{
+					path: "BoundaryImage",
+					content: detailDrawing!.boundaryImg,
+				},
+				{
+					path: "CrossSectionImage",
+					content: detailDrawing!.crossSectionImg,
+				},
+			]);
+
+			const currentTimeStamp = await Ether.getTimestamp();
+			const expiredAt = currentTimeStamp + 60 * 500;
+			const signer = ether!.provider.getSigner();
+			const sender = await signer.getAddress();
+			let txReceipt;
+			try {
+				const amount = ethers.utils.parseEther("10");
+				const tx = await ether!.contract.HomeLab.connect(signer).startProject(
+					detailDrawing!!.hire._id,
+					IPFS.getIPFSUrlFromPath(ipfsResult.directory.cid.toString()),
+					ethers.constants.AddressZero,
+					"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+					expiredAt,
+					amount,
+					{ value: amount },
+				);
+
+				txReceipt = await tx.wait();
+				console.log(txReceipt);
+			} catch (error) {
+				console.error(error);
+				throw Ether.parseError(error);
 			}
+
+			const transaction = await createTransaction({
+				from: sender,
+				to: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+				method: "StartedProject",
+				txHash: txReceipt.transactionHash,
+			});
+			const currentTransactions = detailDrawing!.hire.transactions || [];
+			currentTransactions.push(transaction as Transaction);
+
+			await hireApi.updateHire(detailDrawing!.hire._id, {
+				status: STATUS_HIRE.ACCEPT,
+				transactions: currentTransactions,
+			});
+			const newDetailDrawing = { ...detailDrawing! };
+			newDetailDrawing!.hire.status = STATUS_HIRE.ACCEPT;
+
+			setDetailDrawing(newDetailDrawing!);
+			dispatch(popMessage({ isClearAll: true }));
+			dispatch(pushSuccess("Contract created successfully"));
 		} catch (error) {
 			throw error;
 		}

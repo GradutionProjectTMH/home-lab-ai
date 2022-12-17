@@ -20,11 +20,29 @@ async function getBlockNumber(): Promise<number> {
 	return latestBlock.number;
 }
 
+export const parseError = (error: any) => {
+	if (error.reason?.includes("unapproved collaborators left"))
+		return "All collaborators deliverables must be approved before finishing worktask";
+
+	if (error.reason?.includes("not enough package budget left"))
+		return "The worktask's remaining budget is insufficient";
+
+	if (error.reason?.includes("caller is not the project initiator"))
+		return "Please connect to the correct wallet of project initiator";
+
+	if (error.reason?.includes("unknown account #0")) return "Please connect to wallet";
+
+	if (error.reason?.includes("low-level call failed")) return "Not enough token";
+
+	if (error.reason) return error.reason?.replace("execution reverted:", "");
+};
+
 const Ether = {
 	isConnected,
 	getBlock,
 	getTimestamp,
 	getBlockNumber,
+	parseError,
 	BN,
 };
 
