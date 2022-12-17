@@ -98,23 +98,13 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 	const handleClickAccept = async () => {
 		try {
-			const walletAddress = await ether!.provider
-				.getSigner()
-				.getAddress()
-				.catch((error) => {
-					console.error(error);
-					return ethers.constants.AddressZero;
-				});
-			if (walletAddress == ethers.constants.AddressZero) throw "Please connect to Metamask before";
+			const hire = detailDrawing!.hire;
 
 			const signer = ether!.provider.getSigner();
-			const sender = await signer.getAddress();
 			let tx;
 			let txReceipt;
 			try {
-				const amount = 1;
-				tx = await ether!.contract.HomeLab.connect(signer).acceptedPhase(1, 1);
-
+				tx = await ether!.contract.HomeLab.connect(signer).acceptedPhase(hire.projectId, hire.floorDesigns![0].phaseId);
 				txReceipt = await tx.wait();
 				console.log(txReceipt);
 			} catch (error) {
@@ -125,13 +115,13 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 			const transaction = await createTransaction({
 				from: tx.from,
 				to: tx.to,
-				method: "AcceptedPhase",
+				method: "Accepted Design",
 				txHash: txReceipt.transactionHash,
 			});
 
-			const currentTransactions = detailDrawing!.hire.transactions;
+			const currentTransactions = hire.transactions;
 			currentTransactions.push(transaction as Transaction);
-			await hireApi.updateHire(detailDrawing!.hire._id, {
+			await hireApi.updateHire(hire._id, {
 				status: STATUS_HIRE.RUNNING,
 				transactions: currentTransactions,
 			});
@@ -152,9 +142,36 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 	const handleSummitDrawingFloor = async (floor: number) => {
 		if (detailDrawing?.hire) {
-			const hire: Hire = {
-				...detailDrawing?.hire,
-			};
+			const hire: Hire = detailDrawing.hire;
+
+			const ipfsData = hire.floorDesigns![floor - 1].designs.map((design, index) => ({
+				path: (index + 1).toString(),
+				content: design.image,
+			}));
+			const ipfsResult = await IPFS.uploadMany(ipfsData);
+
+			const signer = ether!.provider.getSigner();
+			let tx;
+			let txReceipt;
+			try {
+				tx = await ether!.contract.HomeLab.connect(signer).submitPhase(
+					hire.projectId,
+					hire.floorDesigns![0].phaseId,
+					IPFS.getIPFSUrlFromPath(ipfsResult.directory.cid.toString()),
+				);
+				txReceipt = await tx.wait();
+				console.log(txReceipt);
+			} catch (error) {
+				console.error(error);
+				throw Ether.parseError(error);
+			}
+
+			await createTransaction({
+				from: tx.from,
+				to: tx.to,
+				method: "Submitted Design",
+				txHash: tx.hash,
+			});
 
 			hire.floorDesigns![floor - 1].status = STATUS_DRAWING_FLOOR.SUBMITTED;
 

@@ -116,7 +116,6 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 			const currentTimeStamp = await Ether.getTimestamp();
 			const expiredAt = currentTimeStamp + 60 * 500;
 			const signer = ether!.provider.getSigner();
-			const sender = await signer.getAddress();
 			let tx;
 			let txReceipt;
 			try {
@@ -141,10 +140,12 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 			const transaction = await createTransaction({
 				from: tx.from,
 				to: tx.to,
-				method: "StartedProject",
+				method: "Started Project",
 				txHash: txReceipt.transactionHash,
 			});
 			hiring.transactions = [transaction as Transaction];
+			hiring.projectId = txReceipt.events![0].args!["projectId"].toString();
+			hiring.floorDesigns![0].phaseId = txReceipt.events![0].args!["phaseId"].toString();
 
 			await hireApi.createHire(hiring);
 
