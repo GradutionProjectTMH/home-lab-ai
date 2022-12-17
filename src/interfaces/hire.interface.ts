@@ -2,6 +2,7 @@ import { STATUS_DRAWING_FLOOR, STATUS_HIRE } from "../enums/hiring.enum";
 import { User } from "../types/common";
 import { DetailDrawing } from "./detail-drawing.interface";
 import { Products } from "./product.interface";
+import { Transaction } from "./transaction.interface";
 
 export type Material = {
 	amount?: number;
@@ -25,6 +26,7 @@ export type HouseDesign = {
 	designs: ItemDesign[];
 	status: boolean;
 };
+
 export interface Hire {
 	_id: string;
 	userId?: string;
@@ -36,5 +38,6 @@ export interface Hire {
 	floorDesigns?: FloorDesign[];
 	houseDesigns?: HouseDesign[];
 	status: STATUS_HIRE;
+	transactions: Transaction[];
 	projectId: string;
 }

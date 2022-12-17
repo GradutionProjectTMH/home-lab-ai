@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Ether from "../apis/ether.api";
 import * as authApi from "../apis/server/auth.api";
 import { getEnvironment } from "../apis/server/environment.api";
+import { updateUserProfile } from "../apis/user.api";
 import { setEnvironment } from "../redux/slices/environment.slice";
 import { setWalletAddress, initiateEther } from "../redux/slices/ether.slice";
 import { initiateFirebase } from "../redux/slices/firebase-service.slice";
@@ -117,7 +118,11 @@ const Initializer = () => {
 		};
 		ethereum.on("disconnect", handleDisconnected);
 
-		const handleAccountsChanged = (accounts: string[]) => dispatch(setWalletAddress(accounts.shift()));
+		const handleAccountsChanged = async (accounts: string[]) => {
+			const account = accounts.shift();
+			await updateUserProfile({ wallet: account });
+			dispatch(setWalletAddress(account));
+		};
 		ethereum.on("accountsChanged", handleAccountsChanged);
 
 		const handleChainChanged = (chainId: number) => window.location.reload();
@@ -136,10 +141,10 @@ const Initializer = () => {
 	};
 
 	useEffect(() => {
-		// if (environment.isReady) {
-		// 	const handleListenersRemoved = setupMetamaskEvents();
-		// 	return () => handleListenersRemoved();
-		// }
+		if (environment.isReady) {
+			const handleListenersRemoved = setupMetamaskEvents();
+			return () => handleListenersRemoved();
+		}
 	}, [environment]);
 
 	return <div></div>;

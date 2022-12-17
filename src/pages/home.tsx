@@ -570,29 +570,29 @@ const HomePage = (props: RouteComponentProps) => {
 						</Stack>
 					</Stack>
 
-					<div className="h-[1px] my-4 bg-gray-200"></div>
-
-					<Stack className="mt-4 px-6 flex-wrap gap-y-4">
-						<Stack column className="gap-4">
-							{sentences &&
-								sentences.map((sentence: any) => (
-									<Stack key={sentence.position} className="gap-2">
-										<H4 className="text-gray-700">
-											{sentence.position + 1 < 10 ? `0${sentence.position + 1}` : sentence.position + 1}.
-										</H4>
-										<Stack className="gap-2 flex-wrap">
-											{sentence.words.map((word: any) => (
-												<H4 key={word.position} className={word.isNounPhrase ? "text-blue-500" : "text-gray-500"}>
-													{word.token}
-												</H4>
-											))}
+					<Carousel title="Show text">
+						<Stack className="mt-4 px-6 flex-wrap gap-y-4">
+							<Stack column className="gap-4">
+								{sentences &&
+									sentences.map((sentence: any) => (
+										<Stack key={sentence.position} className="gap-2">
+											<H4 className="text-gray-700">
+												{sentence.position + 1 < 10 ? `0${sentence.position + 1}` : sentence.position + 1}.
+											</H4>
+											<Stack className="gap-2 flex-wrap">
+												{sentence.words.map((word: any) => (
+													<H4 key={word.position} className={word.isNounPhrase ? "text-blue-500" : "text-gray-500"}>
+														{word.token}
+													</H4>
+												))}
+											</Stack>
 										</Stack>
-									</Stack>
-								))}
+									))}
+							</Stack>
 						</Stack>
-					</Stack>
 
-					<div className="h-[1px] my-4 bg-gray-200"></div>
+						<div className="h-[1px] my-4 bg-gray-200"></div>
+					</Carousel>
 
 					{entities && (
 						<Stack className="mt-4 px-6 gap-4">

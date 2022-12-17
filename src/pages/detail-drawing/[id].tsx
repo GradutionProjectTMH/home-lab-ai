@@ -12,7 +12,7 @@ import { DetailDrawing } from "../../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../../apis/detail-drawing.api";
 import * as hireApi from "../../apis/hire.api";
 import { splittingRoomColor } from "../../utils/room-color";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
 import { STATUS_DRAWING_FLOOR, STATUS_HIRE } from "../../enums/hiring.enum";
 import { RouteComponentProps } from "@reach/router";
@@ -20,6 +20,12 @@ import { special } from "../../utils/ordinal-digit";
 import UploadFile from "../../components/upload-file";
 import ModelDetailDrawing from "../../components/detail-drawing/model.detail-drawing";
 import { ROLE } from "../../enums/user.enum";
+import IPFS from "../../apis/ipfs.api";
+import { ethers } from "ethers";
+import Ether from "../../apis/ether.api";
+import { popMessage, pushError, pushLoading, pushSuccess } from "../../redux/slices/message.slice";
+import { createTransaction } from "../../apis/transaction.api";
+import { Transaction } from "../../interfaces/transaction.interface";
 import Modal from "../../components/modal";
 import { Hire } from "../../interfaces/hire.interface";
 
@@ -55,6 +61,10 @@ type DetailDrawingProps = {
 } & RouteComponentProps;
 
 const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
+	const dispatch = useDispatch();
+	const user = useSelector((state: RootState) => state.user);
+	const ether = useSelector((state: RootState) => state.ether);
+
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
 	const [detailDrawing, setDetailDrawing] = React.useState<DetailDrawing>();
 	const [isShownModal, setIsShownModal] = React.useState<boolean>(false);
@@ -62,8 +72,6 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 	const [iFrameSrc, setIFrameSrc] = React.useState<string | null>();
 	const [isShownModalCoHome, setIsShownModalCoHome] = React.useState<boolean>(false);
-
-	const user = useSelector((state: RootState) => state.user);
 
 	const handleClick = (src: string) => {
 		setIFrameSrc(src);
@@ -76,6 +84,8 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 			setDetailDrawing(result);
 		} catch (error: any) {
+			console.error(error);
+
 			throw error;
 		} finally {
 			setIsLoader(false);
@@ -88,12 +98,40 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 	const handleClickAccept = async () => {
 		try {
-			if (detailDrawing?.hire._id) {
-				await hireApi.updateHire(detailDrawing.hire._id, { status: STATUS_HIRE.RUNNING });
-				const newDetailDrawing = { ...detailDrawing };
-				newDetailDrawing.hire.status = STATUS_HIRE.RUNNING;
-				setDetailDrawing(newDetailDrawing);
+			const hire = detailDrawing!.hire;
+
+			dispatch(pushLoading("Establishing transaction"));
+
+			const signer = ether!.provider.getSigner();
+			let tx;
+			let txReceipt;
+			try {
+				tx = await ether!.contract.HomeLab.connect(signer).acceptedPhase(hire.projectId, hire.floorDesigns![0].phaseId);
+				txReceipt = await tx.wait();
+				console.log(txReceipt);
+			} catch (error) {
+				console.error(error);
+				throw Ether.parseError(error);
 			}
+
+			const transaction = await createTransaction({
+				from: tx.from,
+				to: tx.to,
+				method: "Accepted Design",
+				hash: tx.hash,
+			});
+
+			const currentTransactions = hire.transactions;
+			currentTransactions.push(transaction as Transaction);
+			await hireApi.updateHire(hire._id, {
+				status: STATUS_HIRE.RUNNING,
+				transactions: currentTransactions,
+			});
+			const newDetailDrawing = { ...detailDrawing };
+			newDetailDrawing.hire!.status = STATUS_HIRE.RUNNING;
+			setDetailDrawing(newDetailDrawing as DetailDrawing);
+			dispatch(popMessage({ isClearAll: true }));
+			dispatch(pushSuccess("Accepted design"));
 		} catch (error) {
 			throw error;
 		}
@@ -106,9 +144,38 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 
 	const handleSummitDrawingFloor = async (floor: number) => {
 		if (detailDrawing?.hire) {
-			const hire: Hire = {
-				...detailDrawing?.hire,
-			};
+			const hire: Hire = detailDrawing.hire;
+
+			dispatch(pushLoading("Establishing transaction"));
+
+			const ipfsData = hire.floorDesigns![floor - 1].designs.map((design, index) => ({
+				path: (index + 1).toString(),
+				content: design.image,
+			}));
+			const ipfsResult = await IPFS.uploadMany(ipfsData);
+
+			const signer = ether!.provider.getSigner();
+			let tx;
+			let txReceipt;
+			try {
+				tx = await ether!.contract.HomeLab.connect(signer).submitPhase(
+					hire.projectId,
+					hire.floorDesigns![0].phaseId,
+					IPFS.getIPFSUrlFromPath(ipfsResult.directory.cid.toString()),
+				);
+				txReceipt = await tx.wait();
+				console.log(txReceipt);
+			} catch (error) {
+				console.error(error);
+				throw Ether.parseError(error);
+			}
+
+			await createTransaction({
+				from: tx.from,
+				to: tx.to,
+				method: "Submitted Design",
+				hash: tx.hash,
+			});
 
 			hire.floorDesigns![floor - 1].status = STATUS_DRAWING_FLOOR.SUBMITTED;
 
@@ -117,6 +184,8 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 			const newDetailDrawing = { ...detailDrawing };
 			newDetailDrawing.hire = hire;
 			setDetailDrawing(newDetailDrawing);
+			dispatch(popMessage({ isClearAll: true }));
+			dispatch(pushSuccess("Submitted design"));
 		}
 	};
 
@@ -165,20 +234,29 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 								<Stack>
 									<Stack className="basis-1/2 gap-2 items-stretch">
 										<img
-											src="../images/suggested-designs/33.png"
+											src={detailDrawing?.boundaryImg}
 											alt="suggested-design"
 											className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
 										/>
 									</Stack>
 									<Stack className="basis-1/2 gap-2 items-stretch">
 										<img
-											src="../images/suggested-designs/33.png"
+											src={detailDrawing?.crossSectionImg}
 											alt="suggested-design"
 											className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
 										/>
 									</Stack>
 								</Stack>
-								<Button className="!px-4 !py-1 justify-center items-center" type="outline" onClick={handleClickAccept}>
+								<Button
+									className="!px-4 !py-1 justify-center items-center"
+									type="outline"
+									onClick={handleClickAccept}
+									disabled={
+										!(
+											detailDrawing?.hire.status === STATUS_HIRE.PENDING && detailDrawing?.hire.designerId === user?._id
+										)
+									}
+								>
 									{detailDrawing?.hire.status === STATUS_HIRE.FINISH
 										? "Finish"
 										: detailDrawing?.hire.status === STATUS_HIRE.RUNNING
