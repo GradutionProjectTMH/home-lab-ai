@@ -100,6 +100,8 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 		try {
 			const hire = detailDrawing!.hire;
 
+			dispatch(pushLoading("Establishing transaction"));
+
 			const signer = ether!.provider.getSigner();
 			let tx;
 			let txReceipt;
@@ -129,7 +131,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 			newDetailDrawing.hire!.status = STATUS_HIRE.RUNNING;
 			setDetailDrawing(newDetailDrawing as DetailDrawing);
 			dispatch(popMessage({ isClearAll: true }));
-			dispatch(pushSuccess("Contract created successfully"));
+			dispatch(pushSuccess("Accepted design"));
 		} catch (error) {
 			throw error;
 		}
@@ -143,6 +145,8 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 	const handleSummitDrawingFloor = async (floor: number) => {
 		if (detailDrawing?.hire) {
 			const hire: Hire = detailDrawing.hire;
+
+			dispatch(pushLoading("Establishing transaction"));
 
 			const ipfsData = hire.floorDesigns![floor - 1].designs.map((design, index) => ({
 				path: (index + 1).toString(),
@@ -180,6 +184,8 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 			const newDetailDrawing = { ...detailDrawing };
 			newDetailDrawing.hire = hire;
 			setDetailDrawing(newDetailDrawing);
+			dispatch(popMessage({ isClearAll: true }));
+			dispatch(pushSuccess("Submitted design"));
 		}
 	};
 
@@ -228,20 +234,29 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 								<Stack>
 									<Stack className="basis-1/2 gap-2 items-stretch">
 										<img
-											src="../images/suggested-designs/33.png"
+											src={detailDrawing?.boundaryImg}
 											alt="suggested-design"
 											className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
 										/>
 									</Stack>
 									<Stack className="basis-1/2 gap-2 items-stretch">
 										<img
-											src="../images/suggested-designs/33.png"
+											src={detailDrawing?.crossSectionImg}
 											alt="suggested-design"
 											className="cursor-pointer basis-1/2 hover:scale-110 hover:shadow-md hover:z-10"
 										/>
 									</Stack>
 								</Stack>
-								<Button className="!px-4 !py-1 justify-center items-center" type="outline" onClick={handleClickAccept}>
+								<Button
+									className="!px-4 !py-1 justify-center items-center"
+									type="outline"
+									onClick={handleClickAccept}
+									disabled={
+										!(
+											detailDrawing?.hire.status === STATUS_HIRE.PENDING && detailDrawing?.hire.designerId === user?._id
+										)
+									}
+								>
 									{detailDrawing?.hire.status === STATUS_HIRE.FINISH
 										? "Finish"
 										: detailDrawing?.hire.status === STATUS_HIRE.RUNNING

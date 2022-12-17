@@ -45,7 +45,7 @@ const Button = ({
 
 	return (
 		<button
-			className={joinTxts("px-6 py-3", buttonClass[type], className)}
+			className={joinTxts("px-6 py-3", buttonClass[type], className, disabled ? "opacity-50" : "")}
 			{...props}
 			disabled={disabled}
 			onClick={handleClicked}

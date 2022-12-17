@@ -97,13 +97,11 @@ export interface HomeLabInterface extends utils.Interface {
     "getPendingWithdraw(address)": FunctionFragment;
     "getPhase(uint256,uint256)": FunctionFragment;
     "initialize(address)": FunctionFragment;
-    "lastProjectId()": FunctionFragment;
     "owner()": FunctionFragment;
     "permittedTokens(address)": FunctionFragment;
     "projects(uint256)": FunctionFragment;
     "rejectSubmitedPhase(uint256,uint256)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "serviceFeePercent()": FunctionFragment;
     "setPermittedToken(address,bool)": FunctionFragment;
     "setServiceFeePercent(uint256)": FunctionFragment;
     "startPhase(uint256,address,uint256,uint256)": FunctionFragment;
@@ -122,13 +120,11 @@ export interface HomeLabInterface extends utils.Interface {
       | "getPendingWithdraw"
       | "getPhase"
       | "initialize"
-      | "lastProjectId"
       | "owner"
       | "permittedTokens"
       | "projects"
       | "rejectSubmitedPhase"
       | "renounceOwnership"
-      | "serviceFeePercent"
       | "setPermittedToken"
       | "setServiceFeePercent"
       | "startPhase"
@@ -163,10 +159,6 @@ export interface HomeLabInterface extends utils.Interface {
     functionFragment: "initialize",
     values: [PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(
-    functionFragment: "lastProjectId",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "permittedTokens",
@@ -182,10 +174,6 @@ export interface HomeLabInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "serviceFeePercent",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -255,10 +243,6 @@ export interface HomeLabInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getPhase", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "lastProjectId",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "permittedTokens",
@@ -271,10 +255,6 @@ export interface HomeLabInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "serviceFeePercent",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -597,8 +577,6 @@ export interface HomeLab extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    lastProjectId(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     permittedTokens(
@@ -642,8 +620,6 @@ export interface HomeLab extends BaseContract {
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
-
-    serviceFeePercent(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     setPermittedToken(
       _token: PromiseOrValue<string>,
@@ -733,8 +709,6 @@ export interface HomeLab extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  lastProjectId(overrides?: CallOverrides): Promise<BigNumber>;
-
   owner(overrides?: CallOverrides): Promise<string>;
 
   permittedTokens(
@@ -778,8 +752,6 @@ export interface HomeLab extends BaseContract {
   renounceOwnership(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
-
-  serviceFeePercent(overrides?: CallOverrides): Promise<BigNumber>;
 
   setPermittedToken(
     _token: PromiseOrValue<string>,
@@ -869,8 +841,6 @@ export interface HomeLab extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    lastProjectId(overrides?: CallOverrides): Promise<BigNumber>;
-
     owner(overrides?: CallOverrides): Promise<string>;
 
     permittedTokens(
@@ -912,8 +882,6 @@ export interface HomeLab extends BaseContract {
     ): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    serviceFeePercent(overrides?: CallOverrides): Promise<BigNumber>;
 
     setPermittedToken(
       _token: PromiseOrValue<string>,
@@ -1151,8 +1119,6 @@ export interface HomeLab extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    lastProjectId(overrides?: CallOverrides): Promise<BigNumber>;
-
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     permittedTokens(
@@ -1174,8 +1140,6 @@ export interface HomeLab extends BaseContract {
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
-
-    serviceFeePercent(overrides?: CallOverrides): Promise<BigNumber>;
 
     setPermittedToken(
       _token: PromiseOrValue<string>,
@@ -1266,8 +1230,6 @@ export interface HomeLab extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    lastProjectId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     permittedTokens(
@@ -1289,8 +1251,6 @@ export interface HomeLab extends BaseContract {
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
-
-    serviceFeePercent(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setPermittedToken(
       _token: PromiseOrValue<string>,

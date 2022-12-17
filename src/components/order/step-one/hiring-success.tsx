@@ -15,6 +15,11 @@ import { special } from "../../../utils/ordinal-digit";
 import Modal from "../../modal";
 import * as hireApi from "../../../apis/hire.api";
 import DialogBox from "../../dialog-box";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/stores/store.redux";
+import Ether from "../../../apis/ether.api";
+import { createTransaction } from "../../../apis/transaction.api";
+import { popMessage, pushLoading, pushSuccess } from "../../../redux/slices/message.slice";
 
 type HiringSuccessProp = {
 	detailDrawing: DetailDrawing | undefined;
@@ -28,6 +33,9 @@ type SelectedDrawing = {
 };
 
 function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
+	const dispatch = useDispatch();
+	const ether = useSelector((state: RootState) => state.ether);
+
 	const [isShownModal, setIsShownModal] = React.useState<boolean>(false);
 	const [iFrameSrc, setIFrameSrc] = React.useState<string | null>();
 	const [isShownDialogBox, setIsShownDialogBox] = React.useState<boolean>(false);
@@ -41,6 +49,30 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 			const newHire = { ...detailDrawing.hire };
 			if (!newHire.floorDesigns) return;
 
+			dispatch(pushLoading("Establishing transaction"));
+
+			const signer = ether!.provider.getSigner();
+			let tx;
+			let txReceipt;
+			try {
+				tx = await ether!.contract.HomeLab.connect(signer).finishPhase(
+					newHire.projectId,
+					newHire.floorDesigns![0].phaseId,
+				);
+				txReceipt = await tx.wait();
+				console.log(txReceipt);
+			} catch (error) {
+				console.error(error);
+				throw Ether.parseError(error);
+			}
+
+			await createTransaction({
+				from: tx.from,
+				to: tx.to,
+				method: "Finished Design",
+				hash: tx.hash,
+			});
+
 			newHire.floorDesigns[floor].designs[index].isChoose = isChoose;
 			newHire.floorDesigns[floor].status = STATUS_DRAWING_FLOOR.FINISHED;
 
@@ -53,6 +85,8 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 
 			newDetailDrawing.hire = newHire;
 			setDetailDrawing(newDetailDrawing);
+			dispatch(popMessage({ isClearAll: true }));
+			dispatch(pushSuccess("Finished design"));
 		} catch (error) {
 			throw error;
 		}
@@ -112,94 +146,89 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 					</div>
 				</Stack>
 			</Stack>
-			{detailDrawing?.hire.status === STATUS_HIRE.PENDING ? (
-				<>Waiting for the designer to accept</>
-			) : (
-				<>
-					{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
-						if (floorDesign.status !== STATUS_DRAWING_FLOOR.FINISHED) {
-							return (
-								<div key={index}>
-									<Stack className="pt-8 justify-between items-center mx-6">
-										<H4>Choose 3D model for your {special[index + 1]} floor:</H4>
-										<Button type="ghost" className="px-4 py-1 text-red-500 fill-red-500" LeftItem={TrashOutlinedSvg}>
-											Reject all drafts
-										</Button>
-									</Stack>
+			{detailDrawing?.hire.status !== STATUS_HIRE.PENDING &&
+				detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
+					if (floorDesign.status !== STATUS_DRAWING_FLOOR.FINISHED) {
+						return (
+							<div key={index}>
+								<Stack className="pt-8 justify-between items-center mx-6">
+									<H4>Choose 3D model for your {special[index + 1]} floor:</H4>
+									<Button type="ghost" className="px-4 py-1 text-red-500 fill-red-500" LeftItem={TrashOutlinedSvg}>
+										Reject all drafts
+									</Button>
+								</Stack>
 
-									<Stack className="mx-6 mt-2 gap-4">
-										{floorDesign.designs.map((design, i) => {
-											return (
-												<Stack column className="basis-1/3 items-stretch" key={i}>
-													<img
+								<Stack className="mx-6 mt-2 gap-4">
+									{floorDesign.designs.map((design, i) => {
+										return (
+											<Stack column className="basis-1/3 items-stretch" key={i}>
+												<img
+													onClick={() => {
+														setIsShownModal(true);
+														setIFrameSrc(design.coHomeUrl);
+													}}
+													src={design.image}
+													alt="suggested-design"
+													className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10 h-[400px]"
+												/>
+												<Stack className="gap-4 mt-2 justify-center">
+													<Button
+														type="outline"
+														className="px-4 py-1"
+														LeftItem={AddTaskOutlinedSvg}
 														onClick={() => {
-															setIsShownModal(true);
-															setIFrameSrc(design.coHomeUrl);
+															setSelectedDrawing({ floor: index, index: i, isChoose: true });
+															// handleChooseDrawing(index, i, true);
+															setIsShownDialogBox(true);
 														}}
-														src={design.image}
-														alt="suggested-design"
-														className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10 h-[400px]"
-													/>
-													<Stack className="gap-4 mt-2 justify-center">
-														<Button
-															type="outline"
-															className="px-4 py-1"
-															LeftItem={AddTaskOutlinedSvg}
-															onClick={() => {
-																setSelectedDrawing({ floor: index, index: i, isChoose: true });
-																// handleChooseDrawing(index, i, true);
-																setIsShownDialogBox(true);
-															}}
-														>
-															I choose this
-														</Button>
-													</Stack>
-												</Stack>
-											);
-										})}
-									</Stack>
-								</div>
-							);
-						} else {
-							const isChooseImage = floorDesign.designs.find((design) => design.isChoose);
-							const draft = floorDesign.designs.filter((design) => !design.isChoose).length;
-							if (!isChooseImage) return <></>;
-							return (
-								<div key={index}>
-									<Stack className="pt-8 justify-between items-center mx-6">
-										<H4>Choose 3D model for your {special[index + 1]} floor:</H4>
-									</Stack>
-									<Stack className="mx-6 mt-2 gap-4">
-										<Stack column className="basis-2/3 items-stretch gap-6">
-											<Stack className="items-center gap-3">
-												<div className="w-3 h-3 bg-red-500 rounded-full" />
-												<Text className="font-bold text-red-500">Draft: {draft} pieces</Text>
-											</Stack>
-											<Stack>
-												<Stack className="px-4 py-3 border-4 border-green-500 flex gap-3 justify-center items-center">
-													<AddTaskOutlinedSvg className="fill-green-500 w-6 h-6" />
-													<Text className="font-bold text-green-500 text-base">DONE</Text>
+													>
+														I choose this
+													</Button>
 												</Stack>
 											</Stack>
+										);
+									})}
+								</Stack>
+							</div>
+						);
+					} else {
+						const isChooseImage = floorDesign.designs.find((design) => design.isChoose);
+						const draft = floorDesign.designs.filter((design) => !design.isChoose).length;
+						if (!isChooseImage) return <></>;
+						return (
+							<div key={index}>
+								<Stack className="pt-8 justify-between items-center mx-6">
+									<H4>Choose 3D model for your {special[index + 1]} floor:</H4>
+								</Stack>
+								<Stack className="mx-6 mt-2 gap-4">
+									<Stack column className="basis-2/3 items-stretch gap-6">
+										<Stack className="items-center gap-3">
+											<div className="w-3 h-3 bg-red-500 rounded-full" />
+											<Text className="font-bold text-red-500">Draft: {draft} pieces</Text>
 										</Stack>
-										<Stack column className="basis-1/3 items-stretch">
-											<img
-												onClick={() => {
-													setIsShownModal(true);
-													setIFrameSrc(isChooseImage.coHomeUrl);
-												}}
-												src={isChooseImage.image}
-												alt="suggested-design"
-												className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10 h-[400px]"
-											/>
+										<Stack>
+											<Stack className="px-4 py-3 border-4 border-green-500 flex gap-3 justify-center items-center">
+												<AddTaskOutlinedSvg className="fill-green-500 w-6 h-6" />
+												<Text className="font-bold text-green-500 text-base">DONE</Text>
+											</Stack>
 										</Stack>
 									</Stack>
-								</div>
-							);
-						}
-					})}
-				</>
-			)}
+									<Stack column className="basis-1/3 items-stretch">
+										<img
+											onClick={() => {
+												setIsShownModal(true);
+												setIFrameSrc(isChooseImage.coHomeUrl);
+											}}
+											src={isChooseImage.image}
+											alt="suggested-design"
+											className="border-white border-4 cursor-pointer hover:scale-110 hover:shadow-md hover:z-10 h-[400px]"
+										/>
+									</Stack>
+								</Stack>
+							</div>
+						);
+					}
+				})}
 			<Modal
 				isShown={isShownModal}
 				onClose={() => {
