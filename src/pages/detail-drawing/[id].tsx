@@ -107,45 +107,13 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 				});
 			if (walletAddress == ethers.constants.AddressZero) throw "Please connect to Metamask before";
 
-			dispatch(pushLoading("Creating contract"));
-
-			const ipfsDetailDrawingData = {
-				...detailDrawing,
-				boundaryImagePath: "/BoundaryImage",
-				crossSectionPath: "/CrossSectionImage",
-			};
-
-			const ipfsResult = await IPFS.uploadMany([
-				{
-					path: "",
-					content: JSON.stringify(ipfsDetailDrawingData),
-				},
-				{
-					path: "BoundaryImage",
-					content: detailDrawing!.boundaryImg,
-				},
-				{
-					path: "CrossSectionImage",
-					content: detailDrawing!.crossSectionImg,
-				},
-			]);
-
-			const currentTimeStamp = await Ether.getTimestamp();
-			const expiredAt = currentTimeStamp + 60 * 500;
 			const signer = ether!.provider.getSigner();
 			const sender = await signer.getAddress();
+			let tx;
 			let txReceipt;
 			try {
 				const amount = 1;
-				const tx = await ether!.contract.HomeLab.connect(signer).startProject(
-					detailDrawing!!.hire._id,
-					IPFS.getIPFSUrlFromPath(ipfsResult.directory.cid.toString()),
-					ethers.constants.AddressZero,
-					"0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-					expiredAt,
-					amount,
-					{ value: amount },
-				);
+				tx = await ether!.contract.HomeLab.connect(signer).acceptedPhase(1, 1);
 
 				txReceipt = await tx.wait();
 				console.log(txReceipt);
@@ -155,14 +123,14 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 			}
 
 			const transaction = await createTransaction({
-				from: sender,
-				to: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-				method: "StartedProject",
+				from: tx.from,
+				to: tx.to,
+				method: "AcceptedPhase",
 				txHash: txReceipt.transactionHash,
 			});
-			const currentTransactions = detailDrawing!.hire.transactions || [];
-			currentTransactions.push(transaction as Transaction);
 
+			const currentTransactions = detailDrawing!.hire.transactions;
+			currentTransactions.push(transaction as Transaction);
 			await hireApi.updateHire(detailDrawing!.hire._id, {
 				status: STATUS_HIRE.RUNNING,
 				transactions: currentTransactions,
