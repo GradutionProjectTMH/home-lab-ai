@@ -90,7 +90,13 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 									);
 								})}
 							</Stack>
-							<Strong className="text-green-500">I have finished 3D model for your first floor.</Strong>
+							<Strong className="text-green-500">
+								{detailDrawing?.hire.status === STATUS_HIRE.PENDING
+									? "Waiting for the designer to accept."
+									: detailDrawing?.hire.status === STATUS_HIRE.RUNNING
+									? "I am completing a 3D model of your first floor."
+									: "I have finished 3D model for your first floor."}
+							</Strong>
 						</Stack>
 					</Stack>
 					<Stack>
@@ -107,11 +113,7 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 				</Stack>
 			</Stack>
 			{detailDrawing?.hire.status === STATUS_HIRE.PENDING ? (
-				<>
-					<Button className="!px-4 !py-1 justify-center items-center" type="outline" disabled={true}>
-						Waiting for the designer to accept
-					</Button>
-				</>
+				<>Waiting for the designer to accept</>
 			) : (
 				<>
 					{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
