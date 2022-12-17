@@ -89,72 +89,77 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 			houseDesigns: isSelfBuild ? (dataExampleHouseDesign as any) : [],
 		};
 
-		try {
-			dispatch(pushLoading("Creating hiring contract"));
-
-			const ipfsDetailDrawingData = {
-				...detailDrawing,
-				boundaryImagePath: "/BoundaryImage",
-				crossSectionPath: "/CrossSectionImage",
-			};
-
-			const ipfsResult = await IPFS.uploadMany([
-				{
-					path: "",
-					content: JSON.stringify(ipfsDetailDrawingData),
-				},
-				{
-					path: "BoundaryImage",
-					content: detailDrawing!.boundaryImg,
-				},
-				{
-					path: "CrossSectionImage",
-					content: detailDrawing!.crossSectionImg,
-				},
-			]);
-
-			const currentTimeStamp = await Ether.getTimestamp();
-			const expiredAt = currentTimeStamp + 60 * 500;
-			const signer = ether!.provider.getSigner();
-			let tx;
-			let txReceipt;
+		if (!isSelfBuild) {
 			try {
-				const amount = 1;
-				tx = await ether!.contract.HomeLab.connect(signer).startProject(
-					detailDrawing!._id,
-					IPFS.getIPFSUrlFromPath(ipfsResult.directory.cid.toString()),
-					ethers.constants.AddressZero,
-					user!.wallet,
-					expiredAt,
-					amount,
-					{ value: amount },
-				);
+				dispatch(pushLoading("Creating hiring contract"));
 
-				txReceipt = await tx.wait();
-				console.log(txReceipt);
+				const ipfsDetailDrawingData = {
+					...detailDrawing,
+					boundaryImagePath: "/BoundaryImage",
+					crossSectionPath: "/CrossSectionImage",
+				};
+
+				const ipfsResult = await IPFS.uploadMany([
+					{
+						path: "",
+						content: JSON.stringify(ipfsDetailDrawingData),
+					},
+					{
+						path: "BoundaryImage",
+						content: detailDrawing!.boundaryImg,
+					},
+					{
+						path: "CrossSectionImage",
+						content: detailDrawing!.crossSectionImg,
+					},
+				]);
+
+				const currentTimeStamp = await Ether.getTimestamp();
+				const expiredAt = currentTimeStamp + 60 * 500;
+				const signer = ether!.provider.getSigner();
+				let tx;
+				let txReceipt;
+				try {
+					const amount = 1;
+					tx = await ether!.contract.HomeLab.connect(signer).startProject(
+						detailDrawing!._id,
+						IPFS.getIPFSUrlFromPath(ipfsResult.directory.cid.toString()),
+						ethers.constants.AddressZero,
+						user!.wallet,
+						expiredAt,
+						amount,
+						{ value: amount },
+					);
+
+					txReceipt = await tx.wait();
+					console.log(txReceipt);
+				} catch (error) {
+					console.error(error);
+					throw Ether.parseError(error);
+				}
+
+				const transaction = await createTransaction({
+					from: tx.from,
+					to: tx.to,
+					method: "Started Project",
+					hash: tx.hash,
+				});
+				hiring.transactions = [transaction as Transaction];
+				hiring.projectId = txReceipt.events![0].args!["projectId"].toString();
+				hiring.floorDesigns![0].phaseId = txReceipt.events![0].args!["phaseId"].toString();
+
+				dispatch(popMessage({ isClearAll: true }));
+				dispatch(pushSuccess("Contract created successfully"));
+
+				setIsLoader(true);
 			} catch (error) {
-				console.error(error);
-				throw Ether.parseError(error);
+				throw error;
 			}
-
-			const transaction = await createTransaction({
-				from: tx.from,
-				to: tx.to,
-				method: "Started Project",
-				hash: tx.hash,
-			});
-			hiring.transactions = [transaction as Transaction];
-			hiring.projectId = txReceipt.events![0].args!["projectId"].toString();
-			hiring.floorDesigns![0].phaseId = txReceipt.events![0].args!["phaseId"].toString();
-
+		} else {
+			dispatch(pushLoading("Prepare to building"));
 			await hireApi.createHire(hiring);
-
-			dispatch(popMessage({ isClearAll: true }));
-			dispatch(pushSuccess("Contract created successfully"));
-
 			setIsLoader(true);
-		} catch (error) {
-			throw error;
+			dispatch(popMessage({ isClearAll: true }));
 		}
 	};
 
