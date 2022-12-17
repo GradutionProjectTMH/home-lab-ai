@@ -159,6 +159,10 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 			hire.floorDesigns![floor - 1].status = STATUS_DRAWING_FLOOR.SUBMITTED;
 
 			await hireApi.updateHire(hire._id, hire);
+
+			const newDetailDrawing = { ...detailDrawing };
+			newDetailDrawing.hire = hire;
+			setDetailDrawing(newDetailDrawing);
 		}
 	};
 
@@ -221,7 +225,9 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 									</Stack>
 								</Stack>
 								<Button className="!px-4 !py-1 justify-center items-center" type="outline" onClick={handleClickAccept}>
-									{detailDrawing?.hire.status === STATUS_HIRE.RUNNING
+									{detailDrawing?.hire.status === STATUS_HIRE.FINISH
+										? "Finish"
+										: detailDrawing?.hire.status === STATUS_HIRE.RUNNING
 										? "Working"
 										: detailDrawing?.hire.status === STATUS_HIRE.PENDING && detailDrawing?.hire.designerId === user?._id
 										? "Accept"
@@ -332,7 +338,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 					</Stack>
 				</Carousel>
 			</section>
-			{detailDrawing?.hire.status === STATUS_HIRE.RUNNING && (
+			{detailDrawing?.hire.status !== STATUS_HIRE.PENDING && (
 				<section className="container mx-auto">
 					{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
 						return (
@@ -378,6 +384,8 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 									<Stack className="justify-center">
 										{floorDesign.status === STATUS_DRAWING_FLOOR.SUBMITTED ? (
 											<H5 className="text-green-500"> Pending client review</H5>
+										) : floorDesign.status === STATUS_DRAWING_FLOOR.FINISHED ? (
+											<></>
 										) : (
 											<Button className="!px-11" onClick={() => handleSummitDrawingFloor(index + 1)}>
 												Submit
