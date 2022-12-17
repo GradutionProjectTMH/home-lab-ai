@@ -8,6 +8,7 @@ import UploadFile from "../upload-file";
 import * as uploadFileApi from "../../apis/upload-file.api";
 import * as hireApi from "../../apis/hire.api";
 import { FloorDesign } from "../../interfaces/hire.interface";
+import { STATUS_DRAWING_FLOOR } from "../../enums/hiring.enum";
 
 interface ModelDetailDrawingProps {
 	isShownModal: boolean;
@@ -67,7 +68,7 @@ const ModelDetailDrawing = ({
 								isChoose: false,
 							},
 						],
-						status: false,
+						status: STATUS_DRAWING_FLOOR.RUNNING,
 					},
 				];
 			} else {

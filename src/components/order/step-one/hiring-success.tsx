@@ -9,7 +9,7 @@ import { ReactComponent as TrashOutlinedSvg } from "../../../svgs/trash-outlined
 import { ReactComponent as AddTaskOutlinedSvg } from "../../../svgs/add-task-outlined.svg";
 import { ReactComponent as ForwardToInboxOutlinedSvg } from "../../../svgs/forward-to-inbox-outlined.svg";
 import { DetailDrawing } from "../../../interfaces/detail-drawing.interface";
-import { STATUS_HIRE } from "../../../enums/hiring.enum";
+import { STATUS_DRAWING_FLOOR, STATUS_HIRE } from "../../../enums/hiring.enum";
 import { Link, navigate } from "@reach/router";
 import { special } from "../../../utils/ordinal-digit";
 import Modal from "../../modal";
@@ -42,11 +42,11 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 			if (!newHire.floorDesigns) return;
 
 			newHire.floorDesigns[floor].designs[index].isChoose = isChoose;
-			newHire.floorDesigns[floor].status = true;
+			newHire.floorDesigns[floor].status = STATUS_DRAWING_FLOOR.FINISHED;
 
 			if (!newHire.floorDesigns.some((floorDesign) => !floorDesign.status)) {
 				// Sau khi hoàn thành tất cả các bảng vẽ cho từng tần
-				newHire.status = STATUS_HIRE.COMPLETE;
+				newHire.status = STATUS_HIRE.FINISH;
 			}
 
 			await hireApi.updateHire(newHire._id, newHire);
@@ -110,16 +110,6 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 				<>
 					<Button className="!px-4 !py-1 justify-center items-center" type="outline" disabled={true}>
 						Waiting for the designer to accept
-					</Button>
-				</>
-			) : detailDrawing?.hire.status === STATUS_HIRE.CANCELED ? (
-				<>
-					<Button
-						className="!px-4 !py-1 justify-center items-center border-red-500 text-red-500"
-						type="outline"
-						disabled={true}
-					>
-						This job has been cancelled
 					</Button>
 				</>
 			) : (

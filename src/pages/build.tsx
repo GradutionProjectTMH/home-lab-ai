@@ -380,6 +380,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			height: detailDrawing.height,
 			boundaryImg,
 			crossSectionImg,
+			numberOfFloors: 1,
 			rooms: ideaPositions.map((ideaPosition) => ({ name: ideaPosition.roomLabel, amount: 1 })) as any,
 			additionalInformation: {
 				budget: `${detailDrawing.budget} Million VND`,

@@ -14,7 +14,7 @@ import * as hireApi from "../../apis/hire.api";
 import { splittingRoomColor } from "../../utils/room-color";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/stores/store.redux";
-import { STATUS_HIRE } from "../../enums/hiring.enum";
+import { STATUS_DRAWING_FLOOR, STATUS_HIRE } from "../../enums/hiring.enum";
 import { RouteComponentProps } from "@reach/router";
 import { special } from "../../utils/ordinal-digit";
 import UploadFile from "../../components/upload-file";
@@ -26,6 +26,7 @@ import Ether from "../../apis/ether.api";
 import { popMessage, pushError, pushLoading, pushSuccess } from "../../redux/slices/message.slice";
 import { createTransaction } from "../../apis/transaction.api";
 import { Transaction } from "../../interfaces/transaction.interface";
+import Modal from "../../components/modal";
 
 const rewards = [
 	{
@@ -69,6 +70,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 	const [numberFloor, setNumberFloor] = React.useState<number>(0);
 
 	const [iFrameSrc, setIFrameSrc] = React.useState<string | null>();
+	const [isShownModalCoHome, setIsShownModalCoHome] = React.useState<boolean>(false);
 
 	const handleClick = (src: string) => {
 		setIFrameSrc(src);
@@ -161,13 +163,12 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 			currentTransactions.push(transaction as Transaction);
 
 			await hireApi.updateHire(detailDrawing!.hire._id, {
-				status: STATUS_HIRE.ACCEPT,
+				status: STATUS_HIRE.RUNNING,
 				transactions: currentTransactions,
 			});
-			const newDetailDrawing = { ...detailDrawing! };
-			newDetailDrawing!.hire.status = STATUS_HIRE.ACCEPT;
-
-			setDetailDrawing(newDetailDrawing!);
+			const newDetailDrawing = { ...detailDrawing };
+			newDetailDrawing.hire!.status = STATUS_HIRE.RUNNING;
+			setDetailDrawing(newDetailDrawing as DetailDrawing);
 			dispatch(popMessage({ isClearAll: true }));
 			dispatch(pushSuccess("Contract created successfully"));
 		} catch (error) {
@@ -178,6 +179,10 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 	const handleClickUpload = async (floor: number) => {
 		setNumberFloor(floor);
 		setIsShownModal(true);
+	};
+
+	const handleSummitDrawingFloor = (floor: number) => {
+		console.log(floor);
 	};
 
 	if (isLoader) return <></>;
@@ -239,7 +244,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 									</Stack>
 								</Stack>
 								<Button className="!px-4 !py-1 justify-center items-center" type="outline" onClick={handleClickAccept}>
-									{detailDrawing?.hire.status === STATUS_HIRE.ACCEPT
+									{detailDrawing?.hire.status === STATUS_HIRE.RUNNING
 										? "Working"
 										: detailDrawing?.hire.status === STATUS_HIRE.PENDING && detailDrawing?.hire.designerId === user?._id
 										? "Accept"
@@ -351,14 +356,6 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 				</Carousel>
 			</section>
 			<section className="container mx-auto">
-				{iFrameSrc && (
-					<Stack>
-						<div className="bg-white p-1 w-full">
-							<iframe src={iFrameSrc} className="w-full h-[700px]"></iframe>
-						</div>
-					</Stack>
-				)}
-
 				{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
 					return (
 						<Carousel
@@ -374,31 +371,31 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 												<div
 													className="bg-white p-1  hover:scale-110 hover:shadow-md hover:z-10"
 													key={index}
-													onClick={() => handleClick(design.coHomeUrl)}
+													onClick={() => {
+														setIsShownModalCoHome(true);
+														handleClick(design.coHomeUrl);
+													}}
 												>
 													<img src={design.image} alt="suggested-design" className="cursor-pointer w-full h-[400px]" />
 												</div>
-												<Stack className="gap-4 mt-2 justify-center">
-													<Button type="outline" className="px-4 py-1" LeftItem={AddTaskOutlinedSvg}>
-														<Strong className="text-sm">I choose this</Strong>
-													</Button>
-													<Button
-														type="ghost"
-														className="px-4 py-1 text-red-500 !fill-red-500"
-														LeftItem={TrashOutlined}
-													>
-														<Strong className="text-sm">Send message</Strong>
-													</Button>
-												</Stack>
 											</Stack>
 										);
 									})}
-									{floorDesign.designs.length < 3 && user?.role === ROLE.DESIGNER && !floorDesign.status && (
-										<div className="p-1 basis-1/3" onClick={() => handleClickUpload(index + 1)}>
-											<UploadFile />
-										</div>
-									)}
+									{floorDesign.designs.length < 3 &&
+										user?.role === ROLE.DESIGNER &&
+										user?._id === detailDrawing.hire.designerId &&
+										floorDesign.status !== STATUS_DRAWING_FLOOR.CANCELED &&
+										floorDesign.status !== STATUS_DRAWING_FLOOR.FINISHED && (
+											<div className="p-1 basis-1/3 h-[400px]" onClick={() => handleClickUpload(index + 1)}>
+												<UploadFile />
+											</div>
+										)}
 								</Stack>
+							</Stack>
+							<Stack className="justify-center">
+								<Button className="!px-11" onClick={() => handleSummitDrawingFloor(index + 1)}>
+									Submit
+								</Button>
 							</Stack>
 						</Carousel>
 					);
@@ -427,6 +424,16 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 					setIsShownModal={setIsShownModal}
 					setIsLoader={setIsLoader}
 				/>
+			)}
+
+			{iFrameSrc && (
+				<Modal isShown={isShownModalCoHome} onClose={() => setIsShownModalCoHome(false)} withFull={true}>
+					<Stack className="w-full h-full">
+						<div className="bg-white p-1 w-full">
+							<iframe src={iFrameSrc} className="w-full h-[700px]"></iframe>
+						</div>
+					</Stack>
+				</Modal>
 			)}
 		</>
 	);
