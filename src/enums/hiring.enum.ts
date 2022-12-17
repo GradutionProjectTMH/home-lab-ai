@@ -8,7 +8,7 @@ export enum STATUS_DRAWING_FLOOR {
 	PENDING = "pending",
 	STARTED = "started",
 	RUNNING = "running",
-	SUBLIMED = "submitted",
+	SUBMITTED = "submitted",
 	FINISHED = "finished",
 	CANCELED = "canceled",
 }
