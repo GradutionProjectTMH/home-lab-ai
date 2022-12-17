@@ -74,6 +74,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 						designs: [],
 						floor: index + 1,
 						status: STATUS_DRAWING_FLOOR.PENDING,
+						phaseId: "",
 					});
 				});
 		}

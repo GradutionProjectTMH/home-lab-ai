@@ -68,6 +68,7 @@ const ModelDetailDrawing = ({
 								isChoose: false,
 							},
 						],
+						phaseId: "",
 						status: STATUS_DRAWING_FLOOR.RUNNING,
 					},
 				];

@@ -115,7 +115,7 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 			) : (
 				<>
 					{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
-						if (!floorDesign.status) {
+						if (floorDesign.status !== STATUS_DRAWING_FLOOR.FINISHED) {
 							return (
 								<div key={index}>
 									<Stack className="pt-8 justify-between items-center mx-6">
@@ -150,9 +150,6 @@ function HiringSuccess({ detailDrawing, setDetailDrawing }: HiringSuccessProp) {
 															}}
 														>
 															I choose this
-														</Button>
-														<Button type="ghost" className="px-4 py-1" LeftItem={ForwardToInboxOutlinedSvg}>
-															Send message
 														</Button>
 													</Stack>
 												</Stack>

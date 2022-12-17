@@ -18,6 +18,7 @@ export type FloorDesign = {
 	floor: number;
 	designs: ItemDesign[];
 	status: STATUS_DRAWING_FLOOR;
+	phaseId: string;
 };
 
 export type HouseDesign = {
@@ -35,4 +36,5 @@ export interface Hire {
 	floorDesigns?: FloorDesign[];
 	houseDesigns?: HouseDesign[];
 	status: STATUS_HIRE;
+	projectId: string;
 }
