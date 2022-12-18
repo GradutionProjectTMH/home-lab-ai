@@ -144,9 +144,11 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 					method: "Started Project",
 					hash: tx.hash,
 				});
+
 				hiring.transactions = [transaction as Transaction];
 				hiring.projectId = txReceipt.events![0].args!["projectId"].toString();
 				hiring.floorDesigns![0].phaseId = txReceipt.events![0].args!["phaseId"].toString();
+				await hireApi.createHire(hiring);
 
 				dispatch(popMessage({ isClearAll: true }));
 				dispatch(pushSuccess("Contract created successfully"));

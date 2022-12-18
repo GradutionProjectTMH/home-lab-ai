@@ -35,6 +35,8 @@ export const parseError = (error: any) => {
 	if (error.reason?.includes("low-level call failed")) return "Not enough token";
 
 	if (error.reason) return error.reason?.replace("execution reverted:", "");
+
+	if (error.data) return error.data.message?.replace("err:", "");
 };
 
 const Ether = {
