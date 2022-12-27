@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { PRODUCT_STATUS, TYPE_PRODUCT } from "../enums/product.enum";
 
 interface VerifyProduct {
@@ -10,7 +11,7 @@ interface VerifyProduct {
 	verifiedAt: Date;
 }
 
-export interface Products {
+export interface Product {
 	_id: string;
 	name: string;
 	images: string[];
@@ -27,4 +28,9 @@ export interface Products {
 	createdBy: string;
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface ProductVerify extends Partial<Product> {
+	paymentToken: string;
+	bounty: BigNumber;
 }

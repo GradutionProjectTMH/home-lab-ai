@@ -1,12 +1,10 @@
 import axiosClient from "../configs/server.config";
-import { Products } from "../interfaces/product.interface";
+import { Product } from "../interfaces/product.interface";
 
-const getById = async (id: string): Promise<Products> => {
-	return axiosClient.get<Products, Products>(`products/${id}`);
+export const getProductById = async (id: string): Promise<Product> => {
+	return axiosClient.get<Product, Product>(`products/${id}`);
 };
 
-const create = async (data: Products): Promise<Products> => {
-	return axiosClient.post<Products, Products>(`products`, data);
+export const createProduct = async (data: Partial<Product>): Promise<Partial<Product>> => {
+	return axiosClient.post<Partial<Product>, Partial<Product>>(`products`, data);
 };
-
-export { getById, create };

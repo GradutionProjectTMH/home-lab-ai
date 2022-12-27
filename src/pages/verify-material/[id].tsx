@@ -6,7 +6,7 @@ import Stack from "../../components/layout/stack";
 import Slider from "../../components/slider";
 import H4 from "../../components/typography/h4";
 import * as productApi from "../../apis/product.api";
-import { Products } from "../../interfaces/product.interface";
+import { Product } from "../../interfaces/product.interface";
 import H5 from "../../components/typography/h5";
 import { ReactComponent as Star } from "../../svgs/star.svg";
 import H3 from "../../components/typography/h3";
@@ -28,12 +28,12 @@ type VerifyMaterialProps = {
 
 const VerifyMaterial = ({ id }: VerifyMaterialProps) => {
 	const [isLoader, setIsLoader] = React.useState<boolean>(true);
-	const [material, setMaterial] = React.useState<Products>();
+	const [material, setMaterial] = React.useState<Product>();
 
 	const fetchDetailDrawing = async () => {
 		if (!id) return;
 		try {
-			const result = await productApi.getById(id);
+			const result = await productApi.getProductById(id);
 
 			setMaterial(result);
 		} catch (error: any) {

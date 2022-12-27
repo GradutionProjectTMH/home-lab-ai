@@ -2,8 +2,10 @@ import { ContractReceipt, ContractTransaction, ethers } from "ethers";
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import IPFS from "../apis/ipfs.api";
+import { createProduct } from "../apis/product.api";
 import Button from "../components/button";
 import Carousel from "../components/carousel";
+import Dropdown from "../components/dropdown";
 import Input from "../components/input";
 import Stack from "../components/layout/stack";
 import SpringLoading from "../components/SpringLoading";
@@ -12,20 +14,31 @@ import H2 from "../components/typography/h2";
 import H3 from "../components/typography/h3";
 import Strong from "../components/typography/strong";
 import Text from "../components/typography/text";
+import { TYPE_PRODUCT } from "../enums/product.enum";
+import { Product, ProductVerify } from "../interfaces/product.interface";
 import { pushError, pushSuccess } from "../redux/slices/message.slice";
 import { RootState } from "../redux/stores/store.redux";
+
+const productTypeOptions: Record<"value" | "label", string>[] = [
+	{
+		label: "Furniture",
+		value: TYPE_PRODUCT.FURNITURE,
+	},
+	{
+		label: "Material",
+		value: TYPE_PRODUCT.MATERIAL,
+	},
+];
 
 const RequestVerify = () => {
 	const dispatch = useDispatch();
 	const ether = useSelector((state: RootState) => state.ether);
 
-	const [material, setMaterial] = React.useState<Record<string, any>>({
+	const [productVerify, setProductVerify] = React.useState<ProductVerify>({
 		name: "",
-		description: "",
-		price: 0,
+		type: TYPE_PRODUCT.FURNITURE,
+		bounty: ethers.utils.parseEther("0"),
 		paymentToken: ethers.constants.AddressZero,
-		bounty: ethers.utils.parseEther("10"),
-		image: [],
 	});
 	const [search, setSearch] = React.useState<string>("");
 	const [onlyMyMaterial, setOnlyMyMaterial] = React.useState<boolean>(false);
@@ -37,9 +50,9 @@ const RequestVerify = () => {
 		fileRef.current?.click();
 	};
 
-	const handleMaterialChanged = (key: string, value: any) => {
-		setMaterial({
-			...material,
+	const handleProductVerifyChanged = (key: string, value: any) => {
+		setProductVerify({
+			...productVerify,
 			[key]: value,
 		});
 	};
@@ -59,8 +72,8 @@ const RequestVerify = () => {
 		}
 
 		let flag = true;
-		Object.keys(material).forEach((key) => {
-			flag = flag && material[key];
+		Object.keys(productVerify).forEach((key) => {
+			flag = flag && productVerify[key as keyof ProductVerify];
 		});
 
 		if (!flag) {
@@ -69,25 +82,25 @@ const RequestVerify = () => {
 		}
 
 		// Upload data to IPFS
-		const { directory: ipfsDirectory, files: ipfsFiles } = await IPFS.uploadMany([
-			{
-				path: "Test",
-				content: files[0],
-			},
-		]);
+		const ipfsData = files.slice(1).map((file) => ({
+			path: file.name,
+			content: file,
+		}));
+		const { directory: ipfsDirectory, files: ipfsFiles } = await IPFS.uploadMany(ipfsData);
 
 		// Send Transaction to smart contract
 		const transaction: ContractTransaction = await ether!.contract.Material.connect(
 			ether!.provider.getSigner(),
 		).requestItem(
-			material.name,
+			productVerify.name!,
 			IPFS.getIPFSUrlFromPath(ipfsDirectory.cid.toString()),
-			material.paymentToken,
-			material.bounty,
-			{ value: material.bounty },
+			productVerify.paymentToken,
+			productVerify.bounty,
+			{ value: productVerify.bounty },
 		);
 		const receipt: ContractReceipt = await transaction.wait();
 
+		createProduct(productVerify);
 		dispatch(pushSuccess("Request Success"));
 	};
 
@@ -132,8 +145,21 @@ const RequestVerify = () => {
 									placeholder="50"
 									className="!text-blue-500 flex-grow"
 									type="text"
-									value={material.name}
-									onChange={(event) => handleMaterialChanged("name", event?.target.value)}
+									value={productVerify.name}
+									onChange={(event) => handleProductVerifyChanged("name", event?.target.value)}
+								/>
+							</Stack>
+
+							<Stack className="items-center gap-2">
+								<Text className="!text-gray-500 w-32 whitespace-nowrap">
+									Product type <span className="!text-red-500">*</span>:
+								</Text>
+								<Dropdown
+									value={productVerify.type!}
+									options={productTypeOptions}
+									onChange={(newValue) => {
+										handleProductVerifyChanged("type", newValue);
+									}}
 								/>
 							</Stack>
 
@@ -145,8 +171,8 @@ const RequestVerify = () => {
 									placeholder="Short description for this material"
 									className="!text-blue-500 flex-grow"
 									type="text"
-									value={material.description}
-									onChange={(event) => handleMaterialChanged("description", event?.target.value)}
+									value={productVerify.description}
+									onChange={(event) => handleProductVerifyChanged("description", event?.target.value)}
 								/>
 							</Stack>
 
@@ -158,8 +184,8 @@ const RequestVerify = () => {
 									placeholder="50"
 									className="!text-blue-500 flex-grow"
 									type="number"
-									value={material.price}
-									onChange={(event) => handleMaterialChanged("price", Number(event?.target.value))}
+									value={productVerify.price}
+									onChange={(event) => handleProductVerifyChanged("price", Number(event?.target.value))}
 									after={<Text className="text-blue-500">VND</Text>}
 								/>
 							</Stack>
@@ -202,7 +228,7 @@ const RequestVerify = () => {
 								</tr>
 							</thead>
 							<tbody>
-								<tr key={material?._id} className="cursor-pointer hover:bg-gray-50">
+								<tr key={productVerify?._id} className="cursor-pointer hover:bg-gray-50">
 									<td className="border border-r-0 border-l-0 px-0 border-gray-300">
 										<img src={`${process.env.PUBLIC_URL}/images/verify-bg.jpg`} className="object-contain w-32" />
 									</td>
