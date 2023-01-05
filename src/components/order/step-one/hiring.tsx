@@ -24,6 +24,7 @@ import IPFS from "../../../apis/ipfs.api";
 import { dataExampleHouseDesign } from "../../../utils/example-data-house-design";
 import { createTransaction } from "../../../apis/transaction.api";
 import { Transaction } from "../../../interfaces/transaction.interface";
+import { async } from "@firebase/util";
 
 type HiringProp = {
 	setIsLoader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -61,9 +62,41 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		setSelectedDesigner(designer);
 	};
 
+	const handleClickSelfBuild = async () => {
+		if (!selectedDesigner || !detailDrawing) {
+			return;
+		}
+		const floorDesigns: FloorDesign[] = [];
+		if (detailDrawing.numberOfFloors > 0) {
+			Array(detailDrawing.numberOfFloors)
+				.fill(0)
+				.forEach((e, index) => {
+					floorDesigns.push({
+						designs: [],
+						floor: index + 1,
+						status: STATUS_DRAWING_FLOOR.PENDING,
+						phaseId: "",
+					});
+				});
+		}
+
+		const hiring: Partial<Hire> = {
+			designerId: user?._id,
+			detailDrawingId: detailDrawing._id,
+			status: STATUS_HIRE.RUNNING,
+			floorDesigns: floorDesigns,
+			houseDesigns: dataExampleHouseDesign as any,
+		};
+
+		dispatch(pushLoading("Prepare to building"));
+		await hireApi.createHire(hiring);
+		setIsLoader(true);
+		dispatch(popMessage({ isClearAll: true }));
+		setCurrentPage("Marketplace");
+	};
+
 	const handleClickOrder = async (isSelfBuild: boolean) => {
-		if (!selectedDesigner || !detailDrawing || detailDrawing.hire) {
-			if (isSelfBuild) return setCurrentPage("Marketplace");
+		if (!selectedDesigner || !detailDrawing) {
 			return;
 		}
 
@@ -82,11 +115,11 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 		}
 
 		const hiring: Partial<Hire> = {
-			designerId: isSelfBuild ? user?._id : selectedDesigner._id,
+			designerId: selectedDesigner._id,
 			detailDrawingId: detailDrawing._id,
 			status: STATUS_HIRE.RUNNING,
 			floorDesigns: floorDesigns,
-			houseDesigns: isSelfBuild ? (dataExampleHouseDesign as any) : [],
+			houseDesigns: [],
 		};
 
 		if (!isSelfBuild) {
@@ -269,7 +302,7 @@ const Hiring = ({ setIsLoader, detailDrawing }: HiringProp) => {
 
 			<Stack column={true} className="pb-8 p-6">
 				<div className="mt-8 ">
-					<Button className="px-8" type="outline" onClick={() => handleClickOrder(true)}>
+					<Button className="px-8" type="outline" onClick={() => handleClickSelfBuild()}>
 						Build from scratch
 					</Button>
 				</div>
