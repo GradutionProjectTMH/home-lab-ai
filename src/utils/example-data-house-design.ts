@@ -34,7 +34,7 @@ export const dataExampleHouseDesign = [
 			},
 			{
 				coHomeUrl:
-					"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40HP4BOBI&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
+					"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40GHV6QF1&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
 				image: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1671038683222-100325793.png",
 				isChoose: false,
 				materials: [
@@ -53,7 +53,7 @@ export const dataExampleHouseDesign = [
 			},
 			{
 				coHomeUrl:
-					"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO40HP4BOBI&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
+					"https://www.coohom.com/pub/tool/yundesign/cloud?designid=3FO412GYNX3E&redirecturl=/pub/saas/apps/project/list&redirectbim=false&locale=en_US",
 				image: "https://home-lab-ai.s3.ap-southeast-1.amazonaws.com/1671038683222-100325793.png",
 				isChoose: false,
 				materials: [
