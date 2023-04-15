@@ -1,15 +1,15 @@
 import axios from "axios";
-import queryString from "query-string";
 // const token = window?.localStorage.getItem("token");
 import { store } from "../redux/stores/store.redux";
 
 const env = store.getState().environment.server;
 
+const token = localStorage.getItem("token");
 const axiosClient = axios.create({
 	baseURL: process.env.REACT_APP_API_BASE_URL,
 	headers: {
 		"Content-Type": "application/json",
-		// Authorization: token ? `Bearer ${token}` : "",
+		Authorization: token ? `Bearer ${token}` : "",
 	},
 	// paramsSerializer: {
 	// 	encode: (params) => queryString.stringify(params),
