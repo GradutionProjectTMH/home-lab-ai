@@ -10,7 +10,7 @@ const Body = ({ children }: RouteComponentProps<React.HTMLAttributes<HTMLElement
 	const lines = lineByRoutes[matchedRoute!.name];
 
 	return (
-		<main className="relative bg-gray-100 min-h-screen">
+		<main className="relative bg-background min-h-screen">
 			<div className="absolute top-0 left-0 w-full h-full">
 				<div className="relative w-full h-full">
 					<div className="container mx-auto relative h-full">
@@ -29,7 +29,7 @@ const Body = ({ children }: RouteComponentProps<React.HTMLAttributes<HTMLElement
 							))}
 				</div>
 			</div>
-			<div className="sticky top-0 z-10 bg-gray-100 ">
+			<div className="sticky top-0 z-10 bg-background ">
 				<div className="absolute top-0 left-0 w-full h-full">
 					<div className="relative w-full h-full">
 						<div className="container mx-auto relative h-full">

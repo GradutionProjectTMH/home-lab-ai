@@ -11,6 +11,7 @@ module.exports = {
 		fontFamily: {
 			display: [fontFamily.display, ...defaultTheme.fontFamily.sans],
 			body: [fontFamily.body, ...defaultTheme.fontFamily.sans],
+			body2: [fontFamily.body2, ...defaultTheme.fontFamily.sans],
 		},
 		extend: {},
 	},

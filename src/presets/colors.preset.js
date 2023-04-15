@@ -4,6 +4,12 @@ module.exports = {
 	black: "#000000",
 	white: "#FFFFFF",
 
+	primary: "#51A4F4",
+	secondary: "#C8E3F6",
+	light: "#F0F4FD",
+	background: "#FAFAFA",
+	dark: "#27282C",
+
 	whiteAlpha: {
 		50: "rgba(255, 255, 255, 0.04)",
 		100: "rgba(255, 255, 255, 0.06)",

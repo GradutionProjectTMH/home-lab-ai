@@ -1,26 +1,29 @@
 import * as React from "react";
-import H1 from "../components/typography/h1";
-import Stack from "../components/layout/stack";
-import Text from "../components/typography/text";
-import Button from "../components/button";
-import H4 from "../components/typography/h4";
-import { ReactComponent as MicSvg } from "../svgs/mic-outlined.svg";
-import { ReactComponent as LightBulbSvg } from "../svgs/light-bulb.svg";
-import ButtonIcon from "../components/button-icon";
-import Small from "../components/typography/small";
-import TextRazor from "../apis/text-razor.api";
+import H1 from "../../components/typography/h1";
+import Stack from "../../components/layout/stack";
+import Text from "../../components/typography/text";
+import Button from "../../components/button";
+import H4 from "../../components/typography/h4";
+import { ReactComponent as MicSvg } from "../../svgs/mic-outlined.svg";
+import { ReactComponent as LightBulbSvg } from "../../svgs/light-bulb.svg";
+import LightBulbPng from "./images/light-bulb.png";
+import DesignPng from "./images/design.png";
+import PrototypePng from "./images/prototype.png";
+import ConstructionPng from "./images/construction.png";
+import ButtonIcon from "../../components/button-icon";
+import TextRazor from "../../apis/text-razor.api";
 import { useDispatch, useSelector } from "react-redux";
-import { popMessage, pushError, pushLoading } from "../redux/slices/message.slice";
+import { popMessage, pushError, pushLoading } from "../../redux/slices/message.slice";
 import { RouteComponentProps, useNavigate } from "@reach/router";
-import Slider from "../components/slider";
-import { randomArray } from "../utils/tools.util";
-import SpringLoading from "../components/SpringLoading";
-import Carousel from "../components/carousel";
-import Input from "../components/input";
-import H3 from "../components/typography/h3";
-import TFFloorPlan from "../apis/tf-floor-plan.api";
-import { RootState } from "../redux/stores/store.redux";
-import { removeDuplicated } from "../utils/text.util";
+import Slider from "../../components/slider";
+import { randomArray } from "../../utils/tools.util";
+import SpringLoading from "../../components/SpringLoading";
+import Carousel from "../../components/carousel";
+import Input from "../../components/input";
+import H3 from "../../components/typography/h3";
+import TFFloorPlan from "../../apis/tf-floor-plan.api";
+import { RootState } from "../../redux/stores/store.redux";
+import { removeDuplicated } from "../../utils/text.util";
 
 const slideImages = [
 	"1.jpg",
@@ -44,23 +47,6 @@ const slideImages = [
 	"8.webp",
 	"9.jpg",
 ];
-
-const SliderHome = React.memo(() => {
-	return (
-		<Stack className="basis-1/2 items-center gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
-			<Slider
-				images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
-				showNav={false}
-				useTranslate3D
-			/>
-			<Slider
-				images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
-				showNav={false}
-				useTranslate3D
-			/>
-		</Stack>
-	);
-});
 
 const HomePage = (props: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -235,6 +221,24 @@ const HomePage = (props: RouteComponentProps) => {
 		for (let i = beginIndex; i <= endIndex; ++i) sentence.words[i].isNounPhrase = true;
 	});
 
+	const SliderHome = React.useMemo(
+		() => (
+			<Stack className="basis-[712px] items-center gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
+				<Slider
+					images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
+					showNav={false}
+					useTranslate3D
+				/>
+				<Slider
+					images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
+					showNav={false}
+					useTranslate3D
+				/>
+			</Stack>
+		),
+		[],
+	);
+
 	return (
 		<SpringLoading
 			situations={[
@@ -248,54 +252,56 @@ const HomePage = (props: RouteComponentProps) => {
 		>
 			<section className="container mx-auto">
 				<Stack className="items-stretch">
-					<Stack column className="basis-1/2 gap-8 justify-center">
-						<Stack column className="gap-6">
-							<H1 className="!font-display !text-7xl text-blue-700">Make house</H1>
-							<H1 className="!font-display !font-light !text-7xl text-blue-700">for better</H1>
-							<H1 className="!font-display !text-7xl text-blue-700">living.</H1>
+					<Stack column className="flex-grow gap-10 justify-center">
+						<Stack column className="gap-4 mt-8">
+							<H1 className="!font-display !font-black !text-[12rem]  text-primary">Vẽ lên</H1>
+							<H1 className="!font-body !font-light !text-[8rem] text-dark">ngôi nhà</H1>
+							<H1 className="!font-display !font-black !text-[9rem] text-dark">của bạn.</H1>
 						</Stack>
 
-						<Stack column className="gap-4">
-							<Text className="text-gray-500">
-								We combine your idea, Graph Design AI <br />
-								and Blockchain platform to simplify your solution...
+						<Stack column className="gap-6">
+							<Text className="text-dark">
+								Sẵn sàng tiếp cận công cụ thế hệ mới cho thiết kế xây dựng <br />
+								HomeLab.ai đã tham gia vào hơn 100 công trình dự án trong nước.
 							</Text>
 
 							<Stack className="gap-4">
 								<Button type="fill" onClick={handleTryItButtonClicked}>
-									TRY IT NOW
+									BẮT ĐẦU
 								</Button>
 								<Button type="outline" onClick={handleAnalyze2DButtonClicked}>
-									ANALYZE 2D PLAN
+									ĐÃ CÓ THIẾT KẾ
 								</Button>
 								<input ref={analyze2DButtonRef} className="hidden" type="file" onChange={handleAnalyze2DFileChanged} />
 							</Stack>
 						</Stack>
 					</Stack>
-					<SliderHome />
+					{SliderHome}
 				</Stack>
 			</section>
 
 			<section className="relative">
 				<div className="container mx-auto">
 					<Stack className="mt-14 items-stretch">
-						<Stack column className="basis-1/2 mr-4">
+						<Stack column className="flex-grow mr-4">
 							<Stack column className="bg-white shadow-xl shadow-blackAlpha-100">
-								<textarea rows={6} className="!outline-none p-4 border-0" ref={textAreaRef} />
-								<Stack className="justify-between items-center mx-4 mb-2">
-									<Small className="text-blue-500">Tell us your dream house will be...</Small>
-									<Stack className="gap-1">
-										<ButtonIcon Icon={MicSvg} className="w-10 h-10 !fill-gray-500" />
-										<ButtonIcon
-											Icon={LightBulbSvg}
-											className="w-10 h-10 !fill-blue-500"
-											onClick={handleExtractorClicked}
-										/>
-									</Stack>
+								<textarea
+									rows={6}
+									className="text-body !outline-none placeholder:text-gray-400 placeholder:text-body p-4 border-0"
+									ref={textAreaRef}
+									placeholder="Hãy bắt đầu xây dựng từ ý tưởng của bạn..."
+								/>
+								<Stack className="justify-end items-center mx-4 mb-2">
+									<ButtonIcon Icon={MicSvg} className="w-10 h-10 !fill-gray-500" />
+									<ButtonIcon
+										Icon={LightBulbSvg}
+										className="w-10 h-10 !fill-blue-500"
+										onClick={handleExtractorClicked}
+									/>
 								</Stack>
 							</Stack>
 
-							<Stack className="justify-between gap-4 m-8">
+							{/* <Stack className="justify-between gap-4 m-8">
 								<Stack column className="gap-4">
 									<H4 className="text-gray-700">House boundary</H4>
 									<Stack column className="gap-4">
@@ -374,34 +380,54 @@ const HomePage = (props: RouteComponentProps) => {
 										/>
 									</Stack>
 								</Stack>
-							</Stack>
+							</Stack> */}
 						</Stack>
 
-						<Stack column className="basis-1/2 items-stretch">
-							<Stack className="bg-white gap-9 w-full">
-								<Stack column className="items-center bg-blue-700 p-3">
-									<H4 className="text-gray-100">800+</H4>
-									<Text className="text-gray-100">Accepted Designs</Text>
+						<Stack column className="basis-[712px] items-stretch">
+							<Stack className="gap-2 w-full">
+								<Stack column className="relative w-[172px] h-[172px] bg-primary border-primary border-2">
+									<img src={LightBulbPng} width={60} height={60} className="absolute top-4 right-4" />
+									<Stack className="w-20 h-20 bg-background justify-center items-center">
+										<H4 className="!text-5xl !font-body2 !font-black text-primary">01</H4>
+									</Stack>
+									<Stack className="flex-grow items-center px-4">
+										<H4 className="text-background !font-body !text-4xl">Ý Tưởng</H4>
+									</Stack>
 								</Stack>
-								<Stack column className="items-center p-3">
-									<H4 className="text-gray-500">08</H4>
-									<Text className="text-gray-500">Room Types</Text>
+								<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
+									<img src={DesignPng} width={60} height={60} className="absolute top-4 right-4" />
+									<Stack className="w-20 h-20 bg-dark justify-center items-center">
+										<H4 className="!text-5xl !font-body2 !font-black text-background">02</H4>
+									</Stack>
+									<Stack className="flex-grow items-center px-4">
+										<H4 className="text-dark !font-body !text-4xl">Thiết kế</H4>
+									</Stack>
 								</Stack>
-								<Stack column className="items-center p-3">
-									<H4 className="text-gray-500">300+</H4>
-									<Text className="text-gray-500">Orders</Text>
+								<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
+									<img src={PrototypePng} width={60} height={60} className="absolute top-4 right-4" />
+									<Stack className="w-20 h-20 bg-dark justify-center items-center">
+										<H4 className="!text-5xl !font-body2 !font-black text-background">03</H4>
+									</Stack>
+									<Stack className="flex-grow items-center px-4">
+										<H4 className="text-dark !font-body !text-4xl">Thử nghiệm</H4>
+									</Stack>
 								</Stack>
-								<Stack column className="items-center p-3">
-									<H4 className="text-gray-500">03</H4>
-									<Text className="text-gray-500">Coins</Text>
+								<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
+									<img src={ConstructionPng} width={60} height={60} className="absolute top-4 right-4" />
+									<Stack className="w-20 h-20 bg-dark justify-center items-center">
+										<H4 className="!text-5xl !font-body2 !font-black text-background">04</H4>
+									</Stack>
+									<Stack className="flex-grow items-center px-4">
+										<H4 className="text-dark !font-body !text-4xl">Xây dựng</H4>
+									</Stack>
 								</Stack>
 							</Stack>
 
-							<Button type="outline" className="mt-4" onClick={handleStartBuildingClicked}>
+							{/* <Button type="outline" className="mt-4" onClick={handleStartBuildingClicked}>
 								Start Build
-							</Button>
+							</Button> */}
 
-							<Stack
+							{/* <Stack
 								id="analyze2D"
 								className="flex-grow mt-4 justify-center items-center border-2 border-spacing-2 border-dashed border-gray-500 text-gray-500 cursor-pointer hover:border-blue-500 hover:!text-blue-700"
 								onClick={handleAnalyze2DButtonClicked}
@@ -496,13 +522,13 @@ const HomePage = (props: RouteComponentProps) => {
 								) : (
 									<H3>Drop your 2D design here</H3>
 								)}
-							</Stack>
+							</Stack> */}
 						</Stack>
 					</Stack>
 				</div>
 			</section>
 
-			<section className="container mx-auto py-8">
+			{/* <section className="container mx-auto py-8">
 				<Carousel title="Advanced Section" defaultOpened>
 					<Stack column className="m-8 gap-4">
 						<Stack className="items-center">
@@ -636,7 +662,7 @@ const HomePage = (props: RouteComponentProps) => {
 						</Stack>
 					)}
 				</Carousel>
-			</section>
+			</section> */}
 		</SpringLoading>
 	);
 };

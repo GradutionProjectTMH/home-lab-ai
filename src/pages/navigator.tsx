@@ -2,7 +2,7 @@ import React from "react";
 import { Router } from "@reach/router";
 import Body from "./body";
 import BuildPage from "./build";
-import HomePage from "./home";
+import HomePage from "./home/home";
 import MarketplacePage from "./marketplace";
 import RequestVerify from "./request-verify";
 import VerifyMaterial from "./verify-material/[id]";
