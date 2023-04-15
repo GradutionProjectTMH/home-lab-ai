@@ -23,7 +23,8 @@ import Input from "../../components/input";
 import H3 from "../../components/typography/h3";
 import TFFloorPlan from "../../apis/tf-floor-plan.api";
 import { RootState } from "../../redux/stores/store.redux";
-import { removeDuplicated } from "../../utils/text.util";
+import { joinTxts, removeDuplicated } from "../../utils/text.util";
+import style from "./style.module.css";
 
 const slideImages = [
 	"1.jpg",
@@ -228,11 +229,13 @@ const HomePage = (props: RouteComponentProps) => {
 					images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
 					showNav={false}
 					useTranslate3D
+					additionalClass={joinTxts("w-full h-full", style["slider"])}
 				/>
 				<Slider
 					images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
 					showNav={false}
 					useTranslate3D
+					additionalClass={joinTxts("w-full h-full", style["slider"])}
 				/>
 			</Stack>
 		),
@@ -252,8 +255,8 @@ const HomePage = (props: RouteComponentProps) => {
 		>
 			<section className="container mx-auto">
 				<Stack className="items-stretch">
-					<Stack column className="flex-grow gap-10 justify-center">
-						<Stack column className="gap-4 mt-8">
+					<Stack column className="flex-grow gap-10 justify-center py-8">
+						<Stack column className="gap-4">
 							<H1 className="!font-display !font-black !text-[12rem]  text-primary">Vẽ lên</H1>
 							<H1 className="!font-body !font-light !text-[8rem] text-dark">ngôi nhà</H1>
 							<H1 className="!font-display !font-black !text-[9rem] text-dark">của bạn.</H1>
@@ -282,7 +285,7 @@ const HomePage = (props: RouteComponentProps) => {
 
 			<section className="relative">
 				<div className="container mx-auto">
-					<Stack className="mt-14 items-stretch">
+					<Stack className="my-24 items-stretch">
 						<Stack column className="flex-grow mr-4">
 							<Stack column className="bg-white shadow-xl shadow-blackAlpha-100">
 								<textarea

@@ -13,7 +13,7 @@ import HistoryTransaction from "./history-transaction";
 
 export const routes = [
 	{
-		name: "Home",
+		name: "HomeLab.ai",
 		path: "/",
 		isNav: true,
 		page: HomePage,

@@ -20,13 +20,14 @@ import { routes } from "../pages/navigator";
 import { joinTxts } from "../utils/text.util";
 import { updateUserProfile } from "../apis/user.api";
 
-type NavbarProps = {} & React.HtmlHTMLAttributes<HTMLDivElement>;
+type NavbarProps = {
+	fixNav?: boolean;
+} & React.HtmlHTMLAttributes<HTMLDivElement>;
 
-const Navbar = ({ ...props }: NavbarProps) => {
+const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
 	const ether = useSelector((state: RootState) => state.ether);
-	const [fixNav, setFixNav] = React.useState<boolean>(false);
 	const [wallet, setWallet] = React.useState<string>();
 	const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
 
@@ -73,16 +74,6 @@ const Navbar = ({ ...props }: NavbarProps) => {
 		})();
 	}, [ether, ether?.walletAddress]);
 
-	const onScrollWindow = () => {
-		if (window.scrollY <= 50) {
-			setFixNav(false);
-		} else {
-			setFixNav(true);
-		}
-	};
-
-	window.addEventListener("scroll", onScrollWindow);
-	// fixNav ? "scale-90" : "scale-100"
 	return (
 		<nav className={joinTxts("w-full", fixNav ? "shadow-md" : "")} {...props}>
 			<div className="container mx-auto">
