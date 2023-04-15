@@ -1,6 +1,6 @@
 import * as React from "react";
 import Stack from "../../components/layout/stack";
-import Carousel from "../../components/carousel";
+import Accordion from "../../components/accordion";
 import Button from "../../components/button";
 import { DetailDrawing } from "../../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../../apis/detail-drawing.api";
@@ -80,7 +80,7 @@ const OrderDetail = ({ id }: OrderProps) => {
 	return (
 		<>
 			<section className="container mx-auto ">
-				<Carousel
+				<Accordion
 					title={
 						detailDrawing?.hire && detailDrawing?.hire.status === STATUS_HIRE.FINISH
 							? "Step 01: Complete your design (Task 01) completed"
@@ -96,11 +96,11 @@ const OrderDetail = ({ id }: OrderProps) => {
 					) : (
 						<Hiring setIsLoader={setIsLoader} detailDrawing={detailDrawing} />
 					)}
-				</Carousel>
+				</Accordion>
 			</section>
 
 			{/* <section className="pt-16 container mx-auto">
-				<Carousel title="Step 02: Choose your furnitures" defaultOpened>
+				<Accordion title="Step 02: Choose your furnitures" defaultOpened>
 					<Stack className="items-stretch px-6 py-12">
 						<Stack className="basis-2/3">
 							<Stack column>
@@ -121,11 +121,11 @@ const OrderDetail = ({ id }: OrderProps) => {
 							/>
 						</Stack>
 					</Stack>
-				</Carousel>
+				</Accordion>
 			</section> */}
 
 			<section className="pt-16 container mx-auto">
-				<Carousel title="Step 02: Estimation">
+				<Accordion title="Step 02: Estimation">
 					<Stack className="justify-center items-center">
 						<Stack className="p-16 bg-white">
 							<Stack ref={pdfContent} column className="flex-grow w-[749px] container bg-white gap-8">
@@ -300,7 +300,7 @@ const OrderDetail = ({ id }: OrderProps) => {
 							View Floor Plan
 						</Button>
 					</Stack>
-				</Carousel>
+				</Accordion>
 			</section>
 		</>
 	);

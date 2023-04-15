@@ -1,7 +1,7 @@
 export const rooms = [
 	{
 		id: 0,
-		name: "Public Area",
+		name: "Phòng chung",
 		labels: ["LivingRoom", "Balcony", "Entrance"],
 		colorTheme: "gray",
 		leftIndex: 0,
@@ -9,7 +9,7 @@ export const rooms = [
 	},
 	{
 		id: 1,
-		name: "Bedroom",
+		name: "Phòng riêng",
 		labels: ["MasterRoom", "SecondRoom", "ChildRoom", "StudyRoom", "GuestRoom"],
 		colorTheme: "blue",
 		leftIndex: 0,
@@ -17,7 +17,7 @@ export const rooms = [
 	},
 	{
 		id: 2,
-		name: "Function Area",
+		name: "Phòng chức năng",
 		labels: ["Bathroom", "Kitchen", "DiningRoom", "Storage"],
 		colorTheme: "green",
 		leftIndex: 0,

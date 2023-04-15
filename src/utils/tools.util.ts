@@ -32,3 +32,7 @@ export function randomArray(array: any[], seed: number = 100) {
 
 	return array;
 }
+
+export function randomImg(width: number = 200, height: number = 200) {
+	return `https://picsum.photos/seed/${Math.random()}/${width}/${height}`;
+}

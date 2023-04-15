@@ -1,58 +1,34 @@
+import { RouteComponentProps } from "@reach/router";
 import * as React from "react";
+import LineBody from "../components/line-body.config";
 import Navbar from "../components/navbar";
-import { RouteComponentProps, Router, useMatch } from "@reach/router";
-import { joinTxts } from "../utils/text.util";
-import { lineByRoutes, LineName } from "../configs/line-body.config";
-import { routes } from "./navigator";
 
 const Body = ({ children }: RouteComponentProps<React.HTMLAttributes<HTMLElement>>) => {
-	const matchedRoute = routes.find((route) => useMatch(route.path));
-	const lines = lineByRoutes[matchedRoute!.name];
+	const [fixNav, setFixNav] = React.useState<boolean>(false);
+
+	React.useEffect(() => {
+		const handleScrolled = () => {
+			if (window.scrollY <= 50) {
+				setFixNav(false);
+			} else {
+				setFixNav(true);
+			}
+		};
+
+		window.addEventListener("scroll", handleScrolled);
+		return () => window.removeEventListener("scroll", handleScrolled);
+	}, [fixNav]);
 
 	return (
-		<main className="relative bg-gray-100 min-h-screen">
-			<div className="absolute top-0 left-0 w-full h-full">
-				<div className="relative w-full h-full">
-					<div className="container mx-auto relative h-full">
-						{lines &&
-							Object.keys(lines)
-								.filter((key) => key.includes("VLine"))
-								.map((key) => (
-									<div key={key} className={joinTxts("absolute w-[1px] h-full top-0", lines[key as LineName])} />
-								))}
-					</div>
-					{lines &&
-						Object.keys(lines)
-							.filter((key) => key.includes("HLine"))
-							.map((key) => (
-								<div key={key} className={joinTxts("absolute w-full h-[1px] left-0", lines[key as LineName])} />
-							))}
-				</div>
-			</div>
-			<div className="sticky top-0 z-10 bg-gray-100 ">
-				<div className="absolute top-0 left-0 w-full h-full">
-					<div className="relative w-full h-full">
-						<div className="container mx-auto relative h-full">
-							{lines &&
-								Object.keys(lines)
-									.filter((key) => key.includes("VLine"))
-									.map((key) => (
-										<div key={key} className={joinTxts("absolute w-[1px] h-full top-0", lines[key as LineName])} />
-									))}
-						</div>
-						{lines &&
-							Object.keys(lines)
-								.filter((key) => key.includes("HLine"))
-								.map((key) => (
-									<div key={key} className={joinTxts("absolute w-full h-[1px] left-0", lines[key as LineName])} />
-								))}
-					</div>
-				</div>
+		<main className="relative bg-background min-h-screen">
+			<LineBody />
+			<div className="fixed top-0 left-0 right-0 z-10 bg-background overflow-hidden">
+				{!fixNav && <LineBody />}
 				<div className="relative">
-					<Navbar />
+					<Navbar fixNav={fixNav} />
 				</div>
 			</div>
-			<div className="relative w-full h-full">{children}</div>
+			<div className="relative w-full h-full pt-32">{children}</div>
 		</main>
 	);
 };

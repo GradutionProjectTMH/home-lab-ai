@@ -7,9 +7,9 @@ import H5 from "./typography/h5";
 export type ButtonType = "fill" | "outline" | "ghost";
 
 const buttonClass: Record<ButtonType, string> = {
-	fill: "bg-blue-700 text-gray-50 fill-gray-50 hover:bg-blue-600 active:bg-blue-800",
-	outline: "text-blue-700 border-blue-700 border-2 fill-blue-700 hover:bg-gray-200 active:bg-gray-300",
-	ghost: "text-blue-700 fill-blue-700 hover:bg-gray-200 active:bg-gray-300",
+	fill: "bg-primary text-background fill-background hover:bg-blue-400 active:bg-blue-500",
+	outline: "text-dark border-dark border-2 fill-dark hover:bg-gray-100 active:bg-gray-200",
+	ghost: "text-primary fill-primary hover:bg-gray-100 active:bg-gray-200",
 };
 
 type ButtonProps = {

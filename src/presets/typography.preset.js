@@ -1,6 +1,7 @@
 const fontFamily = {
-	display: "Poppins",
-	body: "Be Vietnam Pro",
+	display: "Raleway",
+	body2: "Be Vietnam Pro",
+	body: "Comfortaa",
 };
 
 module.exports = {
