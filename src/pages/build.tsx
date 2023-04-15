@@ -12,7 +12,7 @@ import ButtonIcon from "../components/button-icon";
 import Strong from "../components/typography/strong";
 import H5 from "../components/typography/h5";
 import Text from "../components/typography/text";
-import Carousel from "../components/carousel";
+import Accordion from "../components/accordion";
 import Button from "../components/button";
 import { ReactComponent as ChevronRightSvg } from "../svgs/chevron-right.svg";
 import { ReactComponent as ChevronLeftSvg } from "../svgs/chevron-left.svg";
@@ -29,7 +29,7 @@ import { DetailDrawing } from "../interfaces/detail-drawing.interface";
 import * as detailDrawingApi from "../apis/detail-drawing.api";
 import { useIsInViewport } from "../hooks/useIsInViewPort";
 import { Stage as StageType } from "konva/lib/Stage";
-import { dataURIToBlob, downloadURI } from "../utils/tools.util";
+import { dataURIToBlob, downloadURI, randomImg } from "../utils/tools.util";
 import axiosClient from "../configs/server.config";
 import SpringLoading from "../components/SpringLoading";
 
@@ -60,6 +60,10 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const [ideaPositions, setIdeaPositions] = React.useState<IdeaPosition[]>([]);
 	const [selectedIdeaPosition, setSelectedIdeaPosition] = React.useState<IdeaPosition>();
 	const [ideaRelations, setIdeaRelations] = React.useState<[IdeaPosition, IdeaPosition][]>([]);
+
+	React.useEffect(() => {
+		setSuggestedPlans([...Array(10).keys()].map((i) => ({ trainName: randomImg(), url: randomImg() })));
+	}, []);
 
 	React.useEffect(() => {
 		if (g2pService)
@@ -426,11 +430,11 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			]}
 		>
 			<section className="container mx-auto">
-				<Stack className="items-stretch">
-					<Stack column className="grow gap-8 items-stretch">
-						<Stack column className="gap-1">
-							<H4 className="text-gray-500">Your Idea</H4>
-							<Stack className="h-[33rem] bg-white justify-center items-center">
+				<Stack className="items-stretch mt-12">
+					<Stack className="grow justify-center">
+						<Stack column className="w-[512px] gap-1">
+							<H4 className="text-gray-500">KHUNG NHÀ</H4>
+							<Stack className="bg-white justify-center items-center">
 								<Stage
 									ref={leftFloorPlanRef}
 									width={512}
@@ -501,7 +505,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 							disabled={ideaPositions.length == 0 || ideaRelations.length == 0}
 						/>
 						<H5 className="block [writing-mode:vertical-lr] rotate-180 font-medium text-gray-400 tracking-widest">
-							TRANSFER
+							CHUYỂN ĐỔI
 						</H5>
 						<ButtonIcon
 							Icon={ChevronLeftSvg}
@@ -510,10 +514,10 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 						/>
 					</Stack>
 
-					<Stack column className="grow gap-8 items-stretch">
-						<Stack column className="gap-1">
-							<H4 className="text-gray-500">Floor Plan</H4>
-							<Stack className="h-[33rem] bg-white justify-center items-center">
+					<Stack className="grow justify-center">
+						<Stack column className="w-[512px] gap-1">
+							<H4 className="text-gray-500">MẶT CẮT NGANG</H4>
+							<Stack className="bg-white justify-center items-center">
 								<Stage ref={rightFloorPlanRef} width={512} height={512} className="border-gray-300 border">
 									<Layer>
 										<Rect width={512} height={512} fill={(colors as any).white} />
@@ -639,7 +643,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 					</Stack>
 				</Stack>
 
-				<Stack column className="items-stretch mt-8">
+				<Stack column className="items-stretch mt-28">
 					<Stack className="justify-center gap-10">
 						{rooms.map((room) => {
 							const isCurrentRoom = currentRoom == room;
@@ -683,44 +687,63 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 					))}
 				</Stack>
 
-				<Stack className="mt-4 justify-center font-medium text-gray-400 tracking-widest">
-					<H5 className="">RECOMMENDED DESIGNS</H5>
+				<Stack className="mt-4 justify-center font-medium text-gray-400 tracking-[0.8rem]">
+					<H5>THIẾT KẾ ĐỀ XUẤT</H5>
 				</Stack>
 			</section>
 
-			<section className="container mx-auto mt-4">
-				<Carousel title="Advanced Section" defaultOpened>
+			<section className="container mx-auto mt-24">
+				<Accordion title="THỬ NGHIỆM VỚI MÔ HÌNH 3D" defaultOpened>
+					<Stack column className="items-stretch gap-6 p-6">
+						<img src={randomImg(1920, 1000)} className="object-cover w-full h-[624px] border-4 border-dark" />
+						<Stack className="gap-6">
+							<div className="basis-1/3">
+								<img src={randomImg(400, 400)} className="object-cover w-full h-[284px] border-4 border-dark" />
+							</div>
+							<div className="basis-1/3">
+								<img src={randomImg(400, 400)} className="object-cover w-full h-[284px] border-4 border-dark" />
+							</div>
+							<div className="basis-1/3">
+								<img src={randomImg(400, 400)} className="object-cover w-full h-[284px] border-4 border-dark" />
+							</div>
+						</Stack>
+					</Stack>
+				</Accordion>
+			</section>
+
+			<section className="container mx-auto mt-24">
+				<Accordion title="THÔNG TIN BỔ SUNG" defaultOpened>
 					<Stack className="items-center">
 						{detailDrawing && (
 							<Stack column className="basis-1/2 mt-4 px-8 flex-wrap items-stretch gap-8">
 								<Stack className="items-end gap-12">
 									<Stack column className="flex-grow gap-4">
-										<H4 className="text-gray-700">House boundary</H4>
+										<H4 className="text-gray-700">DIỆN TÍCH NHÀ:</H4>
 										<Stack column className="gap-2">
 											<Stack className="items-center gap-2">
-												<Text className="!text-gray-500 w-24 whitespace-nowrap">
-													Width<span className="text-red-500">*</span> :
+												<Text className="!text-gray-500 w-40 whitespace-nowrap">
+													Chiều dài<span className="text-red-500">*</span> :
 												</Text>
 												<Text className="text-blue-500">{detailDrawing.width}m</Text>
 											</Stack>
 											<hr />
 											<Stack className="items-center gap-2">
-												<Text className="!text-gray-500 w-24 whitespace-nowrap">
-													Height<span className="text-red-500">*</span> :
+												<Text className="!text-gray-500 w-40 whitespace-nowrap">
+													Chiều cao<span className="text-red-500">*</span> :
 												</Text>
 												<Text className="text-blue-500">{detailDrawing.height}m</Text>
 											</Stack>
 											<hr />
 											<Stack className="items-center gap-2">
-												<Text className="!text-gray-500 w-24 whitespace-nowrap">
-													Length<span className="text-red-500">*</span> :
+												<Text className="!text-gray-500 w-40 whitespace-nowrap">
+													Chiều rộng<span className="text-red-500">*</span> :
 												</Text>
 												<Text className="text-blue-500">{detailDrawing.length}m</Text>
 											</Stack>
 											<hr />
 											<Stack className="items-center gap-2">
-												<Text className="!text-gray-500 w-24 whitespace-nowrap">
-													Area<span className="text-red-500">*</span> :
+												<Text className="!text-gray-500 w-40 whitespace-nowrap">
+													Diện tích<span className="text-red-500">*</span> :
 												</Text>
 												<Text className="text-blue-500">
 													{detailDrawing.area}m<sup>2</sup>
@@ -732,53 +755,33 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 								<Stack className="items-end gap-12">
 									<Stack column className="flex-grow gap-4">
-										<H4 className="text-gray-700">Additional information</H4>
+										<H4 className="text-gray-700">THÔNG TIN CHI TIẾT:</H4>
 										<Stack column className="gap-2">
 											<Stack className="items-center">
-												<Text className="text-gray-500 w-28 whitespace-nowrap">
-													Budget<span className="text-red-500">*</span> :
+												<Text className="text-gray-500 w-36 whitespace-nowrap">
+													Chi phí dự tính<span className="text-red-500">*</span> :
 												</Text>
-												<Text className="text-blue-500">{detailDrawing.budget} Million VND</Text>
+												<Text className="text-blue-500">{detailDrawing.budget} Triệu VND</Text>
 											</Stack>
 											<hr />
 											<Stack className="">
-												<Text className="text-gray-500 w-28">Members:</Text>
+												<Text className="text-gray-500 w-40">Thành viên:</Text>
 												<Text className="text-blue-500 w-[32rem]">{detailDrawing.members}</Text>
 											</Stack>
 											<hr />
 											<Stack className="">
-												<Text className="text-gray-500 w-28">Theme:</Text>
+												<Text className="text-gray-500 w-40">Kiểu dáng:</Text>
 												<Text className="text-blue-500 w-[32rem]">{detailDrawing.theme}</Text>
 											</Stack>
 											<hr />
 											<Stack className="">
-												<Text className="text-gray-500 w-28">Location:</Text>
+												<Text className="text-gray-500 w-40">Vị trí:</Text>
 												<Text className="text-blue-500 w-[32rem]">{detailDrawing.location}</Text>
 											</Stack>
 											<hr />
 											<Stack className="">
-												<Text className="text-gray-500 w-28">Categories:</Text>
+												<Text className="text-gray-500 w-40">Đồ dùng:</Text>
 												<Text className="text-blue-500 w-[32rem]">{detailDrawing.categories}</Text>
-											</Stack>
-										</Stack>
-									</Stack>
-								</Stack>
-
-								<Stack className="items-end gap-12">
-									<Stack column className="flex-grow gap-4">
-										<H4 className="text-gray-700">Quick questions</H4>
-										<Stack column className="gap-4">
-											<Stack className="items-center">
-												<Text className="text-gray-500 w-40">Located at alley:</Text>
-												<input type="checkbox" checked={detailDrawing.locatedAtAlley} disabled />
-											</Stack>
-											<Stack className="items-center">
-												<Text className="text-gray-500 w-40">Business in house:</Text>
-												<input type="checkbox" checked={detailDrawing.businessInHouse} disabled />
-											</Stack>
-											<Stack className="items-center">
-												<Text className="text-gray-500 w-40">In the corner:</Text>
-												<input type="checkbox" checked={detailDrawing.inTheCorner} disabled />
 											</Stack>
 										</Stack>
 									</Stack>
@@ -871,24 +874,21 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 							</Stack>
 						)}
 					</Stack>
-				</Carousel>
+				</Accordion>
 			</section>
 
-			<section className="container mx-auto py-4">
+			<section className="container mx-auto py-16">
 				<Stack className="justify-center gap-4 mt-6">
-					<Button type="outline" LeftItem={DownloadSvg} className="!px-4 !py-1" onClick={handleSaved}>
-						Save
-					</Button>
 					<Button
 						type="outline"
 						LeftItem={PencilSvg}
 						className="!px-4 !py-1"
 						onClick={() => setIsShownModalBoundary(true)}
 					>
-						Load
+						LƯU BẢN THIẾT KẾ
 					</Button>
-					<Button type="fill" className="!px-4 !py-1" onClick={handleMakeOrder}>
-						Make Order
+					<Button LeftItem={PencilSvg} type="fill" className="!px-4 !py-1" onClick={handleMakeOrder}>
+						TIẾN HÀNH XÂY DỰNG
 					</Button>
 				</Stack>
 			</section>

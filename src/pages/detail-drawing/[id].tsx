@@ -1,6 +1,6 @@
 import * as React from "react";
 import Stack from "../../components/layout/stack";
-import Carousel from "../../components/carousel";
+import Accordion from "../../components/accordion";
 import Strong from "../../components/typography/strong";
 import Button from "../../components/button";
 import H5 from "../../components/typography/h5";
@@ -194,7 +194,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 	return (
 		<>
 			<section className="container mx-auto">
-				<Carousel title="Requirements" defaultOpened>
+				<Accordion title="Requirements" defaultOpened>
 					<Stack column={true} className="mt-8">
 						{/* 1 */}
 						<Stack className="pb-8 border-b-gray-200 border-b">
@@ -368,13 +368,13 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 							</Stack>
 						</Stack>
 					</Stack>
-				</Carousel>
+				</Accordion>
 			</section>
 			{detailDrawing?.hire.status !== STATUS_HIRE.PENDING && (
 				<section className="container mx-auto">
 					{detailDrawing?.hire.floorDesigns?.map((floorDesign, index) => {
 						return (
-							<Carousel
+							<Accordion
 								key={index}
 								title={`${special[index + 1].charAt(0).toUpperCase() + special[index + 1].slice(1)} floor 3D model `}
 								defaultOpened
@@ -425,7 +425,7 @@ const DetailDrawingPage = ({ id }: DetailDrawingProps) => {
 										)}
 									</Stack>
 								)}
-							</Carousel>
+							</Accordion>
 						);
 					})}
 

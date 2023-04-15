@@ -19,7 +19,7 @@ class ErrorBoundary extends React.Component<HtmlHTMLAttributes<HTMLDivElement> &
 					break;
 
 				default:
-					this.props.dispatch(pushError("Unknown error"));
+					this.props.dispatch(pushError("Lỗi không xác định"));
 			}
 
 			return;

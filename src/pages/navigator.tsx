@@ -13,51 +13,43 @@ import HistoryTransaction from "./history-transaction";
 
 export const routes = [
 	{
-		name: "HomeLab.ai",
+		name: "Home",
 		path: "/",
-		isNav: true,
 		page: HomePage,
 	},
 	{
 		name: "Build",
 		path: "/build",
-		isNav: true,
 		page: BuildPage,
 	},
 	{
 		name: "Orders",
 		path: "/orders",
-		isNav: false,
 		page: OrderPage,
 	},
 	{
 		name: "Order",
 		path: "/order/:id",
-		isNav: false,
 		page: OrderDetail,
 	},
 	{
 		name: "Marketplace",
 		path: "/marketplace",
-		isNav: true,
 		page: MarketplacePage,
 	},
 	{
 		name: "DetailDrawing",
 		path: "/detail-drawing/:id",
-		isNav: false,
 		page: DetailDrawingPage,
 	},
 	{
 		name: "RequestVerify",
 		path: "/request-verify",
-		isNav: false,
 		page: RequestVerify,
 	},
 	{
 		name: "VerifyMaterial",
 		path: "/verify-material/:id",
-		isNav: false,
 		page: VerifyMaterial,
 	},
 	{

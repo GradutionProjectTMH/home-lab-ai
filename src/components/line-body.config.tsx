@@ -2,14 +2,18 @@ import { useMatch } from "@reach/router";
 import * as React from "react";
 import { routes } from "../pages/navigator";
 
-type ListPage = typeof routes[number]["name"];
-
-const lineByRoutes: Record<ListPage, Record<string, JSX.Element>> = {
-	"HomeLab.ai": {
+const lineByRoutes: Record<string, Record<string, JSX.Element>> = {
+	Home: {
 		HLine2: <div className="absolute w-full h-[1px] bg-gray-300 top-[56rem]" />,
 		HLine3: <div className="absolute w-full h-[1px] bg-gray-300 top-[8rem]" />,
 		VLine1: <div className="absolute w-[1px] h-full bg-gray-300 left-0" />,
 		VLine2: <div className="absolute w-[1px] h-full bg-gray-300 right-[712px]" />,
+	},
+	Build: {
+		HLine2: <div className="absolute w-full h-[1px] bg-gray-300 top-[54rem]" />,
+		HLine3: <div className="absolute w-full h-[1px] bg-gray-300 top-[8rem]" />,
+		VLine1: <div className="absolute w-[1px] h-full bg-gray-300 left-0" />,
+		VLine2: <div className="absolute w-[1px] h-full bg-gray-300 right-0" />,
 	},
 };
 

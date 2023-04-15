@@ -14,11 +14,11 @@ import ButtonIcon from "../../components/button-icon";
 import TextRazor from "../../apis/text-razor.api";
 import { useDispatch, useSelector } from "react-redux";
 import { popMessage, pushError, pushLoading } from "../../redux/slices/message.slice";
-import { RouteComponentProps, useNavigate } from "@reach/router";
+import { Link, RouteComponentProps, useNavigate } from "@reach/router";
 import Slider from "../../components/slider";
 import { randomArray } from "../../utils/tools.util";
 import SpringLoading from "../../components/SpringLoading";
-import Carousel from "../../components/carousel";
+import Accordion from "../../components/accordion";
 import Input from "../../components/input";
 import H3 from "../../components/typography/h3";
 import TFFloorPlan from "../../apis/tf-floor-plan.api";
@@ -285,7 +285,7 @@ const HomePage = (props: RouteComponentProps) => {
 
 			<section className="relative">
 				<div className="container mx-auto">
-					<Stack className="my-24 items-stretch">
+					<Stack className="py-24 items-stretch">
 						<Stack column className="flex-grow mr-4">
 							<Stack column className="bg-white shadow-xl shadow-blackAlpha-100">
 								<textarea
@@ -388,42 +388,50 @@ const HomePage = (props: RouteComponentProps) => {
 
 						<Stack column className="basis-[712px] items-stretch">
 							<Stack className="gap-2 w-full">
-								<Stack column className="relative w-[172px] h-[172px] bg-primary border-primary border-2">
-									<img src={LightBulbPng} width={60} height={60} className="absolute top-4 right-4" />
-									<Stack className="w-20 h-20 bg-background justify-center items-center">
-										<H4 className="!text-5xl !font-body2 !font-black text-primary">01</H4>
+								<Link to="/">
+									<Stack column className="relative w-[172px] h-[172px] bg-primary border-primary border-2">
+										<img src={LightBulbPng} width={60} height={60} className="absolute top-4 right-4" />
+										<Stack className="w-20 h-20 bg-background justify-center items-center">
+											<H4 className="!text-5xl !font-body2 !font-black text-primary">01</H4>
+										</Stack>
+										<Stack className="flex-grow items-center px-4">
+											<H4 className="text-background !font-body !text-4xl">Ý Tưởng</H4>
+										</Stack>
 									</Stack>
-									<Stack className="flex-grow items-center px-4">
-										<H4 className="text-background !font-body !text-4xl">Ý Tưởng</H4>
+								</Link>
+								<Link to="/build">
+									<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
+										<img src={DesignPng} width={60} height={60} className="absolute top-4 right-4" />
+										<Stack className="w-20 h-20 bg-dark justify-center items-center">
+											<H4 className="!text-5xl !font-body2 !font-black text-background">02</H4>
+										</Stack>
+										<Stack className="flex-grow items-center px-4">
+											<H4 className="text-dark !font-body !text-4xl">Thiết kế</H4>
+										</Stack>
 									</Stack>
-								</Stack>
-								<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
-									<img src={DesignPng} width={60} height={60} className="absolute top-4 right-4" />
-									<Stack className="w-20 h-20 bg-dark justify-center items-center">
-										<H4 className="!text-5xl !font-body2 !font-black text-background">02</H4>
+								</Link>
+								<Link to="/build">
+									<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
+										<img src={PrototypePng} width={60} height={60} className="absolute top-4 right-4" />
+										<Stack className="w-20 h-20 bg-dark justify-center items-center">
+											<H4 className="!text-5xl !font-body2 !font-black text-background">03</H4>
+										</Stack>
+										<Stack className="flex-grow items-center px-4">
+											<H4 className="text-dark !font-body !text-4xl">Thử nghiệm</H4>
+										</Stack>
 									</Stack>
-									<Stack className="flex-grow items-center px-4">
-										<H4 className="text-dark !font-body !text-4xl">Thiết kế</H4>
+								</Link>
+								<Link to="/build">
+									<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
+										<img src={ConstructionPng} width={60} height={60} className="absolute top-4 right-4" />
+										<Stack className="w-20 h-20 bg-dark justify-center items-center">
+											<H4 className="!text-5xl !font-body2 !font-black text-background">04</H4>
+										</Stack>
+										<Stack className="flex-grow items-center px-4">
+											<H4 className="text-dark !font-body !text-4xl">Xây dựng</H4>
+										</Stack>
 									</Stack>
-								</Stack>
-								<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
-									<img src={PrototypePng} width={60} height={60} className="absolute top-4 right-4" />
-									<Stack className="w-20 h-20 bg-dark justify-center items-center">
-										<H4 className="!text-5xl !font-body2 !font-black text-background">03</H4>
-									</Stack>
-									<Stack className="flex-grow items-center px-4">
-										<H4 className="text-dark !font-body !text-4xl">Thử nghiệm</H4>
-									</Stack>
-								</Stack>
-								<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
-									<img src={ConstructionPng} width={60} height={60} className="absolute top-4 right-4" />
-									<Stack className="w-20 h-20 bg-dark justify-center items-center">
-										<H4 className="!text-5xl !font-body2 !font-black text-background">04</H4>
-									</Stack>
-									<Stack className="flex-grow items-center px-4">
-										<H4 className="text-dark !font-body !text-4xl">Xây dựng</H4>
-									</Stack>
-								</Stack>
+								</Link>
 							</Stack>
 
 							{/* <Button type="outline" className="mt-4" onClick={handleStartBuildingClicked}>
@@ -532,7 +540,7 @@ const HomePage = (props: RouteComponentProps) => {
 			</section>
 
 			{/* <section className="container mx-auto py-8">
-				<Carousel title="Advanced Section" defaultOpened>
+				<Accordion title="Advanced Section" defaultOpened>
 					<Stack column className="m-8 gap-4">
 						<Stack className="items-center">
 							<Text className="text-gray-500 w-32">Members:</Text>
@@ -599,7 +607,7 @@ const HomePage = (props: RouteComponentProps) => {
 						</Stack>
 					</Stack>
 
-					<Carousel title="Show text">
+					<Accordion title="Show text">
 						<Stack className="mt-4 px-6 flex-wrap gap-y-4">
 							<Stack column className="gap-4">
 								{sentences &&
@@ -621,7 +629,7 @@ const HomePage = (props: RouteComponentProps) => {
 						</Stack>
 
 						<div className="h-[1px] my-4 bg-gray-200"></div>
-					</Carousel>
+					</Accordion>
 
 					{entities && (
 						<Stack className="mt-4 px-6 gap-4">
@@ -664,7 +672,7 @@ const HomePage = (props: RouteComponentProps) => {
 							</Stack>
 						</Stack>
 					)}
-				</Carousel>
+				</Accordion>
 			</section> */}
 		</SpringLoading>
 	);

@@ -16,9 +16,23 @@ import Ether from "../apis/ether.api";
 import { pushSuccess } from "../redux/slices/message.slice";
 import { setWalletAddress } from "../redux/slices/ether.slice";
 import { formatAddress } from "../utils/text.util";
-import { routes } from "../pages/navigator";
 import { joinTxts } from "../utils/text.util";
 import { updateUserProfile } from "../apis/user.api";
+
+const navRoutes = [
+	{
+		name: "HomeLab.ai",
+		path: "/",
+	},
+	{
+		name: "HomeFreeLancer",
+		path: "google.com",
+	},
+	{
+		name: "HomeShare",
+		path: "google.com",
+	},
+];
 
 type NavbarProps = {
 	fixNav?: boolean;
@@ -85,26 +99,24 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 					</Link>
 					<div className="w-1/2">
 						<div className={joinTxts("m-auto", fixNav ? "w-auto ml-16" : "w-fit")}>
-							{routes
-								.filter((route) => route.isNav)
-								.map((route) => (
-									<Link
-										to={route.path}
-										key={route.name}
-										className={joinTxts("hover:text-blue-700 ease-linear transition-[margin] duration-300")}
-										getProps={({ isCurrent }) => {
-											return {
-												className: isCurrent
-													? joinTxts("float-left text-blue-700", fixNav ? "mr-4" : "mr-16  ")
-													: joinTxts("float-left text-blue-500", fixNav ? "mr-4" : "mr-16  "),
-											};
-										}}
-									>
-										<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-xl")}>
-											{route.name}
-										</H5>
-									</Link>
-								))}
+							{navRoutes.map((route) => (
+								<Link
+									to={route.path}
+									key={route.name}
+									className={joinTxts("hover:text-primary ease-linear transition-[margin] duration-300")}
+									getProps={({ isCurrent }) => {
+										return {
+											className: isCurrent
+												? joinTxts("float-left text-primary", fixNav ? "mr-4" : "mr-16  ")
+												: joinTxts("float-left text-gray-500", fixNav ? "mr-4" : "mr-16  "),
+										};
+									}}
+								>
+									<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-xl")}>
+										{route.name}
+									</H5>
+								</Link>
+							))}
 						</div>
 					</div>
 
@@ -115,10 +127,10 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 							type="outline"
 							className={joinTxts(
 								"!text-orange-600 !border-orange-600  transition-all duration-300 ease-linear",
-								fixNav ? "!px-2 !py-1" : "!px-3 !py-2",
+								fixNav ? "text-base !px-2 !py-1" : "text-lg !px-3 !py-2",
 							)}
 						>
-							<H5 className={joinTxts("", fixNav ? "!text-base" : "!text-lg")}>{wallet || "Connect"}</H5>
+							{wallet || "KẾT NỐI VÍ"}
 						</Button>
 						{user ? (
 							<Stack
@@ -160,7 +172,7 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 													className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm"
 													onClick={handleLogout}
 												>
-													Sign out
+													ĐĂNG XUẤT
 												</a>
 											</div>
 										</div>
@@ -174,7 +186,9 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 								type="outline"
 								className={joinTxts(" transition-all duration-300 ease-linear", fixNav ? "!px-2 !py-1" : "!px-3 !py-2")}
 							>
-								<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-lg")}>Sign In</H5>
+								<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-lg")}>
+									ĐĂNG NHẬP
+								</H5>
 							</Button>
 						)}
 					</Stack>

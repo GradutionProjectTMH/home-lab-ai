@@ -5,8 +5,9 @@ import { ReactComponent as ExpandMoreSvg } from "../svgs/expand-more.svg";
 import { ReactComponent as ExpandLessSvg } from "../svgs/expand-less.svg";
 import H3 from "./typography/h3";
 import { joinTxts } from "../utils/text.util";
+import H2 from "./typography/h2";
 
-type CarouselProps = {
+type AccordionProps = {
 	title: string;
 	children: React.ReactNode;
 	disabled?: boolean;
@@ -16,7 +17,7 @@ type CarouselProps = {
 	RightItemActive?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 } & React.HTMLAttributes<HTMLElement>;
 
-const Carousel = ({
+const Accordion = ({
 	title,
 	disabled = false,
 	RightItem,
@@ -27,7 +28,7 @@ const Carousel = ({
 	titleClassName = "",
 	onClick,
 	...props
-}: CarouselProps) => {
+}: AccordionProps) => {
 	const [isActive, setIsActive] = React.useState<boolean>(defaultOpened);
 
 	const handleClicked = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -43,7 +44,7 @@ const Carousel = ({
 				className="justify-between items-center gap-2 pr-6 border-b-gray-300 border-b cursor-pointer hover:bg-gray-200 active:bg-gray-300"
 				onClick={handleClicked}
 			>
-				<H3 className={joinTxts("text-gray-500", titleClassName)}>{title}</H3>
+				<H2 className={joinTxts("text-gray-500", titleClassName)}>{title}</H2>
 				{isActive ? <ExpandLessSvg className="w-12 h-12" /> : <ExpandMoreSvg className="w-12 h-12" />}
 			</Stack>
 
@@ -54,4 +55,4 @@ const Carousel = ({
 	);
 };
 
-export default Carousel;
+export default Accordion;

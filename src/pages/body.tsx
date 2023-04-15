@@ -22,13 +22,13 @@ const Body = ({ children }: RouteComponentProps<React.HTMLAttributes<HTMLElement
 	return (
 		<main className="relative bg-background min-h-screen">
 			<LineBody />
-			<div className="sticky top-0 z-10 bg-background overflow-hidden">
+			<div className="fixed top-0 left-0 right-0 z-10 bg-background overflow-hidden">
 				{!fixNav && <LineBody />}
 				<div className="relative">
 					<Navbar fixNav={fixNav} />
 				</div>
 			</div>
-			<div className="relative w-full h-full">{children}</div>
+			<div className="relative w-full h-full pt-32">{children}</div>
 		</main>
 	);
 };

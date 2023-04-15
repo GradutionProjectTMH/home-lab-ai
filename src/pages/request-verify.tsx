@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import IPFS from "../apis/ipfs.api";
 import { createProduct } from "../apis/product.api";
 import Button from "../components/button";
-import Carousel from "../components/carousel";
+import Accordion from "../components/accordion";
 import Dropdown from "../components/dropdown";
 import Input from "../components/input";
 import Stack from "../components/layout/stack";
@@ -201,7 +201,7 @@ const RequestVerify = () => {
 			</section>
 
 			<section className="pt-16 container mx-auto">
-				<Carousel title="Request list" defaultOpened>
+				<Accordion title="Request list" defaultOpened>
 					<Stack column className="gap-4 mt-4">
 						<Stack className="gap-8">
 							<Input
@@ -240,7 +240,7 @@ const RequestVerify = () => {
 							</tbody>
 						</table>
 					</Stack>
-				</Carousel>
+				</Accordion>
 			</section>
 		</SpringLoading>
 	);
