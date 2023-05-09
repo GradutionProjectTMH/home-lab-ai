@@ -184,11 +184,12 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 								onClick={handleLoginGoogle}
 								RightItem={GoogleSvg}
 								type="outline"
-								className={joinTxts(" transition-all duration-300 ease-linear", fixNav ? "!px-2 !py-1" : "!px-3 !py-2")}
+								className={joinTxts(
+									" transition-all duration-300 ease-linear",
+									fixNav ? "!text-base !px-2 !py-1" : "!text-lg !px-3 !py-2",
+								)}
 							>
-								<H5 className={joinTxts("transition-all duration-300", fixNav ? "!text-base" : "!text-lg")}>
-									ĐĂNG NHẬP
-								</H5>
+								ĐĂNG NHẬP
 							</Button>
 						)}
 					</Stack>
