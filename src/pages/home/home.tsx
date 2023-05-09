@@ -25,6 +25,8 @@ import TFFloorPlan from "../../apis/tf-floor-plan.api";
 import { RootState } from "../../redux/stores/store.redux";
 import { joinTxts, removeDuplicated } from "../../utils/text.util";
 import style from "./style.module.css";
+import { Image } from "../../components/image";
+import sponsorJpg from "./images/sponsor.jpg";
 
 const slideImages = [
 	"1.jpg",
@@ -270,15 +272,16 @@ const HomePage = (props: RouteComponentProps) => {
 
 							<Stack className="gap-4">
 								<Button type="fill" onClick={handleTryItButtonClicked}>
-									BẮT ĐẦU
+									TÌM Ý TƯỞNG
 								</Button>
 								<Button type="outline" onClick={handleAnalyze2DButtonClicked}>
-									ĐÃ CÓ THIẾT KẾ
+									BẮT ĐẦU THIẾT KẾ
 								</Button>
 								<input ref={analyze2DButtonRef} className="hidden" type="file" onChange={handleAnalyze2DFileChanged} />
 							</Stack>
 						</Stack>
 					</Stack>
+
 					{SliderHome}
 				</Stack>
 			</section>
@@ -287,393 +290,28 @@ const HomePage = (props: RouteComponentProps) => {
 				<div className="container mx-auto">
 					<Stack className="py-24 items-stretch">
 						<Stack column className="flex-grow mr-4">
-							<Stack column className="bg-white shadow-xl shadow-blackAlpha-100">
-								<textarea
-									rows={6}
-									className="text-body !outline-none placeholder:text-gray-400 placeholder:text-body p-4 border-0"
-									ref={textAreaRef}
-									placeholder="Hãy bắt đầu xây dựng từ ý tưởng của bạn..."
-								/>
-								<Stack className="justify-end items-center mx-4 mb-2">
-									<ButtonIcon Icon={MicSvg} className="w-10 h-10 !fill-gray-500" />
-									<ButtonIcon
-										Icon={LightBulbSvg}
-										className="w-10 h-10 !fill-blue-500"
-										onClick={handleExtractorClicked}
-									/>
+							<Stack column className="items-stretch gap-4">
+								<H4 className="text-center text-gray-500">CÙNG ĐỒNG HÀNH VỚI</H4>
+								<Stack className="gap-4 justify-center">
+									{[...Array(4)].map((_) => (
+										<Image src={sponsorJpg} />
+									))}
 								</Stack>
 							</Stack>
-
-							{/* <Stack className="justify-between gap-4 m-8">
-								<Stack column className="gap-4">
-									<H4 className="text-gray-700">House boundary</H4>
-									<Stack column className="gap-4">
-										<Stack className="items-center gap-2">
-											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Width<span className="text-red-500">*</span> :
-											</Text>
-											<Input
-												placeholder="50"
-												className="!text-blue-500 w-32"
-												type="number"
-												value={detailDrawing.width}
-												onChange={(event) => handleUserInfoChanged("width", Number(event?.target.value))}
-												after={<Text className="text-blue-500">m</Text>}
-											/>
-										</Stack>
-										<Stack className="items-center gap-2">
-											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Height<span className="text-red-500">*</span> :
-											</Text>
-											<Input
-												placeholder="50"
-												className="!text-blue-500 w-32"
-												type="number"
-												value={detailDrawing.height}
-												onChange={(event) => handleUserInfoChanged("height", Number(event?.target.value))}
-												after={<Text className="text-blue-500">m</Text>}
-											/>
-										</Stack>
-										<Stack className="items-center gap-2">
-											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Length<span className="text-red-500">*</span> :
-											</Text>
-											<Input
-												placeholder="50"
-												className="!text-blue-500 w-32"
-												type="number"
-												value={detailDrawing.length}
-												onChange={(event) => handleUserInfoChanged("length", Number(event?.target.value))}
-												after={<Text className="text-blue-500">m</Text>}
-											/>
-										</Stack>
-										<Stack className="items-center gap-2">
-											<Text className="!text-gray-500 w-16 whitespace-nowrap">
-												Area<span className="text-red-500">*</span> :
-											</Text>
-											<Input
-												placeholder="50"
-												className="!text-blue-500 w-32"
-												type="number"
-												value={detailDrawing.area}
-												onChange={(event) => handleUserInfoChanged("area", Number(event?.target.value))}
-												after={
-													<Text className="text-blue-500">
-														m<sup>2</sup>
-													</Text>
-												}
-											/>
-										</Stack>
-									</Stack>
-								</Stack>
-
-								<Stack column className="gap-4">
-									<H4 className="text-gray-700">Additional information</H4>
-									<Stack className="items-center">
-										<Text className="text-gray-500 w-32 whitespace-nowrap">
-											Budget<span className="text-red-500">*</span> :
-										</Text>
-										<Input
-											placeholder="50"
-											className="!text-blue-500 w-full"
-											type="number"
-											value={detailDrawing.budget}
-											onChange={(event) => handleUserInfoChanged("budget", event?.target.value)}
-											after={<Text className="text-blue-500">Million VND</Text>}
-										/>
-									</Stack>
-								</Stack>
-							</Stack> */}
 						</Stack>
 
-						<Stack column className="basis-[712px] items-stretch">
-							<Stack className="gap-2 w-full">
-								<Link to="/">
-									<Stack column className="relative w-[172px] h-[172px] bg-primary border-primary border-2">
-										<img src={LightBulbPng} width={60} height={60} className="absolute top-4 right-4" />
-										<Stack className="w-20 h-20 bg-background justify-center items-center">
-											<H4 className="!text-5xl !font-body2 !font-black text-primary">01</H4>
-										</Stack>
-										<Stack className="flex-grow items-center px-4">
-											<H4 className="text-background !font-body !text-4xl">Ý Tưởng</H4>
-										</Stack>
-									</Stack>
-								</Link>
-								<Link to="/build">
-									<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
-										<img src={DesignPng} width={60} height={60} className="absolute top-4 right-4" />
-										<Stack className="w-20 h-20 bg-dark justify-center items-center">
-											<H4 className="!text-5xl !font-body2 !font-black text-background">02</H4>
-										</Stack>
-										<Stack className="flex-grow items-center px-4">
-											<H4 className="text-dark !font-body !text-4xl">Thiết kế</H4>
-										</Stack>
-									</Stack>
-								</Link>
-								<Link to="/build">
-									<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
-										<img src={PrototypePng} width={60} height={60} className="absolute top-4 right-4" />
-										<Stack className="w-20 h-20 bg-dark justify-center items-center">
-											<H4 className="!text-5xl !font-body2 !font-black text-background">03</H4>
-										</Stack>
-										<Stack className="flex-grow items-center px-4">
-											<H4 className="text-dark !font-body !text-4xl">Thử nghiệm</H4>
-										</Stack>
-									</Stack>
-								</Link>
-								<Link to="/build">
-									<Stack column className="relative w-[172px] h-[172px] bg-transparent border-dark border-2">
-										<img src={ConstructionPng} width={60} height={60} className="absolute top-4 right-4" />
-										<Stack className="w-20 h-20 bg-dark justify-center items-center">
-											<H4 className="!text-5xl !font-body2 !font-black text-background">04</H4>
-										</Stack>
-										<Stack className="flex-grow items-center px-4">
-											<H4 className="text-dark !font-body !text-4xl">Xây dựng</H4>
-										</Stack>
-									</Stack>
-								</Link>
-							</Stack>
-
-							{/* <Button type="outline" className="mt-4" onClick={handleStartBuildingClicked}>
-								Start Build
-							</Button> */}
-
-							{/* <Stack
-								id="analyze2D"
-								className="flex-grow mt-4 justify-center items-center border-2 border-spacing-2 border-dashed border-gray-500 text-gray-500 cursor-pointer hover:border-blue-500 hover:!text-blue-700"
-								onClick={handleAnalyze2DButtonClicked}
-								onDrop={handle2DAreaDropped}
-								onDragOver={(event) => event.preventDefault()}
+						<Stack column className="basis-[712px] items-stretch px-4">
+							<Stack
+								column
+								className="justify-center items-center gap-2 h-[180px] bg-white rounded-lg border border-dark border-dashed shadow-lg"
 							>
-								{file2D ? (
-									<Stack column className="flex-grow items-stretch gap-2 p-2">
-										<Stack className="basis-1/2 items-stretch gap-2">
-											<div className="basis-1/2">
-												<img id="input" src={URL.createObjectURL(file2D)} />
-											</div>
-											{analyzed2DName ? (
-												<div className="basis-1/2">
-													<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_result.jpg`} />
-												</div>
-											) : (
-												<div className="basis-1/2 bg-gray-300 animate-pulse w-full min-h-[240px]" />
-											)}
-										</Stack>
-										<Stack className="basis-1/2 items-stretch gap-2">
-											<Stack column className="basis-1/4 items-center gap-2">
-												{analyzed2DName ? (
-													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r.jpg`} />
-													</div>
-												) : (
-													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
-												)}
-												{analyzed2DName ? (
-													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw.jpg`} />
-														<H4 className="text-center">Raw</H4>
-													</div>
-												) : (
-													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
-												)}
-											</Stack>
-											<Stack column className="basis-1/4 items-center gap-2">
-												{analyzed2DName ? (
-													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r_color.jpg`} />
-													</div>
-												) : (
-													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
-												)}
-												{analyzed2DName ? (
-													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw_color.jpg`} />
-														<H4 className="text-center">Raw + Color</H4>
-													</div>
-												) : (
-													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
-												)}
-											</Stack>
-											<Stack column className="basis-1/4 items-center gap-2">
-												{analyzed2DName ? (
-													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r.jpg`} />
-													</div>
-												) : (
-													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
-												)}
-												{analyzed2DName ? (
-													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw.jpg`} />
-														<H4 className="text-center">Refined</H4>
-													</div>
-												) : (
-													<div className="bg-gray-300 animate-pulse w-full min-h-[64px]" />
-												)}
-											</Stack>
-											<Stack column className="basis-1/4 items-center gap-2">
-												{analyzed2DName ? (
-													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r_color.jpg`} />
-													</div>
-												) : (
-													<div className="bg-gray-300 animate-pulse w-full h-16" />
-												)}
-												{analyzed2DName ? (
-													<div>
-														<img src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw_color.jpg`} />
-														<H4 className="text-center">Refined + Color</H4>
-													</div>
-												) : (
-													<div className="bg-gray-300 animate-pulse w-full h-16" />
-												)}
-											</Stack>
-										</Stack>
-									</Stack>
-								) : (
-									<H3>Drop your 2D design here</H3>
-								)}
-							</Stack> */}
+								<H3 className="text-center text-gray-500">BẠN ĐÃ CÓ THIẾT KẾ?</H3>
+								<Text className="text-center text-gray-500">Tối ưu hóa thiết kế của bạn tại đây</Text>
+							</Stack>
 						</Stack>
 					</Stack>
 				</div>
 			</section>
-
-			{/* <section className="container mx-auto py-8">
-				<Accordion title="Advanced Section" defaultOpened>
-					<Stack column className="m-8 gap-4">
-						<Stack className="items-center">
-							<Text className="text-gray-500 w-32">Members:</Text>
-							<Input
-								value={detailDrawing.members}
-								onChange={(event) => handleUserInfoChanged("members", event?.target.value)}
-								placeholder="Mother, Father, Children"
-								className="!text-blue-500 w-full"
-							/>
-						</Stack>
-						<Stack className="items-center">
-							<Text className="text-gray-500 w-32">Theme:</Text>
-							<Input
-								value={detailDrawing.theme}
-								onChange={(event) => handleUserInfoChanged("theme", event?.target.value)}
-								placeholder="White, Yellow"
-								className="!text-blue-500 w-full"
-							/>
-						</Stack>
-						<Stack className="items-center">
-							<Text className="text-gray-500 w-32">Location:</Text>
-							<Input
-								value={detailDrawing.location}
-								onChange={(event) => handleUserInfoChanged("location", event?.target.value)}
-								placeholder="Da Nang"
-								className="!text-blue-500 w-full"
-							/>
-						</Stack>
-						<Stack className="items-center">
-							<Text className="text-gray-500 w-32">Categories:</Text>
-							<Input
-								value={detailDrawing.categories}
-								onChange={(event) => handleUserInfoChanged("categories", event?.target.value)}
-								placeholder="Table, Chair, Bed"
-								className="!text-blue-500 w-full"
-							/>
-						</Stack>
-
-						<Stack className="gap-32">
-							<Stack className="items-center gap-4">
-								<Text className="text-gray-500">Located at alley:</Text>
-								<input
-									type="checkbox"
-									checked={detailDrawing.locatedAtAlley}
-									onChange={(event) => handleUserInfoChanged("locatedAtAlley", !detailDrawing.locatedAtAlley)}
-								/>
-							</Stack>
-							<Stack className="items-center gap-4">
-								<Text className="text-gray-500">Business in house:</Text>
-								<input
-									type="checkbox"
-									checked={detailDrawing.businessInHouse}
-									onChange={(event) => handleUserInfoChanged("businessInHouse", !detailDrawing.businessInHouse)}
-								/>
-							</Stack>
-							<Stack className="items-center gap-4">
-								<Text className="text-gray-500">In the corner:</Text>
-								<input
-									type="checkbox"
-									checked={detailDrawing.inTheCorner}
-									onChange={(event) => handleUserInfoChanged("inTheCorner", !detailDrawing.inTheCorner)}
-								/>
-							</Stack>
-						</Stack>
-					</Stack>
-
-					<Accordion title="Show text">
-						<Stack className="mt-4 px-6 flex-wrap gap-y-4">
-							<Stack column className="gap-4">
-								{sentences &&
-									sentences.map((sentence: any) => (
-										<Stack key={sentence.position} className="gap-2">
-											<H4 className="text-gray-700">
-												{sentence.position + 1 < 10 ? `0${sentence.position + 1}` : sentence.position + 1}.
-											</H4>
-											<Stack className="gap-2 flex-wrap">
-												{sentence.words.map((word: any) => (
-													<H4 key={word.position} className={word.isNounPhrase ? "text-blue-500" : "text-gray-500"}>
-														{word.token}
-													</H4>
-												))}
-											</Stack>
-										</Stack>
-									))}
-							</Stack>
-						</Stack>
-
-						<div className="h-[1px] my-4 bg-gray-200"></div>
-					</Accordion>
-
-					{entities && (
-						<Stack className="mt-4 px-6 gap-4">
-							<Stack className="basis-1/2 gap-12">
-								<Stack column className="items-end gap-4">
-									<H4 className="text-gray-700">Entities list:</H4>
-									{filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-700">
-											{entity.entityEnglishId}
-										</Text>
-									))}
-								</Stack>
-								<Stack column className="items-start gap-4">
-									<H4 className="text-gray-500">Confidence score</H4>
-									{filteredEntities.slice(0, Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-500">
-											{entity.confidenceScore}
-										</Text>
-									))}
-								</Stack>
-							</Stack>
-
-							<Stack className="basis-1/2 gap-12">
-								<Stack column className="items-end gap-4">
-									<H4 className="text-gray-700">Entities list:</H4>
-									{filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-700">
-											{entity.entityEnglishId}
-										</Text>
-									))}
-								</Stack>
-								<Stack column className="items-start gap-4">
-									<H4 className="text-gray-500">Confidence score</H4>
-									{filteredEntities.slice(Math.round(entities.length / 2)).map((entity: any) => (
-										<Text key={entity.entityId} className="text-gray-500">
-											{entity.confidenceScore}
-										</Text>
-									))}
-								</Stack>
-							</Stack>
-						</Stack>
-					)}
-				</Accordion>
-			</section> */}
 		</SpringLoading>
 	);
 };
