@@ -50,6 +50,8 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const [isShownModalBoundary, setIsShownModalBoundary] = React.useState<boolean>(false);
 	const [boundaryNames, setBoundaryNames] = React.useState<string[]>([]);
 
+	const [isShownModalCoohome, setIsShownModalCoohome] = React.useState<boolean>(false);
+
 	const [currentRoom, setCurrentRoom] = React.useState<Room>(rooms[0]);
 	const [rightFloorPlan, setRightFloorPlan] = React.useState<any>(null);
 
@@ -908,6 +910,18 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 						</Stack>
 					))}
 				</Stack>
+			</Modal>
+
+			<Modal
+				isShown={isShownModalCoohome}
+				onClose={() => {
+					setIsShownModalCoohome(false);
+				}}
+				withFull={true}
+			>
+				<div className="bg-white p-1 w-full">
+					<iframe src={""} className="w-full h-full"></iframe>
+				</div>
 			</Modal>
 		</SpringLoading>
 	);

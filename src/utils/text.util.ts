@@ -1,5 +1,5 @@
-export function joinTxts(...texts: (string | null | undefined)[]): string {
-	return texts.filter((text) => text).join(" ");
+export function joinTxts(...texts: any[]): string {
+	return texts.filter((text) => Boolean(text)).join(" ");
 }
 
 export function formatAddress(address: string): string {
