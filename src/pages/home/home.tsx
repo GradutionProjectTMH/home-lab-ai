@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { popMessage, pushError, pushLoading } from "../../redux/slices/message.slice";
 import { Link, RouteComponentProps, useNavigate } from "@reach/router";
 import Slider from "../../components/slider";
-import { randomArray } from "../../utils/tools.util";
+import { randomArray, randomImg } from "../../utils/tools.util";
 import SpringLoading from "../../components/SpringLoading";
 import Accordion from "../../components/accordion";
 import Input from "../../components/input";
@@ -27,6 +27,9 @@ import { joinTxts, removeDuplicated } from "../../utils/text.util";
 import style from "./style.module.css";
 import { Image } from "../../components/image";
 import sponsorJpg from "./images/sponsor.jpg";
+import H5 from "../../components/typography/h5";
+import { ChatIdea } from "./components/chat-idea";
+import { Transition } from "@headlessui/react";
 
 const slideImages = [
 	"1.jpg",
@@ -75,9 +78,11 @@ const HomePage = (props: RouteComponentProps) => {
 		businessInHouse: false,
 		inTheCorner: false,
 	});
-
 	const [file2D, setFile2D] = React.useState<File>();
 	const [analyzed2DName, setAnalyzed2DName] = React.useState<string>();
+
+	const [isShowTitle, setIsShowTitle] = React.useState<boolean>(true);
+	const [isShowChat, setIsShowChat] = React.useState<boolean>(false);
 
 	const handleUserInfoChanged = (key: string, value: any) => {
 		setDetailDrawing({
@@ -138,10 +143,6 @@ const HomePage = (props: RouteComponentProps) => {
 		}
 
 		navigate("/build", { state: { detail_drawing: detailDrawing, analyzed_2d_name: analyzed2DName } });
-	};
-
-	const handleTryItButtonClicked = () => {
-		textAreaRef.current?.focus();
 	};
 
 	const handleAnalyze2DButtonClicked = () => {
@@ -226,7 +227,7 @@ const HomePage = (props: RouteComponentProps) => {
 
 	const SliderHome = React.useMemo(
 		() => (
-			<Stack className="basis-[712px] items-center gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
+			<Stack className="h-[640px] items-center gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
 				<Slider
 					images={randomArray(slideImages).map((image) => `${process.env.PUBLIC_URL}/images/home-slider/${image}`)}
 					showNav={false}
@@ -257,61 +258,109 @@ const HomePage = (props: RouteComponentProps) => {
 		>
 			<section className="container mx-auto">
 				<Stack className="items-stretch">
-					<Stack column className="flex-grow gap-10 justify-center py-8">
-						<Stack column className="gap-4">
-							<H1 className="!font-display !font-black !text-[12rem]  text-primary">Vẽ lên</H1>
-							<H1 className="!font-body !font-light !text-[8rem] text-dark">ngôi nhà</H1>
-							<H1 className="!font-display !font-black !text-[9rem] text-dark">của bạn.</H1>
-						</Stack>
-
-						<Stack column className="gap-6">
-							<Text className="text-dark">
-								Sẵn sàng tiếp cận công cụ thế hệ mới cho thiết kế xây dựng <br />
-								HomeLab.ai đã tham gia vào hơn 100 công trình dự án trong nước.
-							</Text>
-
-							<Stack className="gap-4">
-								<Button type="fill" onClick={handleTryItButtonClicked}>
-									TÌM Ý TƯỞNG
-								</Button>
-								<Button type="outline" onClick={handleAnalyze2DButtonClicked}>
-									BẮT ĐẦU THIẾT KẾ
-								</Button>
-								<input ref={analyze2DButtonRef} className="hidden" type="file" onChange={handleAnalyze2DFileChanged} />
+					<Transition
+						as={React.Fragment}
+						show={isShowTitle}
+						leave="transform duration-800 transition ease-in-out"
+						leaveFrom="opacity-100 rotate-0 scale-100 "
+						leaveTo="opacity-0 scale-95"
+						afterLeave={() => setIsShowChat(true)}
+						static
+					>
+						<Stack column className="flex-grow gap-10 justify-center py-8">
+							<Stack column className="gap-4">
+								<H1 className="!font-display !font-black !text-[12rem]  text-primary">Vẽ lên</H1>
+								<H1 className="!font-body !font-light !text-[8rem] text-dark">ngôi nhà</H1>
+								<H1 className="!font-display !font-black !text-[9rem] text-dark">của bạn.</H1>
 							</Stack>
-						</Stack>
-					</Stack>
 
-					{SliderHome}
-				</Stack>
-			</section>
+							<Stack column className="gap-6">
+								<Text className="text-dark">
+									Sẵn sàng tiếp cận công cụ thế hệ mới cho thiết kế xây dựng <br />
+									HomeLab.ai đã tham gia vào hơn 100 công trình dự án trong nước.
+								</Text>
 
-			<section className="relative">
-				<div className="container mx-auto">
-					<Stack className="py-24 items-stretch">
-						<Stack column className="flex-grow mr-4">
-							<Stack column className="items-stretch gap-4">
-								<H4 className="text-center text-gray-500">CÙNG ĐỒNG HÀNH VỚI</H4>
-								<Stack className="gap-4 justify-center">
-									{[...Array(4)].map((_) => (
-										<Image src={sponsorJpg} />
-									))}
+								<Stack className="gap-4">
+									<Button type="fill" onClick={() => setIsShowTitle(false)}>
+										TÌM Ý TƯỞNG
+									</Button>
+									<Button type="outline" onClick={handleAnalyze2DButtonClicked}>
+										BẮT ĐẦU THIẾT KẾ
+									</Button>
+									<input
+										ref={analyze2DButtonRef}
+										className="hidden"
+										type="file"
+										onChange={handleAnalyze2DFileChanged}
+									/>
+								</Stack>
+							</Stack>
+
+							<Stack column className="mt-24">
+								<Stack column className="items-stretch gap-4">
+									<H4 className="text-center text-gray-500">CÙNG ĐỒNG HÀNH VỚI</H4>
+									<Stack className="gap-4 justify-center">
+										{[...Array(4)].map((_) => (
+											<Image src={sponsorJpg} />
+										))}
+									</Stack>
 								</Stack>
 							</Stack>
 						</Stack>
+					</Transition>
 
-						<Stack column className="basis-[712px] items-stretch px-4">
+					<Transition
+						show={isShowChat}
+						enter="transform transition duration-1000"
+						enterFrom="opacity-0 scale-y-0 translate-y-[-100%]"
+						enterTo="opacity-100 scale-y-100 translate-y-0"
+						static
+					>
+						<Stack column className="flex-grow m-8">
+							<ChatIdea className="h-[760px]" />
+						</Stack>
+					</Transition>
+
+					<Stack column className="basis-[712px] shrink-0 items-stretch gap-24">
+						{SliderHome}
+
+						<Stack className="items-stretch px-4">
 							<Stack
 								column
-								className="justify-center items-center gap-2 h-[180px] bg-white rounded-lg border border-dark border-dashed shadow-lg"
+								className="flex-grow justify-center items-center gap-2 h-[180px] bg-white rounded-lg border border-dark border-dashed shadow-lg"
 							>
 								<H3 className="text-center text-gray-500">BẠN ĐÃ CÓ THIẾT KẾ?</H3>
 								<Text className="text-center text-gray-500">Tối ưu hóa thiết kế của bạn tại đây</Text>
 							</Stack>
 						</Stack>
 					</Stack>
-				</div>
+				</Stack>
 			</section>
+
+			{/* <section className="mt-32 py-16 bg-background border-t border-light-gray">
+				<Stack className="container mx-auto justify-between items-end" {...props}>
+					<Stack column>
+						<Stack className="gap-10">
+							<H5 className="text-dark-gray">CONTACT</H5>
+							<H5 className="text-dark-gray">TERMS OF SERVICES</H5>
+							<H5 className="text-dark-gray">SHIPPING AND RETURNS</H5>
+						</Stack>
+						<H5 className="mt-12">
+							© 2021 Shelly. <span className="text-dark-gray">Terms of use</span> and{" "}
+							<span className="text-dark-gray">privacy policy</span>.
+						</H5>
+					</Stack>
+					<Stack column className="items-end">
+						<Input placeholder="Give an email, get the newsletter" className="!w-96" />
+						<Stack className="flex gap-6 text-dark-gray mt-8">
+							<i className="ri-linkedin-fill hover:text-accent cursor-pointer text-2xl" />
+							<i className="ri-facebook-fill hover:text-accent cursor-pointer text-2xl" />
+							<i className="ri-instagram-fill hover:text-accent cursor-pointer text-2xl" />
+							<i className="ri-twitter-fill hover:text-accent cursor-pointer text-2xl" />
+						</Stack>
+					</Stack>
+				</Stack>
+			</section> */}
 		</SpringLoading>
 	);
 };
