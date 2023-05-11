@@ -18,12 +18,17 @@ import { postChatGptApi } from "../../../../apis/chat-gpt/chat-gpt.api";
 
 import style from "./style.module.css";
 import { Animation } from "../../../../components/animation";
+import { useDispatch } from "react-redux";
+import { pushError } from "../../../../redux/slices/message.slice";
+import { AxiosError } from "axios";
 
 type ChatFields = {
 	message: string;
 };
 
 export const ChatIdea = ({ className }: React.HTMLAttributes<HTMLDivElement>) => {
+	const dispatch = useDispatch();
+
 	const {
 		register,
 		handleSubmit,
@@ -36,7 +41,8 @@ export const ChatIdea = ({ className }: React.HTMLAttributes<HTMLDivElement>) =>
 	const [chatMessages, setChatMessages] = React.useState<MessageItem[]>([
 		{
 			role: "assistant",
-			content: "Chào bạn, mình là HomeLabGPT được xây dựng với công nghệ ChatGPT. Bạn cần mình giúp gì?",
+			content:
+				"Chào bạn, mình là HomeLabChat. Hãy xây dựng ý tưởng xây dựng ngôi nhà bằng một đoạn mô tả ngôi nhà của bạn nhé!",
 		},
 	]);
 
@@ -46,8 +52,8 @@ export const ChatIdea = ({ className }: React.HTMLAttributes<HTMLDivElement>) =>
 				setChatMessages([...chatMessages, chatRes.message]);
 			}, 1000);
 		},
-		onError: (error) => {
-			console.log(error);
+		onError: (error: AxiosError<{ message: string }>) => {
+			dispatch(pushError(error?.message));
 		},
 	});
 
