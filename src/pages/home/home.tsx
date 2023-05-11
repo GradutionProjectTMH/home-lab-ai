@@ -300,6 +300,7 @@ const HomePage = (props: RouteComponentProps) => {
 					</Transition>
 
 					<Transition
+						as={React.Fragment}
 						show={isShowChat}
 						enter="transform transition duration-1000"
 						enterFrom="opacity-0 scale-y-0 translate-y-[-100%]"

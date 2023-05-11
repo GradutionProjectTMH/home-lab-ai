@@ -17,6 +17,7 @@ type ButtonIconProps = {
 	disabled?: boolean;
 	type?: ButtonType;
 	link?: string;
+	typeButton?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
 } & React.HTMLAttributes<HTMLElement>;
 
 const ButtonIcon = ({
@@ -40,7 +41,7 @@ const ButtonIcon = ({
 	};
 
 	return (
-		<div
+		<button
 			className={joinTxts(
 				"flex justify-center items-center rounded-full cursor-pointer",
 				buttonClass[disabled ? "disabled" : type],
@@ -50,7 +51,7 @@ const ButtonIcon = ({
 			{...props}
 		>
 			<i className={joinTxts(`ri-${props.remixIconName}`, iconClassName)} />
-		</div>
+		</button>
 	);
 };
 

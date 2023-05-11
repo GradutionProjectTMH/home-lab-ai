@@ -1,4 +1,4 @@
-import axiosClient from "../../configs/server.config";
+import axiosHomeLab from "../../configs/homelab-server.config";
 
 export type EnvironmentKey =
 	| "TEXT_RAZOR_API_ENDPOINT"
@@ -20,4 +20,4 @@ export type EnvironmentKey =
 	| "INFURA_DEDICATED_GATEWAY_SUBDOMAIN";
 
 export const getEnvironment = async (): Promise<Record<EnvironmentKey, string>> =>
-	axiosClient.get<Record<EnvironmentKey, string>, Record<EnvironmentKey, string>>("environment");
+	axiosHomeLab.get<Record<EnvironmentKey, string>, Record<EnvironmentKey, string>>("environment");

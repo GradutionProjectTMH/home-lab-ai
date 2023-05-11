@@ -28,6 +28,10 @@ class ErrorBoundary extends React.Component<HtmlHTMLAttributes<HTMLDivElement> &
 		this.props.dispatch(pushError(reason?.message || reason));
 	};
 
+	getDerivedStateFromError(error: Error) {
+		this.props.dispatch(pushError(error?.message));
+	}
+
 	componentDidMount() {
 		window.addEventListener("unhandledrejection", this.handlePromiseRejection);
 	}

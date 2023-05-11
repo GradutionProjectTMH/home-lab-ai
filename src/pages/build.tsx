@@ -30,7 +30,7 @@ import * as detailDrawingApi from "../apis/detail-drawing.api";
 import { useIsInViewport } from "../hooks/useIsInViewPort";
 import { Stage as StageType } from "konva/lib/Stage";
 import { dataURIToBlob, downloadURI, randomImg } from "../utils/tools.util";
-import axiosClient from "../configs/server.config";
+import axiosHomeLab from "../configs/homelab-server.config";
 import SpringLoading from "../components/SpringLoading";
 
 const BuildPage = ({ location }: RouteComponentProps) => {
@@ -378,7 +378,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		formData.append("files", leftFloorPlan, "LeftFloorPlan.jpg");
 		formData.append("files", rightFloorPlan, "rightFloorPlan.jpg");
 
-		const [boundaryImg, crossSectionImg] = await axiosClient.post<string, string[]>(`uploads`, formData);
+		const [boundaryImg, crossSectionImg] = await axiosHomeLab.post<string, string[]>(`uploads`, formData);
 
 		const data: Partial<DetailDrawing> = {
 			houseBoundary: detailDrawing.area,

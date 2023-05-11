@@ -14,7 +14,7 @@ const rootReducer = {
 	// ether: etherSlice,
 	message: messageSlice,
 	environment: environmentSlice,
-	firebaseService: firebaseServiceSlice,
+	// firebaseService: firebaseServiceSlice,
 	g2pService: g2pServiceSlice,
 	tfFloorPlanService: tfFloorPlanServiceSlice,
 	// ipfsService: ipfsServiceSlice,
