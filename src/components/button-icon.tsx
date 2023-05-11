@@ -12,18 +12,19 @@ const buttonClass: Record<ButtonType, string> = {
 };
 
 type ButtonIconProps = {
-	Icon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
+	remixIconName: string;
+	iconClassName?: string;
 	disabled?: boolean;
 	type?: ButtonType;
 	link?: string;
 } & React.HTMLAttributes<HTMLElement>;
 
 const ButtonIcon = ({
-	Icon,
 	disabled = false,
 	type = "ghost",
 	link,
 	className = "",
+	iconClassName = "",
 	onClick,
 	...props
 }: ButtonIconProps) => {
@@ -39,11 +40,17 @@ const ButtonIcon = ({
 	};
 
 	return (
-		<Icon
-			className={joinTxts("rounded-full p-2 cursor-pointer", buttonClass[disabled ? "disabled" : type], className)}
+		<div
+			className={joinTxts(
+				"flex justify-center items-center rounded-full cursor-pointer",
+				buttonClass[disabled ? "disabled" : type],
+				className,
+			)}
 			onClick={handleClicked}
 			{...props}
-		/>
+		>
+			<i className={joinTxts(`ri-${props.remixIconName}`, iconClassName)} />
+		</div>
 	);
 };
 

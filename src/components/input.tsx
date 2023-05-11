@@ -25,7 +25,7 @@ const Input = ({
 			<Stack column className="gap-1 flex-grow">
 				<input
 					ref={refInput}
-					className="font-body font-medium text-base flex-grow w-full px-2 py-1"
+					className="form-input font-body font-medium text-base flex-grow w-full px-2 py-1"
 					value={value}
 					onChange={onChange}
 					type={type}

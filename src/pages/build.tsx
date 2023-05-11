@@ -501,7 +501,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 					<Stack column className="mx-2 justify-center items-center gap-4">
 						<ButtonIcon
-							Icon={ChevronRightSvg}
+							remixIconName="chevron-right-line"
 							className="w-12 h-12 fill-gray-500"
 							onClick={handleRightTransferButtonClicked}
 							disabled={ideaPositions.length == 0 || ideaRelations.length == 0}
@@ -510,7 +510,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 							CHUYỂN ĐỔI
 						</H5>
 						<ButtonIcon
-							Icon={ChevronLeftSvg}
+							remixIconName="chevron-right-line"
 							className="w-12 h-12 fill-gray-500"
 							onClick={handleLeftTransferButtonClicked}
 						/>

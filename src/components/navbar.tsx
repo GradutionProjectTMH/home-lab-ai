@@ -21,16 +21,12 @@ import { updateUserProfile } from "../apis/user.api";
 
 const navRoutes = [
 	{
-		name: "HomeLab.ai",
+		name: "Tìm ý tưởng",
 		path: "/",
 	},
 	{
-		name: "HomeFreeLancer",
-		path: "google.com",
-	},
-	{
-		name: "HomeShare",
-		path: "google.com",
+		name: "Thiết kế",
+		path: "/build",
 	},
 ];
 
@@ -91,14 +87,14 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 	return (
 		<nav className={joinTxts("w-full", fixNav ? "shadow-md" : "")} {...props}>
 			<div className="container mx-auto">
-				<Stack className={joinTxts(" py-6 items-center ", fixNav ? "h-20" : "h-32")}>
+				<Stack className={joinTxts(" py-6 items-center", fixNav ? "h-20" : "h-32")}>
 					<Link to="/" className={joinTxts("", fixNav ? "w-1/6" : "w-1/4")}>
 						<Stack className={joinTxts("", fixNav ? "w-56" : "w-72")}>
 							<img src="../images/logo-full-horizontal.png" alt="Logo" />
 						</Stack>
 					</Link>
-					<div className="w-1/2">
-						<div className={joinTxts("m-auto", fixNav ? "w-auto ml-16" : "w-fit")}>
+					<div>
+						<Stack className={joinTxts("m-auto", fixNav ? "w-auto gap-8" : "w-fit gap-16")}>
 							{navRoutes.map((route) => (
 								<Link
 									to={route.path}
@@ -106,9 +102,7 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 									className={joinTxts("hover:text-primary ease-linear transition-[margin] duration-300")}
 									getProps={({ isCurrent }) => {
 										return {
-											className: isCurrent
-												? joinTxts("float-left text-primary", fixNav ? "mr-4" : "mr-16  ")
-												: joinTxts("float-left text-gray-500", fixNav ? "mr-4" : "mr-16  "),
+											className: isCurrent ? "float-left text-primary" : "float-left text-gray-500",
 										};
 									}}
 								>
@@ -117,82 +111,8 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 									</H5>
 								</Link>
 							))}
-						</div>
+						</Stack>
 					</div>
-
-					<Stack className={joinTxts("justify-end gap-2", fixNav ? "w-2/6" : "w-1/4")}>
-						<Button
-							onClick={handleConnect}
-							RightItem={MetamaskSvg}
-							type="outline"
-							className={joinTxts(
-								"!text-orange-600 !border-orange-600  transition-all duration-300 ease-linear",
-								fixNav ? "text-base !px-2 !py-1" : "text-lg !px-3 !py-2",
-							)}
-						>
-							{wallet || "KẾT NỐI VÍ"}
-						</Button>
-						{user ? (
-							<Stack
-								className={joinTxts(
-									"items-center cursor-pointer hover:bg-gray-200 hover:rounded ",
-									fixNav ? "px-2 py-1" : "px-3 py-2",
-								)}
-								onClick={() => setShowDropdown(!showDropdown)}
-							>
-								<Stack className={joinTxts("justify-center items-center", fixNav ? "w-[32px]" : "w-[45px]")}>
-									<Stack className="rounded-full border-white border-2 overflow-hidden ">
-										<img className="object-cover" src={user.avatar} />
-									</Stack>
-								</Stack>
-								<div className="relative inline-block text-left">
-									<div>
-										<div
-											className={joinTxts(
-												"absolute right-0 z-100 mt-10 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
-												!showDropdown ? "hidden" : null,
-											)}
-										>
-											<div className="py-1">
-												<a href="#" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
-													Account settings
-												</a>
-												<Link to="/orders" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
-													Orders
-												</Link>
-												<Link to="/request-verify" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
-													Request verify
-												</Link>
-												<Link to="/history" className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm">
-													Transaction history
-												</Link>
-
-												<a
-													href="#"
-													className="hover:bg-gray-100 text-gray-700 block px-4 py-2 text-sm"
-													onClick={handleLogout}
-												>
-													ĐĂNG XUẤT
-												</a>
-											</div>
-										</div>
-									</div>
-								</div>
-							</Stack>
-						) : (
-							<Button
-								onClick={handleLoginGoogle}
-								RightItem={GoogleSvg}
-								type="outline"
-								className={joinTxts(
-									" transition-all duration-300 ease-linear",
-									fixNav ? "!text-base !px-2 !py-1" : "!text-lg !px-3 !py-2",
-								)}
-							>
-								ĐĂNG NHẬP
-							</Button>
-						)}
-					</Stack>
 				</Stack>
 			</div>
 		</nav>

@@ -4,12 +4,14 @@ import { joinTxts } from "../utils/text.util";
 import Stack from "./layout/stack";
 import H5 from "./typography/h5";
 
-export type ButtonType = "fill" | "outline" | "ghost";
+export type ButtonType = "fill" | "outline" | "ghost" | "overlay";
 
 const buttonClass: Record<ButtonType, string> = {
 	fill: "bg-primary text-background fill-background hover:bg-blue-400 active:bg-blue-500",
 	outline: "text-dark border-dark border-2 fill-dark hover:bg-gray-100 active:bg-gray-200",
 	ghost: "text-primary fill-primary hover:bg-gray-100 active:bg-gray-200",
+	overlay:
+		"backdrop-blur-md bg-gray-500/30 border-white border text-white fill-white hover:bg-gray-400/30 active:bg-gray-300/30",
 };
 
 type ButtonProps = {
@@ -18,7 +20,7 @@ type ButtonProps = {
 	LeftItem?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 	RightItem?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 	link?: string;
-	typeButton?: "button" | "submit" | "reset" | undefined;
+	typeButton?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
 } & React.HTMLAttributes<HTMLElement>;
 
 const Button = ({
