@@ -2,6 +2,7 @@ import React from "react";
 import { Router } from "@reach/router";
 import Body from "./body";
 import BuildPage from "./build";
+import Build2DPage from "./build-2d/build-2d";
 import HomePage from "./home/home";
 import MarketplacePage from "./marketplace";
 import RequestVerify from "./request-verify";
@@ -21,6 +22,11 @@ export const routes = [
 		name: "Build",
 		path: "/build",
 		page: BuildPage,
+	},
+	{
+		name: "Build 2D",
+		path: "/build-2d",
+		page: Build2DPage,
 	},
 	{
 		name: "Orders",

@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Transition } from "react-transition-group";
 import Stack from "./layout/stack";
 import { ReactComponent as ExpandMoreSvg } from "../svgs/expand-more.svg";
 import { ReactComponent as ExpandLessSvg } from "../svgs/expand-less.svg";
 import H3 from "./typography/h3";
 import { joinTxts } from "../utils/text.util";
 import H2 from "./typography/h2";
+import { Transition } from "@headlessui/react";
 
 type AccordionProps = {
 	title: string;
@@ -48,8 +48,17 @@ const Accordion = ({
 				{isActive ? <ExpandLessSvg className="w-12 h-12" /> : <ExpandMoreSvg className="w-12 h-12" />}
 			</Stack>
 
-			<Transition in={isActive} timeout={1000}>
-				{(state) => ["entering", "entered"].includes(state) && children}
+			<Transition
+				show={isActive}
+				enter="transform transition duration-500"
+				enterFrom="opacity-0 scale-x-75 scale-y-50 -translate-y-1/2"
+				enterTo="opacity-100 scale-x-100 scale-y-100 translate-y-0"
+				leave="transform transition duration-300"
+				leaveFrom="opacity-100 scale-x-100 scale-100"
+				leaveTo="opacity-0 scale-75"
+				static
+			>
+				{children}
 			</Transition>
 		</section>
 	);

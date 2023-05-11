@@ -336,31 +336,6 @@ const HomePage = (props: RouteComponentProps) => {
 					</Stack>
 				</Stack>
 			</section>
-
-			{/* <section className="mt-32 py-16 bg-background border-t border-light-gray">
-				<Stack className="container mx-auto justify-between items-end" {...props}>
-					<Stack column>
-						<Stack className="gap-10">
-							<H5 className="text-dark-gray">CONTACT</H5>
-							<H5 className="text-dark-gray">TERMS OF SERVICES</H5>
-							<H5 className="text-dark-gray">SHIPPING AND RETURNS</H5>
-						</Stack>
-						<H5 className="mt-12">
-							© 2021 Shelly. <span className="text-dark-gray">Terms of use</span> and{" "}
-							<span className="text-dark-gray">privacy policy</span>.
-						</H5>
-					</Stack>
-					<Stack column className="items-end">
-						<Input placeholder="Give an email, get the newsletter" className="!w-96" />
-						<Stack className="flex gap-6 text-dark-gray mt-8">
-							<i className="ri-linkedin-fill hover:text-accent cursor-pointer text-2xl" />
-							<i className="ri-facebook-fill hover:text-accent cursor-pointer text-2xl" />
-							<i className="ri-instagram-fill hover:text-accent cursor-pointer text-2xl" />
-							<i className="ri-twitter-fill hover:text-accent cursor-pointer text-2xl" />
-						</Stack>
-					</Stack>
-				</Stack>
-			</section> */}
 		</SpringLoading>
 	);
 };
