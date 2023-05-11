@@ -37,8 +37,6 @@ type NavbarProps = {
 const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user);
-	const ether = useSelector((state: RootState) => state.ether);
-	const [wallet, setWallet] = React.useState<string>();
 	const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
 
 	const handleLoginGoogle = async (): Promise<void> => {
@@ -66,23 +64,6 @@ const Navbar = ({ fixNav = false, ...props }: NavbarProps) => {
 		window?.localStorage.removeItem("token");
 		dispatch(updateUser(null));
 	};
-
-	const handleConnect = async () => {
-		await ether!.provider.send("eth_requestAccounts", []);
-		if (!Ether!.isConnected()) throw new Error("Can't connect to Metamask");
-
-		const walletAddress = await ether!.provider.getSigner().getAddress();
-		dispatch(setWalletAddress(walletAddress));
-		dispatch(pushSuccess("Connected to Metamask"));
-	};
-
-	React.useEffect(() => {
-		(async () => {
-			if (ether?.walletAddress) {
-				setWallet(formatAddress(ether!.walletAddress));
-			}
-		})();
-	}, [ether, ether?.walletAddress]);
 
 	return (
 		<nav className={joinTxts("w-full", fixNav ? "shadow-md" : "")} {...props}>
