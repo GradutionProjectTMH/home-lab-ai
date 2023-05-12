@@ -5,31 +5,32 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { Circle, Layer, Line, Rect, Stage } from "react-konva";
 import { useDispatch, useSelector } from "react-redux";
-import G2P from "../apis/g2p.api";
-import SpringLoading from "../components/SpringLoading";
-import Accordion from "../components/accordion";
-import Button from "../components/button";
-import ButtonIcon from "../components/button-icon";
-import Stack from "../components/layout/stack";
-import Modal from "../components/modal";
-import H4 from "../components/typography/h4";
-import H5 from "../components/typography/h5";
-import Strong from "../components/typography/strong";
-import Text from "../components/typography/text";
-import { Room, findRoom, rooms } from "../configs/rooms.config";
-import { colors } from "../configs/tailwind-theme.config";
-import { useIsInViewport } from "../hooks/useIsInViewPort";
-import { popMessage, pushError, pushLoading, pushSuccess } from "../redux/slices/message.slice";
-import { RootState } from "../redux/stores/store.redux";
-import { ReactComponent as PencilSvg } from "../svgs/pencil.svg";
-import { matchArea } from "../utils/konva.util";
-import { joinTxts } from "../utils/text.util";
-import { randomImg } from "../utils/tools.util";
+import G2P from "../../apis/g2p.api";
+import SpringLoading from "../../components/SpringLoading";
+import Accordion from "../../components/accordion";
+import Button from "../../components/button";
+import ButtonIcon from "../../components/button-icon";
+import Stack from "../../components/layout/stack";
+import Modal from "../../components/modal";
+import H4 from "../../components/typography/h4";
+import H5 from "../../components/typography/h5";
+import Strong from "../../components/typography/strong";
+import Text from "../../components/typography/text";
+import { Room, findRoom, rooms } from "../../configs/rooms.config";
+import { colors } from "../../configs/tailwind-theme.config";
+import { useIsInViewport } from "../../hooks/useIsInViewPort";
+import { popMessage, pushError, pushLoading, pushSuccess } from "../../redux/slices/message.slice";
+import { RootState } from "../../redux/stores/store.redux";
+import { ReactComponent as PencilSvg } from "../../svgs/pencil.svg";
+import { matchArea } from "../../utils/konva.util";
+import { joinTxts } from "../../utils/text.util";
+import { randomImg } from "../../utils/tools.util";
 import Chart, { ChartData } from "chart.js/auto";
 import { Transition } from "@headlessui/react";
 import { useMutation } from "@tanstack/react-query";
-import { postGanttApi } from "../apis/gantt/gantt.api";
+import { postGanttApi } from "../../apis/gantt/gantt.api";
 import { AxiosError } from "axios";
+import { Animation } from "../../components/animation";
 
 type ConstructionFields = {
 	length: string;
@@ -86,6 +87,8 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		datasets: [],
 	});
 
+	const [isShownEstimation, setIsShownEstimation] = React.useState<boolean>(true);
+
 	const {
 		mutateAsync: postGantt,
 		isLoading: isLoadingPostGantt,
@@ -96,12 +99,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 			function generateLineDataset(keyDataset: "Labors" | "Days" | "Costs") {
 				return Object.values(ganttRes).reduce((result, ganttCategoryData, index) => {
-					if (index === 0) result.push(ganttCategoryData[keyDataset]);
-					else {
-						const prevData = result[index - 1];
-						result.push(prevData + ganttCategoryData[keyDataset]);
-					}
-
+					result.push(ganttCategoryData[keyDataset]);
 					return result;
 				}, [] as number[]);
 			}
@@ -114,29 +112,49 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 						result.push([prevData[1], prevData[1] + ganttCategoryData[keyDataset]]);
 					}
 
+					// Handle last item
+					if (result.length === labels.length && keyDataset === "Days") {
+						const [startDate, endDate] = result[index];
+						const duration = endDate - startDate;
+						const offset = duration / 2;
+						result[index] = [
+							startDate - Math.round(offset * Math.random()),
+							Math.round(endDate - offset * Math.random()),
+						];
+					}
+
 					return result;
 				}, [] as [number, number][]);
 			}
 
 			const laborsDataset = {
-				label: "Labors",
+				label: "Nhân công (người)",
 				data: generateLineDataset("Labors"),
 				backgroundColor: colors.yellow[500],
-				stack: "combined",
+				yAxisID: "y",
 			};
 
 			const daysDataset = {
-				label: "Days",
+				label: "Từ (ngày) đến (ngày)",
 				data: generateFloatingBarDataset("Days"),
 				backgroundColor: colors.blue[500],
-				stack: "combined",
-				type: "bar",
+				yAxisID: "y",
+			};
+
+			const costsDataset = {
+				label: "Chi phí (triệu VNĐ)",
+				data: generateLineDataset("Costs").map((dataItem) => dataItem / 1000000),
+				backgroundColor: colors.green[500],
+				yAxisID: "y",
 			};
 
 			setGanttChartData({
 				labels,
-				datasets: [laborsDataset, daysDataset as any],
+				datasets: [laborsDataset, daysDataset, costsDataset],
 			});
+
+			dispatch(popMessage({ isClearAll: true }));
+			dispatch(pushSuccess("Tính toán thành công!"));
 		},
 		onError: (error: AxiosError<{ message: string }>) => {
 			dispatch(pushError(error?.message));
@@ -144,58 +162,46 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	});
 
 	React.useEffect(() => {
-		if (isLoadingSpring || !ganttChartRenderRef.current) return;
+		console.log("Generate gantt chart");
+
+		if (isLoadingSpring || !ganttChartRenderRef.current || !isPostGanttSuccess) return;
+
+		const baseFont = {
+			family: "Comfortaa",
+			size: 16,
+		};
 
 		ganttChartRef.current = new Chart(ganttChartRenderRef.current!, {
-			type: "line",
-			data: {
-				labels: ["Design", "Foundation", "Rough Construction", "Finishing Materials"],
-				datasets: [
-					{ label: "Labors", data: [1, 6, 16, 20], backgroundColor: "#D69E2E", yAxisID: "yLabors" },
-					{
-						label: "Days",
-						data: [
-							[0, 275],
-							[275, 1650],
-							[1650, 66450],
-							[66450, 81500],
-						],
-						backgroundColor: "#3182ce",
-						type: "bar",
-						yAxisID: "yDays",
-					},
-				],
-			},
+			type: "bar",
+			data: ganttChartData,
 			options: {
 				indexAxis: "y",
 				responsive: true,
 				plugins: {
+					tooltip: {
+						bodyFont: baseFont,
+					},
 					legend: {
 						position: "top",
+						labels: { font: baseFont },
 					},
 					title: {
 						display: true,
-						text: "Chart.js Floating Bar Chart",
+						text: "Biểu đồ dự toán thi công",
+						font: baseFont,
 					},
 				},
 				scales: {
-					x: {
-						display: false, //this will remove all the x-axis grid lines
-					},
-					yLabors: {
-						// stacked: true,
-						type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-						position: "top",
+					y: {
+						title: { font: baseFont },
 						ticks: {
-							color: colors.yellow[500],
+							font: baseFont,
 						},
 					},
-					yDays: {
-						// stacked: true,
-						type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-						position: "bottom",
+					x: {
+						title: { font: baseFont },
 						ticks: {
-							color: colors.blue[500],
+							font: baseFont,
 						},
 					},
 				},
@@ -203,36 +209,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		});
 
 		return () => ganttChartRef.current?.destroy();
-	}, [isLoadingSpring, ganttChartRenderRef.current]);
-
-	// React.useEffect(() => {
-	// 	if (isLoadingSpring || !ganttChartRenderRef.current || !isPostGanttSuccess) return;
-
-	// 	ganttChartRef.current = new Chart(ganttChartRenderRef.current!, {
-	// 		type: "line",
-	// 		data: ganttChartData,
-	// 		options: {
-	// 			indexAxis: "y",
-	// 			responsive: true,
-	// 			plugins: {
-	// 				legend: {
-	// 					position: "top",
-	// 				},
-	// 				title: {
-	// 					display: true,
-	// 					text: "Chart.js Floating Bar Chart",
-	// 				},
-	// 			},
-	// 			scales: {
-	// 				y: {
-	// 					stacked: true,
-	// 				},
-	// 			},
-	// 		},
-	// 	});
-
-	// 	return () => ganttChartRef.current?.destroy();
-	// }, [isLoadingSpring, ganttChartRenderRef.current, isPostGanttSuccess]);
+	}, [isLoadingSpring, ganttChartRenderRef.current, isPostGanttSuccess, isShownEstimation]);
 
 	React.useEffect(() => {
 		if (isLoadingSpring) return;
@@ -269,8 +246,9 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			length: Number(length),
 			location,
 			width: Number(width),
-			estimate: (new Date(endDate).getTime() - new Date(startDate).getTime()) / (3600 * 24),
+			estimate: (new Date(endDate).getTime() - new Date(startDate).getTime()) / (3600000 * 24),
 		});
+		dispatch(pushLoading("Đang tạo biểu đồ dự toán"));
 	};
 
 	React.useEffect(() => {
@@ -845,14 +823,17 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			<section className="container mx-auto mt-24">
 				<Accordion title="THỬ NGHIỆM VỚI MÔ HÌNH 3D" defaultOpened>
 					<Stack column className="items-stretch gap-6 p-6">
-						<img src={randomImg(1920, 1000)} className="object-cover w-full h-[624px] border-4 border-dark" />
+						<img
+							src={randomImg(1920, 1000)}
+							className="object-cover w-full h-[624px] border-4 border-dark cursor-pointer"
+						/>
 					</Stack>
 				</Accordion>
 			</section>
 
 			<section className="container mx-auto mt-24">
-				<Accordion title="LÂP KẾ HOẠCH THI CÔNG" defaultOpened>
-					<Stack className="items-center">
+				<Accordion title="LÂP KẾ HOẠCH THI CÔNG" defaultOpened onChangeActive={setIsShownEstimation}>
+					<Stack>
 						<form className="basis-1/2 px-8 mt-4" onSubmit={handleSubmit(handleValidSubmit)}>
 							<Stack column className="flex-wrap items-stretch gap-8">
 								<Stack className="items-end gap-12">
@@ -1025,20 +1006,11 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 							</section>
 						</form>
 
-						{/* <Transition
-							as={React.Fragment}
-							show={isPostGanttSuccess}
-							enter="transition duration-1000"
-							enterFrom="opacity-0 scale-75"
-							enterTo="opacity-100 scale-100"
-							leave="transition duration-1000"
-							leaveFrom="opacity-100 scale-100"
-							leaveTo="opacity-0 scale-75"
-						> */}
-						<Stack className="basis-1/2 flex-grow items-stretch gap-2 p-2 mt-4">
-							<canvas ref={ganttChartRenderRef} className="w-full h-full" />
-						</Stack>
-						{/* </Transition> */}
+						{isPostGanttSuccess && (
+							<Stack className="items-stretch gap-2 p-2 mt-4 min-w-[600px]">
+								<canvas ref={ganttChartRenderRef} className="w-full h-full" />
+							</Stack>
+						)}
 					</Stack>
 				</Accordion>
 			</section>

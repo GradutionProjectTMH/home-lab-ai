@@ -1,7 +1,7 @@
 import React from "react";
 import { Router } from "@reach/router";
 import Body from "./body";
-import BuildPage from "./build";
+import BuildPage from "./build/build";
 import Build2DPage from "./build-2d/build-2d";
 import HomePage from "./home/home";
 import MarketplacePage from "./marketplace";
