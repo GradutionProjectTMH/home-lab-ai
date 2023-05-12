@@ -1,15 +1,11 @@
 import React from "react";
 import { Router } from "@reach/router";
 import Body from "./body";
-import BuildPage from "./build";
+import BuildPage from "./build/build";
 import Build2DPage from "./build-2d/build-2d";
 import HomePage from "./home/home";
 import MarketplacePage from "./marketplace";
-import RequestVerify from "./request-verify";
 import VerifyMaterial from "./verify-material/[id]";
-import OrderDetail from "./order/[id]";
-import DetailDrawingPage from "./detail-drawing/[id]";
-import OrderPage from "./order";
 import HistoryTransaction from "./history-transaction";
 
 export const routes = [
@@ -29,29 +25,9 @@ export const routes = [
 		page: Build2DPage,
 	},
 	{
-		name: "Orders",
-		path: "/orders",
-		page: OrderPage,
-	},
-	{
-		name: "Order",
-		path: "/order/:id",
-		page: OrderDetail,
-	},
-	{
 		name: "Marketplace",
 		path: "/marketplace",
 		page: MarketplacePage,
-	},
-	{
-		name: "DetailDrawing",
-		path: "/detail-drawing/:id",
-		page: DetailDrawingPage,
-	},
-	{
-		name: "RequestVerify",
-		path: "/request-verify",
-		page: RequestVerify,
 	},
 	{
 		name: "VerifyMaterial",

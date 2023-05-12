@@ -15,6 +15,7 @@ type AccordionProps = {
 	titleClassName?: React.HTMLAttributes<HTMLElement>["className"];
 	RightItem?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
 	RightItemActive?: React.FC<React.HTMLAttributes<HTMLOrSVGElement>>;
+	onChangeActive?: (isActive: boolean) => void;
 } & React.HTMLAttributes<HTMLElement>;
 
 const Accordion = ({
@@ -26,7 +27,7 @@ const Accordion = ({
 	children,
 	className = "",
 	titleClassName = "",
-	onClick,
+	onChangeActive = () => {},
 	...props
 }: AccordionProps) => {
 	const [isActive, setIsActive] = React.useState<boolean>(defaultOpened);
@@ -35,7 +36,6 @@ const Accordion = ({
 		if (disabled) return;
 
 		setIsActive(!isActive);
-		if (onClick) onClick(event);
 	};
 
 	return (
@@ -57,6 +57,8 @@ const Accordion = ({
 				leaveFrom="opacity-100 scale-x-100 scale-100"
 				leaveTo="opacity-0 scale-75"
 				static
+				afterLeave={() => onChangeActive(false)}
+				afterEnter={() => onChangeActive(true)}
 			>
 				{children}
 			</Transition>

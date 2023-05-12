@@ -6,16 +6,22 @@ import Initializer from "./components/initializer";
 import Notification from "./components/notification";
 import Navigator from "./pages/navigator";
 import { store } from "./redux/stores/store.redux";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "./styles/global.css";
+
+// Create a client
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
 	<Provider store={store}>
-		<ErrorBoundary>
-			<Initializer />
-			<Navigator />
-			<Notification />
-		</ErrorBoundary>
+		<QueryClientProvider client={queryClient}>
+			<ErrorBoundary>
+				<Initializer />
+				<Navigator />
+				<Notification />
+			</ErrorBoundary>
+		</QueryClientProvider>
 	</Provider>,
 );

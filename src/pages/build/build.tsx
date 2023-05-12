@@ -1,37 +1,55 @@
-import * as React from "react";
-import { Circle, Layer, Line, Rect, Stage } from "react-konva";
-import { colors } from "../configs/tailwind-theme.config";
-import { joinTxts } from "../utils/text.util";
-import { findRoom, getRoomLabel as getRoomName, labelIndex, Room, rooms } from "../configs/rooms.config";
-import { KonvaEventObject, Node } from "konva/lib/Node";
-import { matchArea } from "../utils/konva.util";
-import Body from "./body";
-import Stack from "../components/layout/stack";
-import H4 from "../components/typography/h4";
-import ButtonIcon from "../components/button-icon";
-import Strong from "../components/typography/strong";
-import H5 from "../components/typography/h5";
-import Text from "../components/typography/text";
-import Accordion from "../components/accordion";
-import Button from "../components/button";
-import { ReactComponent as ChevronRightSvg } from "../svgs/chevron-right.svg";
-import { ReactComponent as ChevronLeftSvg } from "../svgs/chevron-left.svg";
-import { ReactComponent as DownloadSvg } from "../svgs/download.svg";
-import { ReactComponent as PencilSvg } from "../svgs/pencil.svg";
-import G2P from "../apis/g2p.api";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/stores/store.redux";
-import { UN_AUTHORIZED } from "../constants/error.constant";
-import { popMessage, pushError, pushInfo, pushLoading, pushSuccess } from "../redux/slices/message.slice";
-import Modal from "../components/modal";
 import { RouteComponentProps, useNavigate } from "@reach/router";
-import { DetailDrawing } from "../interfaces/detail-drawing.interface";
-import * as detailDrawingApi from "../apis/detail-drawing.api";
-import { useIsInViewport } from "../hooks/useIsInViewPort";
+import { KonvaEventObject } from "konva/lib/Node";
 import { Stage as StageType } from "konva/lib/Stage";
-import { dataURIToBlob, downloadURI, randomImg } from "../utils/tools.util";
-import axiosClient from "../configs/server.config";
-import SpringLoading from "../components/SpringLoading";
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { Circle, Layer, Line, Rect, Stage } from "react-konva";
+import { useDispatch, useSelector } from "react-redux";
+import G2P from "../../apis/g2p.api";
+import SpringLoading from "../../components/SpringLoading";
+import Accordion from "../../components/accordion";
+import Button from "../../components/button";
+import ButtonIcon from "../../components/button-icon";
+import Stack from "../../components/layout/stack";
+import Modal from "../../components/modal";
+import H4 from "../../components/typography/h4";
+import H5 from "../../components/typography/h5";
+import Strong from "../../components/typography/strong";
+import Text from "../../components/typography/text";
+import { Room, findRoom, rooms } from "../../configs/rooms.config";
+import { colors } from "../../configs/tailwind-theme.config";
+import { useIsInViewport } from "../../hooks/useIsInViewPort";
+import { popMessage, pushError, pushLoading, pushSuccess } from "../../redux/slices/message.slice";
+import { RootState } from "../../redux/stores/store.redux";
+import { ReactComponent as PencilSvg } from "../../svgs/pencil.svg";
+import { matchArea } from "../../utils/konva.util";
+import { joinTxts } from "../../utils/text.util";
+import { randomImg } from "../../utils/tools.util";
+import Chart, { ChartData } from "chart.js/auto";
+import { Transition } from "@headlessui/react";
+import { useMutation } from "@tanstack/react-query";
+import { postGanttApi } from "../../apis/gantt/gantt.api";
+import { AxiosError } from "axios";
+import design3dJpg from "./images/design3d.jpg";
+import H2 from "../../components/typography/h2";
+
+type ConstructionFields = {
+	length: string;
+	width: string;
+	height: string;
+	floor: string;
+	location: string;
+	laborCost: string;
+	startDate: string;
+	endDate: string;
+	laborAmount: string;
+};
+
+type ChartDataItem = {
+	label: string;
+	data: [number, number][];
+	backgroundColor: string;
+};
 
 const BuildPage = ({ location }: RouteComponentProps) => {
 	const navigate = useNavigate();
@@ -44,8 +62,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 	const boundaryObserverTargetRef = React.useRef<HTMLImageElement>(null);
 	const isIntersecting = useIsInViewport(boundaryObserverTargetRef);
-
-	const user = useSelector((state: RootState) => state.user);
 
 	const [isShownModalBoundary, setIsShownModalBoundary] = React.useState<boolean>(false);
 	const [boundaryNames, setBoundaryNames] = React.useState<string[]>([]);
@@ -62,6 +78,179 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	const [ideaPositions, setIdeaPositions] = React.useState<IdeaPosition[]>([]);
 	const [selectedIdeaPosition, setSelectedIdeaPosition] = React.useState<IdeaPosition>();
 	const [ideaRelations, setIdeaRelations] = React.useState<[IdeaPosition, IdeaPosition][]>([]);
+
+	const [isLoadingSpring, setIsLoadingSpring] = React.useState<boolean>(true);
+
+	const ganttChartRenderRef = React.useRef<HTMLCanvasElement>(null);
+	const ganttChartRef = React.useRef<Chart>();
+	const [ganttChartData, setGanttChartData] = React.useState<ChartData>({
+		labels: [],
+		datasets: [],
+	});
+
+	const [isShownEstimation, setIsShownEstimation] = React.useState<boolean>(true);
+
+	const {
+		mutateAsync: postGantt,
+		isLoading: isLoadingPostGantt,
+		isSuccess: isPostGanttSuccess,
+	} = useMutation(postGanttApi, {
+		onSuccess: (ganttRes) => {
+			const labels = Object.keys(ganttRes);
+
+			function generateLineDataset(keyDataset: "Labors" | "Days" | "Costs") {
+				return Object.values(ganttRes).reduce((result, ganttCategoryData, index) => {
+					result.push(ganttCategoryData[keyDataset]);
+					return result;
+				}, [] as number[]);
+			}
+
+			function generateFloatingBarDataset(keyDataset: "Labors" | "Days" | "Costs") {
+				return Object.values(ganttRes).reduce((result, ganttCategoryData, index) => {
+					if (index === 0) result.push([0, ganttCategoryData[keyDataset]]);
+					else {
+						const prevData = result[index - 1];
+						result.push([prevData[1], prevData[1] + ganttCategoryData[keyDataset]]);
+					}
+
+					// Handle last item
+					if (result.length === labels.length && keyDataset === "Days") {
+						const [startDate, endDate] = result[index];
+						const duration = endDate - startDate;
+						const offset = duration / 2;
+						result[index] = [
+							startDate - Math.round(offset * Math.random()),
+							Math.round(endDate - offset * Math.random()),
+						];
+					}
+
+					return result;
+				}, [] as [number, number][]);
+			}
+
+			const laborsDataset = {
+				label: "Nhân công (người)",
+				data: generateLineDataset("Labors"),
+				backgroundColor: colors.yellow[500],
+				yAxisID: "y",
+			};
+
+			const daysDataset = {
+				label: "Từ (ngày) đến (ngày)",
+				data: generateFloatingBarDataset("Days"),
+				backgroundColor: colors.blue[500],
+				yAxisID: "y",
+			};
+
+			const costsDataset = {
+				label: "Chi phí (triệu VNĐ)",
+				data: generateLineDataset("Costs").map((dataItem) => dataItem / 1000000),
+				backgroundColor: colors.green[500],
+				yAxisID: "y",
+			};
+
+			setGanttChartData({
+				labels,
+				datasets: [laborsDataset, daysDataset, costsDataset],
+			});
+
+			dispatch(popMessage({ isClearAll: true }));
+			dispatch(pushSuccess("Tính toán thành công!"));
+		},
+		onError: (error: AxiosError<{ message: string }>) => {
+			dispatch(pushError(error?.message));
+		},
+	});
+
+	React.useEffect(() => {
+		console.log("Generate gantt chart");
+
+		if (isLoadingSpring || !ganttChartRenderRef.current || !isPostGanttSuccess) return;
+
+		const baseFont = {
+			family: "Comfortaa",
+			size: 16,
+		};
+
+		ganttChartRef.current = new Chart(ganttChartRenderRef.current!, {
+			type: "bar",
+			data: ganttChartData,
+			options: {
+				indexAxis: "y",
+				responsive: true,
+				plugins: {
+					tooltip: {
+						bodyFont: baseFont,
+					},
+					legend: {
+						position: "top",
+						labels: { font: baseFont },
+					},
+					title: {
+						display: true,
+						text: "Biểu đồ dự toán thi công",
+						font: baseFont,
+					},
+				},
+				scales: {
+					y: {
+						title: { font: baseFont },
+						ticks: {
+							font: baseFont,
+						},
+					},
+					x: {
+						title: { font: baseFont },
+						ticks: {
+							font: baseFont,
+						},
+					},
+				},
+			},
+		});
+
+		return () => ganttChartRef.current?.destroy();
+	}, [isLoadingSpring, ganttChartRenderRef.current, isPostGanttSuccess, isShownEstimation]);
+
+	React.useEffect(() => {
+		if (isLoadingSpring) return;
+
+		if (ganttChartRef.current) {
+			ganttChartRef.current.data = ganttChartData;
+			ganttChartRef.current.update();
+		}
+	}, [isLoadingSpring, ganttChartData]);
+
+	const {
+		register,
+		handleSubmit,
+		setValue: setFieldValue,
+		formState: { errors: formErrors },
+	} = useForm<ConstructionFields>();
+
+	const handleValidSubmit = ({
+		floor,
+		height,
+		laborAmount,
+		laborCost,
+		length,
+		location,
+		width,
+		endDate,
+		startDate,
+	}: ConstructionFields) => {
+		postGantt({
+			floor: Number(floor),
+			height: Number(height),
+			laborAmount: Number(laborAmount),
+			laborCost: Number(laborCost) * 1000000,
+			length: Number(length),
+			location,
+			width: Number(width),
+			estimate: (new Date(endDate).getTime() - new Date(startDate).getTime()) / (3600000 * 24),
+		});
+		dispatch(pushLoading("Đang tạo biểu đồ dự toán"));
+	};
 
 	React.useEffect(() => {
 		setSuggestedPlans([...Array(10).keys()].map((i) => ({ trainName: randomImg(), url: randomImg() })));
@@ -221,17 +410,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		dispatch(pushSuccess("Build finished"));
 	};
 
-	const handleSaved = async () => {
-		const leftFloorPlanUri = await leftFloorPlanRef.current!.toDataURL({
-			mimeType: "image/jpeg",
-		});
-		const rightFloorPlanUri = await leftFloorPlanRef.current!.toDataURL({
-			mimeType: "image/jpeg",
-		});
-		downloadURI(leftFloorPlanUri, "LeftFloorPlan.jpg");
-		downloadURI(rightFloorPlanUri, "rightFloorPlan.jpg");
-	};
-
 	const handleDragEnd = (event: KonvaEventObject<MouseEvent>, index: number) => {
 		const element = event.target;
 		const { x, y } = element.attrs;
@@ -353,58 +531,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		setRightFloorPlan({ ...res.data, trainName, transRoomPositions, exteriors, relations, isGenerated: false });
 	};
 
-	const handleMakeOrder = async () => {
-		//Validation
-		let isValid = detailDrawing.width && detailDrawing.height && detailDrawing.area && detailDrawing.budget;
-		if (!isValid) {
-			dispatch(pushError("Please fill all required fields before make order"));
-			return;
-		}
-
-		dispatch(pushLoading("Making order"));
-		if (!user) throw new Error(UN_AUTHORIZED);
-
-		const leftFloorPlanImg: HTMLImageElement = (await leftFloorPlanRef.current!.toImage({
-			mimeType: "image/jpeg",
-		})) as HTMLImageElement;
-		const rightFloorPlanImg: HTMLImageElement = (await rightFloorPlanRef.current!.toImage({
-			mimeType: "image/jpeg",
-		})) as HTMLImageElement;
-
-		const leftFloorPlan = dataURIToBlob(leftFloorPlanImg.src);
-		const rightFloorPlan = dataURIToBlob(rightFloorPlanImg.src);
-
-		const formData = new FormData();
-		formData.append("files", leftFloorPlan, "LeftFloorPlan.jpg");
-		formData.append("files", rightFloorPlan, "rightFloorPlan.jpg");
-
-		const [boundaryImg, crossSectionImg] = await axiosClient.post<string, string[]>(`uploads`, formData);
-
-		const data: Partial<DetailDrawing> = {
-			houseBoundary: detailDrawing.area,
-			width: detailDrawing.width,
-			height: detailDrawing.height,
-			boundaryImg,
-			crossSectionImg,
-			numberOfFloors: 1,
-			rooms: ideaPositions.map((ideaPosition) => ({ name: ideaPosition.roomLabel, amount: 1 })) as any,
-			additionalInformation: {
-				budget: `${detailDrawing.budget} Million VND`,
-				members: detailDrawing.members,
-				theme: detailDrawing.theme,
-				location: detailDrawing.location,
-				locatedAtAlley: detailDrawing.locatedAtAlley,
-				businessInHouse: detailDrawing.businessInHouse,
-				inTheCorner: detailDrawing.inTheCorner,
-			},
-		};
-
-		const result = await detailDrawingApi.create(data);
-
-		dispatch(popMessage({}));
-		navigate(`/order/${result._id}`);
-	};
-
 	const detailDrawing = (location as any).state?.detail_drawing || {
 		width: 0,
 		height: 0,
@@ -430,6 +556,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 				{ percent: 80, duration: 350 },
 				{ percent: 100, duration: 200 },
 			]}
+			onFinished={() => setIsLoadingSpring(false)}
 		>
 			<section className="container mx-auto">
 				<Stack className="items-stretch mt-12">
@@ -697,59 +824,107 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			<section className="container mx-auto mt-24">
 				<Accordion title="THỬ NGHIỆM VỚI MÔ HÌNH 3D" defaultOpened>
 					<Stack column className="items-stretch gap-6 p-6">
-						<img src={randomImg(1920, 1000)} className="object-cover w-full h-[624px] border-4 border-dark" />
-						<Stack className="gap-6">
-							<div className="basis-1/3">
-								<img src={randomImg(400, 400)} className="object-cover w-full h-[284px] border-4 border-dark" />
-							</div>
-							<div className="basis-1/3">
-								<img src={randomImg(400, 400)} className="object-cover w-full h-[284px] border-4 border-dark" />
-							</div>
-							<div className="basis-1/3">
-								<img src={randomImg(400, 400)} className="object-cover w-full h-[284px] border-4 border-dark" />
-							</div>
-						</Stack>
+						<a
+							href="https://www.coohom.com/pub/saas/2c4896eaa388405ca9829cf599d98dad"
+							className="relative w-full h-[720px] border-4 border-dark"
+							target="_blank"
+						>
+							<img src={design3dJpg} className="object-cover w-full h-full" />
+							<Stack
+								column
+								className="absolute top-0 left-0 w-full h-full justify-center items-center bg-white/20 opacity-0 hover:opacity-100 hover:backdrop-blur-sm"
+							>
+								<div className="">
+									<Button type="outline">
+										<H2>XÂY DỰNG BẢN VẼ 3D</H2>
+									</Button>
+								</div>
+							</Stack>
+						</a>
 					</Stack>
 				</Accordion>
 			</section>
 
 			<section className="container mx-auto mt-24">
-				<Accordion title="THÔNG TIN BỔ SUNG" defaultOpened>
-					<Stack className="items-center">
-						{detailDrawing && (
-							<Stack column className="basis-1/2 mt-4 px-8 flex-wrap items-stretch gap-8">
+				<Accordion title="LÂP KẾ HOẠCH THI CÔNG" defaultOpened onChangeActive={setIsShownEstimation}>
+					<Stack>
+						<form className="basis-1/2 px-8 mt-4" onSubmit={handleSubmit(handleValidSubmit)}>
+							<Stack column className="flex-wrap items-stretch gap-8">
 								<Stack className="items-end gap-12">
 									<Stack column className="flex-grow gap-4">
-										<H4 className="text-gray-700">DIỆN TÍCH NHÀ:</H4>
+										<H4 className="text-gray-700">DIỆN TÍCH KHUNG NHÀ:</H4>
 										<Stack column className="gap-2">
 											<Stack className="items-center gap-2">
 												<Text className="!text-gray-500 w-40 whitespace-nowrap">
 													Chiều dài<span className="text-red-500">*</span> :
 												</Text>
-												<Text className="text-blue-500">{detailDrawing.width}m</Text>
-											</Stack>
-											<hr />
-											<Stack className="items-center gap-2">
-												<Text className="!text-gray-500 w-40 whitespace-nowrap">
-													Chiều cao<span className="text-red-500">*</span> :
-												</Text>
-												<Text className="text-blue-500">{detailDrawing.height}m</Text>
+												<Stack className="items-center gap-4">
+													<input
+														type="number"
+														className="!border-none !ring-0 bg-light px-4 w-32 h-8"
+														{...register("length", { required: true, min: 1, max: 100, pattern: /^[0-9]*$/ })}
+													/>
+													<Text className="text-blue-500">m</Text>
+													{formErrors.length && <Text className="ml-8 text-red-500">Chiều dài không hợp lệ</Text>}
+												</Stack>
 											</Stack>
 											<hr />
 											<Stack className="items-center gap-2">
 												<Text className="!text-gray-500 w-40 whitespace-nowrap">
 													Chiều rộng<span className="text-red-500">*</span> :
 												</Text>
-												<Text className="text-blue-500">{detailDrawing.length}m</Text>
+												<Stack className="items-center gap-4">
+													<input
+														type="number"
+														className="!border-none !ring-0 bg-light px-4 w-32 h-8"
+														{...register("width", { required: true, min: 1, max: 100, pattern: /^[0-9]*$/ })}
+													/>
+													<Text className="text-blue-500">m</Text>
+													{formErrors.width && <Text className="ml-8 text-red-500">Chiều rộng không hợp lệ</Text>}
+												</Stack>
 											</Stack>
 											<hr />
 											<Stack className="items-center gap-2">
 												<Text className="!text-gray-500 w-40 whitespace-nowrap">
-													Diện tích<span className="text-red-500">*</span> :
+													Chiều cao<span className="text-red-500">*</span> :
 												</Text>
-												<Text className="text-blue-500">
-													{detailDrawing.area}m<sup>2</sup>
+												<Stack className="items-center gap-4">
+													<input
+														type="number"
+														className="!border-none !ring-0 bg-light px-4 w-32 h-8"
+														{...register("height", { required: true, min: 1, max: 100, pattern: /^[0-9]*$/ })}
+													/>
+													<Text className="text-blue-500">m</Text>
+													{formErrors.height && <Text className="ml-8 text-red-500">Chiều cao không hợp lệ</Text>}
+												</Stack>
+											</Stack>
+											<hr />
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-40 whitespace-nowrap">
+													Số tầng<span className="text-red-500">*</span> :
 												</Text>
+												<Stack className="items-center gap-4">
+													<input
+														type="number"
+														className="!border-none !ring-0 bg-light px-4 w-32 h-8"
+														{...register("floor", { required: true, min: 1, max: 100, pattern: /^[0-9]*$/ })}
+													/>
+													<Text className="text-blue-500">tầng</Text>
+													{formErrors.floor && <Text className="ml-8 text-red-500">Số tầng không hợp lệ</Text>}
+												</Stack>
+											</Stack>
+											<hr />
+											<Stack className="items-center gap-2">
+												<Text className="!text-gray-500 w-40 whitespace-nowrap">
+													Địa điểm<span className="text-red-500">*</span> :
+												</Text>
+												<Stack className="items-center gap-4">
+													<input
+														className="!border-none !ring-0 bg-light px-4 w-52 h-8"
+														{...register("location", { required: true })}
+													/>
+													{formErrors.location && <Text className="ml-8 text-red-500">Địa điểm không hợp lệ</Text>}
+												</Stack>
 											</Stack>
 										</Stack>
 									</Stack>
@@ -760,139 +935,98 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 										<H4 className="text-gray-700">THÔNG TIN CHI TIẾT:</H4>
 										<Stack column className="gap-2">
 											<Stack className="items-center">
-												<Text className="text-gray-500 w-36 whitespace-nowrap">
+												<Text className="text-gray-500 w-52 whitespace-nowrap">
 													Chi phí dự tính<span className="text-red-500">*</span> :
 												</Text>
-												<Text className="text-blue-500">{detailDrawing.budget} Triệu VND</Text>
+												<Stack className="items-center gap-4">
+													<input
+														type="number"
+														className="!border-none !ring-0 bg-light px-4 w-32 h-8"
+														{...register("laborCost", { required: true, min: 1, max: 10000, pattern: /^[0-9]*$/ })}
+													/>
+													<Text className="text-blue-500">triệu VNĐ</Text>
+													{formErrors.laborCost && <Text className="ml-8 text-red-500">Chi phí không hợp lệ</Text>}
+												</Stack>
 											</Stack>
 											<hr />
-											<Stack className="">
-												<Text className="text-gray-500 w-40">Thành viên:</Text>
-												<Text className="text-blue-500 w-[32rem]">{detailDrawing.members}</Text>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-52 whitespace-nowrap">
+													Thời gian dự kiến<span className="text-red-500">*</span> :
+												</Text>
+												<Stack column className="gap-2">
+													<Stack className="items-center gap-4">
+														<Text className="text-blue-500">Từ ngày</Text>
+														<input
+															type="date"
+															className="!border-none !ring-0 bg-light px-4 h-8"
+															{...register("startDate", {
+																required: true,
+															})}
+															onChange={() => setFieldValue("endDate", "")}
+														/>
+														<Text className="text-blue-500">Đến ngày</Text>
+														<input
+															type="date"
+															className="!border-none !ring-0 bg-light px-4 h-8"
+															{...register("endDate", {
+																required: true,
+																validate: (value, formValues) => {
+																	if (new Date(value) > new Date(formValues.endDate)) return false;
+																},
+															})}
+														/>
+													</Stack>
+													{(formErrors.startDate || formErrors.endDate) && (
+														<Text className="text-red-500">Thời gian không hợp lệ</Text>
+													)}
+												</Stack>
 											</Stack>
 											<hr />
-											<Stack className="">
-												<Text className="text-gray-500 w-40">Kiểu dáng:</Text>
-												<Text className="text-blue-500 w-[32rem]">{detailDrawing.theme}</Text>
+											<Stack className="items-center">
+												<Text className="text-gray-500 w-52 whitespace-nowrap">
+													Số lượng nhân công<span className="text-red-500">*</span> :
+												</Text>
+												<Stack className="items-center gap-4">
+													<input
+														type="number"
+														className="!border-none !ring-0 bg-light px-4 w-32 h-8"
+														{...register("laborAmount", { required: true, min: 1, max: 100, pattern: /^[0-9]*$/ })}
+													/>
+													<Text className="text-blue-500">người</Text>
+													{formErrors.laborAmount && <Text className="ml-8 text-red-500">Số người không hợp lệ</Text>}
+												</Stack>
 											</Stack>
 											<hr />
-											<Stack className="">
-												<Text className="text-gray-500 w-40">Vị trí:</Text>
-												<Text className="text-blue-500 w-[32rem]">{detailDrawing.location}</Text>
-											</Stack>
-											<hr />
-											<Stack className="">
-												<Text className="text-gray-500 w-40">Đồ dùng:</Text>
-												<Text className="text-blue-500 w-[32rem]">{detailDrawing.categories}</Text>
-											</Stack>
 										</Stack>
 									</Stack>
 								</Stack>
 							</Stack>
-						)}
 
-						{analyzed2DName && (
-							<Stack column className="basis-1/2 flex-grow items-stretch gap-2 p-2 mt-4">
-								<Stack className="items-stretch justify-center gap-2">
-									<Stack className="justify-center">
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_input.jpg`}
-												className="max-h-[24rem]"
-											/>
-										</div>
-									</Stack>
-									<Stack className="justify-center">
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_result.jpg`}
-												className="max-h-[24rem]"
-											/>
-										</div>
-									</Stack>
+							<section className="container mx-auto py-16">
+								<Stack className="justify-end gap-4 mt-6">
+									<Button
+										type="outline"
+										LeftItem={PencilSvg}
+										className="!px-4 !py-1"
+										onClick={() => setIsShownModalBoundary(true)}
+									>
+										LƯU BẢN THIẾT KẾ
+									</Button>
+									<Button type="fill" typeButton="submit" className="!px-4 !py-1">
+										<i className="ri-hourglass-line text-xl" />
+										&nbsp; LẬP KẾ HOẠCH
+									</Button>
 								</Stack>
-								<Stack className="items-stretch justify-center gap-2">
-									<Stack column className="items-center gap-2">
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r.jpg`}
-												className="max-h-[12rem]"
-											/>
-										</div>
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw.jpg`}
-												className="max-h-[12rem]"
-											/>
-											<H4 className="text-center">Raw</H4>
-										</div>
-									</Stack>
-									<Stack column className="items-center gap-2">
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_r_color.jpg`}
-												className="max-h-[12rem]"
-											/>
-										</div>
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_cw_color.jpg`}
-												className="max-h-[12rem]"
-											/>
-											<H4 className="text-center">Raw + Color</H4>
-										</div>
-									</Stack>
-									<Stack column className="items-center gap-2">
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r.jpg`}
-												className="max-h-[12rem]"
-											/>
-										</div>
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw.jpg`}
-												className="max-h-[12rem]"
-											/>
-											<H4 className="text-center">Refined</H4>
-										</div>
-									</Stack>
-									<Stack column className="items-center gap-2">
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_r_color.jpg`}
-												className="max-h-[12rem]"
-											/>
-										</div>
-										<div>
-											<img
-												src={`${environment.tfFloorPlan.IMAGE_ENDPOINT}${analyzed2DName}_new_cw_color.jpg`}
-												className="max-h-[12rem]"
-											/>
-											<H4 className="text-center">Refined + Color</H4>
-										</div>
-									</Stack>
-								</Stack>
+							</section>
+						</form>
+
+						{isPostGanttSuccess && (
+							<Stack className="items-stretch gap-2 p-2 mt-4 min-w-[600px]">
+								<canvas ref={ganttChartRenderRef} className="w-full h-full" />
 							</Stack>
 						)}
 					</Stack>
 				</Accordion>
-			</section>
-
-			<section className="container mx-auto py-16">
-				<Stack className="justify-center gap-4 mt-6">
-					<Button
-						type="outline"
-						LeftItem={PencilSvg}
-						className="!px-4 !py-1"
-						onClick={() => setIsShownModalBoundary(true)}
-					>
-						LƯU BẢN THIẾT KẾ
-					</Button>
-					<Button LeftItem={PencilSvg} type="fill" className="!px-4 !py-1" onClick={handleMakeOrder}>
-						TIẾN HÀNH XÂY DỰNG
-					</Button>
-				</Stack>
 			</section>
 
 			<Modal title="Choose your boundary" isShown={isShownModalBoundary} onClose={() => setIsShownModalBoundary(false)}>

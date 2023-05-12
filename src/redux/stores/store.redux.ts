@@ -11,13 +11,13 @@ import tfFloorPlanServiceSlice from "../slices/tf-floor-plan-service.slice";
 
 const rootReducer = {
 	user: userSlice,
-	ether: etherSlice,
+	// ether: etherSlice,
 	message: messageSlice,
 	environment: environmentSlice,
-	firebaseService: firebaseServiceSlice,
+	// firebaseService: firebaseServiceSlice,
 	g2pService: g2pServiceSlice,
 	tfFloorPlanService: tfFloorPlanServiceSlice,
-	ipfsService: ipfsServiceSlice,
+	// ipfsService: ipfsServiceSlice,
 };
 
 export const store = configureStore({
