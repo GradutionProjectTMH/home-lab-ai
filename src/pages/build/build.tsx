@@ -30,7 +30,8 @@ import { Transition } from "@headlessui/react";
 import { useMutation } from "@tanstack/react-query";
 import { postGanttApi } from "../../apis/gantt/gantt.api";
 import { AxiosError } from "axios";
-import { Animation } from "../../components/animation";
+import design3dJpg from "./images/design3d.jpg";
+import H2 from "../../components/typography/h2";
 
 type ConstructionFields = {
 	length: string;
@@ -823,10 +824,23 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 			<section className="container mx-auto mt-24">
 				<Accordion title="THỬ NGHIỆM VỚI MÔ HÌNH 3D" defaultOpened>
 					<Stack column className="items-stretch gap-6 p-6">
-						<img
-							src={randomImg(1920, 1000)}
-							className="object-cover w-full h-[624px] border-4 border-dark cursor-pointer"
-						/>
+						<a
+							href="https://www.coohom.com/pub/saas/2c4896eaa388405ca9829cf599d98dad"
+							className="relative w-full h-[720px] border-4 border-dark"
+							target="_blank"
+						>
+							<img src={design3dJpg} className="object-cover w-full h-full" />
+							<Stack
+								column
+								className="absolute top-0 left-0 w-full h-full justify-center items-center bg-white/20 opacity-0 hover:opacity-100 hover:backdrop-blur-sm"
+							>
+								<div className="">
+									<Button type="outline">
+										<H2>XÂY DỰNG BẢN VẼ 3D</H2>
+									</Button>
+								</div>
+							</Stack>
+						</a>
 					</Stack>
 				</Accordion>
 			</section>
