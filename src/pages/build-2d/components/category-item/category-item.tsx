@@ -13,6 +13,12 @@ export type CategoryItemData = {
 	id: string;
 	title: string;
 	imgUrl: string;
+	marble?: string;
+	lightAndDarkStyle?: string;
+	decorateTheItems?: string;
+	kindsOfLargeObjects?: string;
+	prompt?: string;
+	price?: string;
 	isChoose: boolean;
 };
 
