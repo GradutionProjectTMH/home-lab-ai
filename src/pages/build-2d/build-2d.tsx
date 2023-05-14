@@ -1,4 +1,4 @@
-import { RouteComponentProps } from "@reach/router";
+import { RouteComponentProps, navigate } from "@reach/router";
 import * as React from "react";
 import SpringLoading from "../../components/SpringLoading";
 import Accordion from "../../components/accordion";
@@ -376,6 +376,7 @@ const Build2DPage = (props: RouteComponentProps) => {
 								<Stack
 									column
 									className="justify-center items-center border border-dashed border-primary py-8 rounded-xl bg-background hover:bg-blue-500/10 cursor-pointer"
+									onClick={() => navigate("/build")}
 								>
 									<Text>Tối ưu thiết kế</Text>
 									<H4 className="text-primary">HOMELAB</H4>
