@@ -352,7 +352,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 	};
 
 	const handleRightTransferButtonClicked = async () => {
-		dispatch(pushLoading("We are building your house"));
+		dispatch(pushLoading("Đang xây dựng ngôi nhà của bạn"));
 
 		const res = await G2P.adjustGraph(
 			ideaPositions,
@@ -628,7 +628,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 					<Stack column className="mx-2 justify-center items-center gap-4">
 						<ButtonIcon
-							remixIconName="chevron-right-line"
+							remixIconName="arrow-right-s-line text-xl"
 							className="w-12 h-12 fill-gray-500"
 							onClick={handleRightTransferButtonClicked}
 							disabled={ideaPositions.length == 0 || ideaRelations.length == 0}
@@ -637,7 +637,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 							CHUYỂN ĐỔI
 						</H5>
 						<ButtonIcon
-							remixIconName="chevron-right-line"
+							remixIconName="arrow-left-s-line text-xl"
 							className="w-12 h-12 fill-gray-500"
 							onClick={handleLeftTransferButtonClicked}
 						/>
@@ -772,7 +772,17 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 					</Stack>
 				</Stack>
 
-				<Stack column className="items-stretch mt-28">
+				<Stack column className="items-stretch mt-28 gap-8">
+					<Stack className="justify-center">
+						<Button
+							type="outline"
+							LeftItem={PencilSvg}
+							className="!px-4 !py-1"
+							onClick={() => setIsShownModalBoundary(true)}
+						>
+							CHỌN KHUNG NHÀ
+						</Button>
+					</Stack>
 					<Stack className="justify-center gap-10">
 						{rooms.map((room) => {
 							const isCurrentRoom = currentRoom == room;
@@ -1004,14 +1014,6 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 							<section className="container mx-auto py-16">
 								<Stack className="justify-end gap-4 mt-6">
-									<Button
-										type="outline"
-										LeftItem={PencilSvg}
-										className="!px-4 !py-1"
-										onClick={() => setIsShownModalBoundary(true)}
-									>
-										LƯU BẢN THIẾT KẾ
-									</Button>
 									<Button type="fill" typeButton="submit" className="!px-4 !py-1">
 										<i className="ri-hourglass-line text-xl" />
 										&nbsp; LẬP KẾ HOẠCH
@@ -1029,7 +1031,11 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 				</Accordion>
 			</section>
 
-			<Modal title="Choose your boundary" isShown={isShownModalBoundary} onClose={() => setIsShownModalBoundary(false)}>
+			<Modal
+				title="Chọn khung nhà của bạn"
+				isShown={isShownModalBoundary}
+				onClose={() => setIsShownModalBoundary(false)}
+			>
 				<Stack className="flex-wrap px-4 py-4">
 					{boundaryNames.map((boundaryName, index) => (
 						<Stack column key={boundaryName} className="basis-1/4 justify-center items-center p-2">

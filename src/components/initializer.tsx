@@ -37,6 +37,8 @@ const Initializer = () => {
 			}),
 		);
 
+		console.log(g2pConfig.API_ENDPOINT);
+
 		dispatch(initiateTFFloorPlan({ baseUrl: tfFloorPlanConfig.API_ENDPOINT }));
 
 		dispatch(initiateG2p({ baseUrl: g2pConfig.API_ENDPOINT }));

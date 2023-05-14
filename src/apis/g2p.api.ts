@@ -111,12 +111,14 @@ const numSearch = async (testName: string) => {
 };
 
 const getTrainImageUrl = (trainName: string) => {
-	const imageEndpoint = store.getState().environment.g2p.IMAGE_ENDPOINT;
+	// const imageEndpoint = store.getState().environment.g2p.IMAGE_ENDPOINT;
+	const imageEndpoint = process.env.REACT_APP_G2P_IMAGE_ENDPOINT;
 	return `${imageEndpoint}snapshot_train/${trainName}`;
 };
 
 const getBoundaryImageUrl = (name: string) => {
-	const imageEndpoint = store.getState().environment.g2p.IMAGE_ENDPOINT;
+	// const imageEndpoint = store.getState().environment.g2p.IMAGE_ENDPOINT;
+	const imageEndpoint = process.env.REACT_APP_G2P_IMAGE_ENDPOINT;
 	return `${imageEndpoint}Img/${name}`;
 };
 

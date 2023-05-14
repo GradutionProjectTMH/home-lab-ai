@@ -21,6 +21,7 @@ import { Animation } from "../../../../components/animation";
 import { useDispatch } from "react-redux";
 import { pushError } from "../../../../redux/slices/message.slice";
 import { AxiosError } from "axios";
+import { navigate } from "@reach/router";
 
 type ChatFields = {
 	message: string;
@@ -152,6 +153,7 @@ export const ChatIdea = ({ className }: React.HTMLAttributes<HTMLDivElement>) =>
 							disabled={isLoadingPostChatGpt}
 						/>
 						<ButtonIcon
+							onClick={() => navigate("/build-2d")}
 							remixIconName="pencil-ruler-2-line"
 							iconClassName="text-3xl text-blue-500"
 							className="w-16 h-16"

@@ -4,8 +4,8 @@ export const textRazorConfig = {
 };
 
 export const g2pConfig = {
-	API_ENDPOINT: process.env.G2P_API_ENDPOINT,
-	IMAGE_ENDPOINT: process.env.G2P_IMAGE_ENDPOINT,
+	API_ENDPOINT: process.env.REACT_APP_G2P_API_ENDPOINT,
+	IMAGE_ENDPOINT: process.env.REACT_APP_G2P_IMAGE_ENDPOINT,
 };
 
 export const tfFloorPlanConfig = {
