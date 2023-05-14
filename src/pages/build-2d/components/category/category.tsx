@@ -6,10 +6,19 @@ import H3 from "../../../../components/typography/h3";
 import H4 from "../../../../components/typography/h4";
 import { joinTxts } from "../../../../utils/text.util";
 import CategoryItem, { CategoryItemData } from "../category-item/category-item";
+import Text from "../../../../components/typography/text";
+import { Skeleton } from "../../../../components/skeleton";
 
-type CategoryProps = {
+export type CategoryData = {
+	id: string;
 	title: string;
 	items: CategoryItemData[];
+	isLoading: boolean;
+	prompt: string;
+};
+
+type CategoryProps = {
+	category: CategoryData;
 	onRefresh?: () => void;
 	onCategoryChange?: (item: CategoryItemData) => void;
 	disabled?: boolean;
@@ -20,8 +29,7 @@ type CategoryProps = {
 } & React.HTMLAttributes<HTMLElement>;
 
 const Category = ({
-	title,
-	items,
+	category,
 	disabled = false,
 	RightItem,
 	RightItemActive,
@@ -62,7 +70,7 @@ const Category = ({
 				onClick={handleCLicked}
 			>
 				<Stack className="gap-4 items-center">
-					<H3 className={joinTxts("text-gray-500", titleClassName)}>{title}</H3>
+					<H3 className={joinTxts("text-gray-500", titleClassName)}>{category.title}</H3>
 					{isActive ? <i className="ri-arrow-up-s-line text-xl" /> : <i className="ri-arrow-down-s-line text-xl" />}
 				</Stack>
 
@@ -83,11 +91,23 @@ const Category = ({
 				leaveTo="opacity-0 scale-75"
 				static
 			>
-				<Grid className="grid-cols-3 grid-rows-2 gap-4 mt-4">
-					{items.map((item) => {
-						return <CategoryItem item={item} onItemClick={handleItemClicked} />;
-					})}
-				</Grid>
+				{category.isLoading ? (
+					<Grid className="grid-cols-3 grid-rows-1 gap-4 mt-4">
+						{[...Array(3)].map((_, index) => (
+							<Skeleton key={index} className="h-40 rounded-xl" />
+						))}
+					</Grid>
+				) : (
+					<Grid className="grid-cols-3 grid-rows-1 gap-4 mt-4">
+						{category.items.length > 0 ? (
+							category.items.map((item) => {
+								return <CategoryItem item={item} onItemClick={handleItemClicked} />;
+							})
+						) : (
+							<Text className="text-gray-500">Không có dữ liệu</Text>
+						)}
+					</Grid>
+				)}
 			</Transition>
 		</section>
 	);
