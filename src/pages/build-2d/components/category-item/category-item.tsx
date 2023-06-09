@@ -60,7 +60,7 @@ const CategoryItem = ({
 		>
 			<div
 				className={joinTxts(
-					"relative w-full h-48 border-4 rounded-xl overflow-hidden",
+					"relative w-full h-32 border-4 rounded-xl overflow-hidden",
 					isChoose ? "border-primary" : "border-transparent",
 				)}
 			>
