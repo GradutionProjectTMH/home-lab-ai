@@ -24,7 +24,7 @@ import { RootState } from "../../redux/stores/store.redux";
 import { ReactComponent as PencilSvg } from "../../svgs/pencil.svg";
 import { matchArea } from "../../utils/konva.util";
 import { joinTxts } from "../../utils/text.util";
-import { randomImg } from "../../utils/tools.util";
+import { downloadURI, randomImg } from "../../utils/tools.util";
 import Chart, { ChartData } from "chart.js/auto";
 import { Transition } from "@headlessui/react";
 import { useMutation } from "@tanstack/react-query";
@@ -59,6 +59,7 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 	const leftFloorPlanRef = React.useRef<StageType>(null);
 	const rightFloorPlanRef = React.useRef<StageType>(null);
+	const generatedFloorPlanRef = React.useRef<StageType>(null);
 
 	const boundaryObserverTargetRef = React.useRef<HTMLImageElement>(null);
 	const isIntersecting = useIsInViewport(boundaryObserverTargetRef);
@@ -531,22 +532,18 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 		setRightFloorPlan({ ...res.data, trainName, transRoomPositions, exteriors, relations, isGenerated: false });
 	};
 
-	const detailDrawing = (location as any).state?.detail_drawing || {
-		width: 0,
-		height: 0,
-		area: 0,
-		budget: 0,
-		members: "",
-		theme: "",
-		location: "",
-		categories: "",
-		locatedAtAlley: false,
-		businessInHouse: false,
-		inTheCorner: false,
-	};
-	const door = rightFloorPlan?.door.split(",").map(Number);
+	const handleOnclickDownload = async () => {
+		const stage = generatedFloorPlanRef.current?.getStage();
+		if (!stage) {
+			pushError("Hãy tạo một bản vẽ trước khi tải xuống");
+			return;
+		}
 
-	const { analyzed_2d_name: analyzed2DName } = location?.state || ({} as any);
+		const urlImage = stage?.toDataURL({ pixelRatio: 5 });
+		downloadURI(urlImage, "HomelabAI_2D_design.png");
+	};
+
+	const door = rightFloorPlan?.door.split(",").map(Number);
 
 	return (
 		<SpringLoading
@@ -645,7 +642,13 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 
 					<Stack className="grow justify-center">
 						<Stack column className="w-[512px] gap-1">
-							<H4 className="text-gray-500">MẶT CẮT NGANG</H4>
+							<Stack className="items-center gap-4">
+								<H4 className="text-gray-500">MẶT CẮT NGANG</H4>
+								<i
+									className="ri-download-cloud-line text-xl text-gray-500 cursor-pointer hover:text-blue-500"
+									onClick={handleOnclickDownload}
+								/>
+							</Stack>
 							<Stack className="bg-white justify-center items-center">
 								<Stage ref={rightFloorPlanRef} width={512} height={512} className="border-gray-300 border">
 									<Layer>
@@ -752,7 +755,98 @@ const BuildPage = ({ location }: RouteComponentProps) => {
 													width={width}
 													height={height}
 													fill={(colors as any)["white"]}
+													// stroke={(colors as any)["gray"][700]}
+												/>
+											);
+										})}
+										{door && (
+											<Rect
+												x={door[0]}
+												y={door[1]}
+												width={door[2] - door[0]}
+												height={door[3] - door[1]}
+												stroke={(colors as any)["yellow"][400]}
+											/>
+										)}
+									</Layer>
+								</Stage>
+
+								<Stage ref={generatedFloorPlanRef} width={512} height={512} className="hidden">
+									<Layer>
+										<Rect width={512} height={512} fill={(colors as any).white} />
+									</Layer>
+									<Layer
+										scale={{ x: 2, y: 2 }}
+										clipFunc={(context) => {
+											if (!rightFloorPlan?.exteriors) return;
+
+											context.beginPath();
+
+											const [xBegin, yBegin] = rightFloorPlan?.exteriors[0];
+											context.moveTo(xBegin, yBegin);
+
+											rightFloorPlan?.exteriors.slice(1).map(([x, y]: number[]) => {
+												context.lineTo(x, y);
+											});
+
+											context.closePath();
+										}}
+									>
+										{rightFloorPlan?.hsbox?.map((box: any[], index: number) => {
+											const [[x1, y1, x2, y2], [label]] = box;
+											const room = rooms.find((room) => room.labels.includes(label));
+											return (
+												<Rect
+													key={[x1, y1, x2, y2, label].join("-")}
+													x={x1}
+													y={y1}
+													width={x2 - x1}
+													height={y2 - y1}
+													fill={(colors as any)[room?.colorTheme!][200]}
 													stroke={(colors as any)["gray"][700]}
+												/>
+											);
+										})}
+										{rightFloorPlan?.roomret?.map((plan: any[], index: number) => {
+											const [[x1, y1, x2, y2], [label], id] = plan;
+											const room = findRoom(label);
+											return (
+												<Rect
+													key={id}
+													x={x1}
+													y={y1}
+													width={x2 - x1}
+													height={y2 - y1}
+													fill={(colors as any)[room?.colorTheme!][200]}
+													stroke={(colors as any)["gray"][700]}
+												/>
+											);
+										})}
+									</Layer>
+
+									<Layer scale={{ x: 2, y: 2 }}>
+										{rightFloorPlan?.exteriors && (
+											<Line
+												points={[...rightFloorPlan.exteriors, rightFloorPlan.exteriors[0]].reduce(
+													(result: number[], exterior) => [...result, ...exterior],
+													[],
+												)}
+												stroke={(colors as any)["gray"][900]}
+												strokeWidth={2}
+											/>
+										)}
+										{rightFloorPlan?.windows?.map((position: number[]) => {
+											const [x, y, width, height]: number[] = position;
+
+											return (
+												<Rect
+													key={position.join(",")}
+													x={x}
+													y={y}
+													width={width}
+													height={height}
+													fill={(colors as any)["white"]}
+													// stroke={(colors as any)["gray"][700]}
 												/>
 											);
 										})}

@@ -12,7 +12,7 @@ import H4 from "../../components/typography/h4";
 import Text from "../../components/typography/text";
 import textStyle from "../../components/typography/text-style";
 import { joinTxts } from "../../utils/text.util";
-import { randomImg, randomPick } from "../../utils/tools.util";
+import { downloadURI, randomImg, randomPick } from "../../utils/tools.util";
 import { CategoryItemData } from "./components/category-item";
 import CategoryItem from "./components/category-item/category-item";
 import Category, { CategoryData } from "./components/category/category";
@@ -20,7 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import { postTextToImageApi } from "../../apis/text-to-image/text-to-image.api";
 import { useDispatch } from "react-redux";
 import { pushError } from "../../redux/slices/message.slice";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { Transition } from "@headlessui/react";
 import bgRenderJpg from "./images/bg-render.jpg";
 import { getCategoriesApi, getProductsApi } from "../../apis/product/product.api";
@@ -450,6 +450,12 @@ const Build2DPage = (props: RouteComponentProps) => {
 		quantity: 1,
 	}));
 
+	const handleOnclickDownload = async (url: string) => {
+		const res = await axios.get(url, { responseType: "blob" });
+		const urlImage = window.URL.createObjectURL(new Blob([res.data]));
+		downloadURI(urlImage, "HomelabAI_design.png");
+	};
+
 	return (
 		<SpringLoading
 			situations={[
@@ -507,11 +513,13 @@ const Build2DPage = (props: RouteComponentProps) => {
 								<div className="absolute bottom-0 right-0">
 									<Stack className="gap-4 m-8">
 										{postTextToImageRes?.output[0] && (
-											<a href={postTextToImageRes?.output[0]} target="_blank" download>
-												<Button type="overlay" className="rounded-xl h-full">
-													<i className="ri-download-cloud-line text-xl" />
-												</Button>
-											</a>
+											<Button
+												type="overlay"
+												className="rounded-xl h-full"
+												onClick={() => handleOnclickDownload(postTextToImageRes?.output[0])}
+											>
+												<i className="ri-download-cloud-line text-xl" />
+											</Button>
 										)}
 										<Button type="overlay" className="rounded-xl" onClick={handleGenerateButtonClicked}>
 											Tạo thiết kế&nbsp; <i className="ri-restart-line" />
