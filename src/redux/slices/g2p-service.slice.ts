@@ -12,6 +12,9 @@ const g2pSlice = createSlice<AxiosInstance | null, SliceCaseReducers<AxiosInstan
 		initiateG2p: (state, action: PayloadAction<G2PConfig>) => {
 			const api = axios.create({
 				baseURL: action.payload.baseUrl,
+				headers: {
+					"ngrok-skip-browser-warning": "true",
+				},
 			});
 
 			api.interceptors.request.use(

@@ -136,10 +136,12 @@ const HomePage = (props: RouteComponentProps) => {
 	};
 
 	const handleAnalyze2DButtonClicked = () => {
-		if (!tfFloorPlan) return;
+		navigate("/build");
 
-		const input = analyze2DButtonRef.current;
-		input?.click();
+		// if (!tfFloorPlan) return;
+
+		// const input = analyze2DButtonRef.current;
+		// input?.click();
 	};
 
 	const handle2DAreaDropped = (event: React.DragEvent<HTMLDivElement>) => {
