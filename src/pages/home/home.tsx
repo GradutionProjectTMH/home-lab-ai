@@ -20,6 +20,7 @@ import { randomArray } from "../../utils/tools.util";
 import { ChatIdea } from "./components/chat-idea";
 import sponsorJpg from "./images/sponsor.jpg";
 import style from "./style.module.css";
+import { Animation } from "../../components/animation";
 
 const slideImages = [
 	"1.jpg",
@@ -315,7 +316,18 @@ const HomePage = (props: RouteComponentProps) => {
 					</Transition>
 
 					<Stack column className="basis-[712px] shrink-0 items-stretch gap-24">
-						{SliderHome}
+						{isShowChat ? (
+							<Animation animation={[{ name: "fadeIn", duration: "500ms", delay: "100ms" }]}>
+								<Stack className="h-[640px] items-center gap-4 drop-shadow-[12px_40px_36px_rgba(26,54,93,0.32)]">
+									<img
+										src="https://www.arch2o.com/wp-content/uploads/2022/02/Arch2O-7-benefits-of-3d-home-floor-plans-scaled.jpeg"
+										alt=""
+									/>
+								</Stack>
+							</Animation>
+						) : (
+							SliderHome
+						)}
 
 						<Stack className="items-stretch px-4">
 							<Stack

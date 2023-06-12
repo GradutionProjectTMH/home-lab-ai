@@ -26,272 +26,27 @@ import bgRenderJpg from "./images/bg-render.jpg";
 import { getCategoriesApi, getProductsApi } from "../../apis/product/product.api";
 import H5 from "../../components/typography/h5";
 import { GetProductRoomType, GetProductStyle } from "../../apis/product/product-enum";
-import livingRoomJpg from "./images/living-room.jpg";
-import bedRoomJpg from "./images/bed-room.jpg";
-import diningRoomJpg from "./images/dining-room.jpg";
-import studyRoomJpg from "./images/study-room.jpg";
-import modernStyleJpg from "./images/modern-style.jpg";
-import futuristicStyleJpg from "./images/futuristic-style.jpg";
-import minimalistStyleJpg from "./images/minimalist-style.jpg";
-import popArtStyleJpg from "./images/pop-art-style.jpg";
+
 import { LIGHT_AND_DARKS_STYLES, MARBLES } from "./constants";
+import { data } from "./data";
 
 const Build2DPage = (props: RouteComponentProps) => {
 	const dispatch = useDispatch();
-	const [categories, setCategories] = React.useState<CategoryData[]>([
-		{
-			id: "Không gian",
-			isLoading: false,
-			items: [
-				{
-					id: "Phòng khách",
-					title: "Phòng khách",
-					prompt: "dreamy sunken living room conversation pit",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Phòng ngủ",
-					title: "Phòng ngủ",
-					prompt: "luminous lighting bedroom",
-					imgUrl: bedRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Phòng ăn",
-					title: "Phòng ăn",
-					prompt: "open space kitchen with dining room",
-					imgUrl: diningRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Phòng làm việc",
-					title: "Phòng làm việc",
-					prompt: "luxury and modern office room, working table on the corner, small room for one person",
-					imgUrl: studyRoomJpg,
-					isChoose: false,
-				},
-			],
-			prompt: "Room Name",
-			title: "Không gian",
-		},
+	const [categories, setCategories] = React.useState<CategoryData[]>(data);
 
-		{
-			id: "Phong cách",
-			isLoading: false,
-			items: [
-				{
-					id: "Hiện đại",
-					title: "Hiện đại",
-					prompt:
-						"high resolution photography interior design, (Room Name), (Floor), (Outside), bauhaus furniture and decoration includes (Categories), (Ceiling), (Palette), interior design magazine, (Feeling)",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Tối giản",
-					title: "Tối giản",
-					prompt:
-						"high resolution photography interior design, (Room Name), (Floor), (Outside), minimalist architecture, minimalist furniture includes (Categories), (Ceiling), (Palette), interior design magazine, (Feeling)",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Thiên nhiên",
-					title: "Thiên nhiên",
-					prompt:
-						"high resolution photography interior design, (Room Name), (Floor), (Outside), bauhaus furniture and decoration includes (Categories), (Ceiling), (Palette), lots of plants indoor architecture, peaceful, (Feeling)",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Nghệ thuật",
-					title: "Nghệ thuật",
-					prompt:
-						"high resolution photography interior design, an apartment complex as seen from inside, (Room Name), must have four paintings on the wall, (Floor), (Outside), (Ceiling), (Palette), a detailed anime style, (Feeling)",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-			],
-			prompt: "Style",
-			title: "Phong cách",
-		},
+	// const {
+	// 	mutateAsync: getCategories,
+	// 	isLoading: isLoadingGetCategories,
+	// 	data: getCategoriesRes,
+	// } = useMutation(getCategoriesApi, {
+	// 	onError: (error: AxiosError<{ message: string }>) => {
+	// 		dispatch(pushError(error?.message));
+	// 	},
+	// });
 
-		{
-			id: "Vật dụng",
-			isLoading: false,
-			items: [
-				{
-					id: "Lò vi sóng",
-					title: "Lò vi sóng",
-					prompt: "Moderna Microwave",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Tủ lạnh",
-					title: "Tủ lạnh",
-					prompt: "Infinity Refrigerator",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Máy rửa bát",
-					title: "Máy rửa bát",
-					prompt: "Apex Dishwasher",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Máy xay",
-					title: "Máy xay",
-					prompt: "Zenith Blender",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-			],
-			prompt: "Categories",
-			title: "Vật dụng",
-		},
-		{
-			id: "Sàn nhà",
-			isLoading: false,
-			items: [
-				{
-					id: "Sàn gỗ",
-					title: "Sàn gỗ",
-					prompt: "wooden floor",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Sàn gạch men",
-					title: "Sàn gạch men",
-					prompt: "ceramic tile floor",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-			],
-			prompt: "Floor",
-			title: "Sàn nhà",
-		},
-		{
-			id: "Trần nhà",
-			isLoading: false,
-			items: [
-				{
-					id: "Trần cao",
-					title: "Trần cao",
-					prompt: "high ceiling",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Đèn chùm",
-					title: "Đèn chùm",
-					prompt: "high ceiling with chandelier",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Đèn treo",
-					title: "Đèn treo",
-					prompt: "high ceiling with downlight",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-			],
-			prompt: "Ceiling",
-			title: "Trần nhà",
-		},
-		{
-			id: "Tông màu",
-			isLoading: false,
-			items: [
-				{
-					id: "Xanh be",
-					title: "Xanh be",
-					prompt: "beige blue salmon pastel palette",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Xanh thiên nhiên",
-					title: "Xanh thiên nhiên",
-					prompt: "dark green amber palette",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Cam",
-					title: "Cam",
-					prompt: "dramatic light palette",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-			],
-			prompt: "Pallette",
-			title: "Tông màu",
-		},
-		{
-			id: "Không gian bên ngoài",
-			isLoading: false,
-			items: [
-				{
-					id: "Vườn hoa",
-					title: "Vườn hoa",
-					prompt: "small windows opening onto the garden",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Biển",
-					title: "Biển",
-					prompt: "big door opening onto the beach",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-				{
-					id: "Thành phố",
-					title: "Thành phố",
-					prompt: "large steel windows viewing a city",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-			],
-			prompt: "Outside",
-			title: "Không gian bên ngoài",
-		},
-		{
-			id: "Cảm giác",
-			isLoading: false,
-			items: [
-				{
-					id: "Ấm cúng",
-					title: "Ấm cúng",
-					prompt: "cozy atmosphere",
-					imgUrl: livingRoomJpg,
-					isChoose: false,
-				},
-			],
-			prompt: "Feeling",
-			title: "Cảm giác",
-		},
-	]);
-
-	const {
-		mutateAsync: getCategories,
-		isLoading: isLoadingGetCategories,
-		data: getCategoriesRes,
-	} = useMutation(getCategoriesApi, {
-		onError: (error: AxiosError<{ message: string }>) => {
-			dispatch(pushError(error?.message));
-		},
-	});
-
-	React.useEffect(() => {
-		getCategories();
-	}, [getCategories]);
+	// React.useEffect(() => {
+	// 	getCategories();
+	// }, [getCategories]);
 
 	const { mutateAsync: getProducts } = useMutation(getProductsApi, {
 		onError: (error: AxiosError<{ message: string }>) => {
@@ -299,44 +54,44 @@ const Build2DPage = (props: RouteComponentProps) => {
 		},
 	});
 
-	React.useEffect(() => {
-		if (!getCategoriesRes) return;
+	// React.useEffect(() => {
+	// 	if (!getCategoriesRes) return;
 
-		const rawCategories: CategoryData[] = getCategoriesRes.map((category) => ({
-			id: category.id,
-			title: category.name,
-			imgUrl: category.thumbnailUrl,
-			prompt: category.prompt,
-			items: [],
-			isLoading: true,
-		}));
+	// 	const rawCategories: CategoryData[] = getCategoriesRes.map((category) => ({
+	// 		id: category.id,
+	// 		title: category.name,
+	// 		imgUrl: category.thumbnailUrl,
+	// 		prompt: category.prompt,
+	// 		items: [],
+	// 		isLoading: true,
+	// 	}));
 
-		setCategories(rawCategories);
+	// 	setCategories(rawCategories);
 
-		(async () => {
-			const newCategories = await Promise.all(
-				rawCategories.map(async (category, index) => {
-					const products = await getProducts({ categoryIds: category.id, page: 1, limit: 3 });
-					category.items = products.data.map((product) => ({
-						id: product.id,
-						title: product.name,
-						imgUrl: product.thumbnailUrl,
-						isChoose: false,
-						marble: product.marble,
-						decorateTheItems: product.decorateTheItems,
-						kindsOfLargeObjects: product.kindsOfLargeObjects,
-						lightAndDarkStyle: product.lightAndDarkStyle,
-						prompt: product.prompt,
-						price: `${product.price / 1000} nghìn VNĐ`,
-					}));
-					category.isLoading = false;
-					return category;
-				}),
-			);
+	// 	(async () => {
+	// 		const newCategories = await Promise.all(
+	// 			rawCategories.map(async (category, index) => {
+	// 				const products = await getProducts({ categoryIds: category.id, page: 1, limit: 3 });
+	// 				category.items = products.data.map((product) => ({
+	// 					id: product.id,
+	// 					title: product.name,
+	// 					imgUrl: product.thumbnailUrl,
+	// 					isChoose: false,
+	// 					marble: product.marble,
+	// 					decorateTheItems: product.decorateTheItems,
+	// 					kindsOfLargeObjects: product.kindsOfLargeObjects,
+	// 					lightAndDarkStyle: product.lightAndDarkStyle,
+	// 					prompt: product.prompt,
+	// 					price: `${product.price / 1000} nghìn VNĐ`,
+	// 				}));
+	// 				category.isLoading = false;
+	// 				return category;
+	// 			}),
+	// 		);
 
-			setCategories(newCategories);
-		})();
-	}, [getCategoriesRes]);
+	// 		setCategories(newCategories);
+	// 	})();
+	// }, [getCategoriesRes]);
 
 	const [prompt, setCurrentPrompt] = React.useState<string>();
 
